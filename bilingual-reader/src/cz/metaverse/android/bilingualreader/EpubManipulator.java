@@ -261,14 +261,14 @@ public class EpubManipulator {
 	public void unzip(String inputZip, String destinationDirectory)
 			throws IOException {
 		int BUFFER = 2048;
-		List zipFiles = new ArrayList();
+		List<String> zipFiles = new ArrayList<String>();
 		File sourceZipFile = new File(inputZip);
 		File unzipDestinationDirectory = new File(destinationDirectory);
 		unzipDestinationDirectory.mkdir();
 
 		ZipFile zipFile;
 		zipFile = new ZipFile(sourceZipFile, ZipFile.OPEN_READ);
-		Enumeration zipFileEntries = zipFile.entries();
+		Enumeration<? extends ZipEntry> zipFileEntries = zipFile.entries();
 
 		// Process each entry
 		while (zipFileEntries.hasMoreElements()) {
@@ -307,7 +307,7 @@ public class EpubManipulator {
 		}
 		zipFile.close();
 
-		for (Iterator iter = zipFiles.iterator(); iter.hasNext();) {
+		for (Iterator<String> iter = zipFiles.iterator(); iter.hasNext();) {
 			String zipName = (String) iter.next();
 			unzip(zipName,
 					destinationDirectory
