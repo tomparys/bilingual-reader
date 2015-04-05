@@ -1,4 +1,4 @@
-package it.angrydroids.epub3reader;
+package cz.metaverse.android.bilingualreader;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

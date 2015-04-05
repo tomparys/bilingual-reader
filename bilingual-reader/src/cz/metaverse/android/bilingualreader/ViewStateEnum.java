@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package it.angrydroids.epub3reader;
+package cz.metaverse.android.bilingualreader;
 
 public enum ViewStateEnum {
 	books, notes, invisible
