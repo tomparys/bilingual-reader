@@ -37,12 +37,17 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-// Abstract fragment that represents a general panel containing only the closing button
+/**
+ * 
+ * Abstract fragment that represents a general book-reading panel containing
+ * 	only the closing button.
+ *
+ */
 public abstract class SplitPanel extends Fragment {
 
-	private RelativeLayout generalLayout;
+	private RelativeLayout splitPanelLayout;
 	protected int index;
-	protected RelativeLayout layout;
+	protected RelativeLayout contentBoxLayout;
 	protected Button closeButton;
 	protected EpubNavigator navigator;
 	protected int screenWidth;
@@ -64,20 +69,18 @@ public abstract class SplitPanel extends Fragment {
 	public void onActivityCreated(Bundle saved) {
 		created = true;
 		super.onActivityCreated(saved);
-		generalLayout = (RelativeLayout) getView().findViewById(
-				R.id.GeneralLayout);
-		layout = (RelativeLayout) getView().findViewById(R.id.Content);
+		splitPanelLayout = (RelativeLayout) getView().findViewById(R.id.GeneralLayout);
+		contentBoxLayout = (RelativeLayout) getView().findViewById(R.id.Content);
 		closeButton = (Button) getView().findViewById(R.id.CloseButton);
 
-		// ----- get activity screen size
+		// Get activity screen size
 		DisplayMetrics metrics = this.getResources().getDisplayMetrics();
 		screenWidth = metrics.widthPixels;
 		screenHeight = metrics.heightPixels;
-		// -----
 
 		changeWeight(weight);
 
-		// ----- VIEW CLOSING
+		// Set listener for the Close button
 		closeButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -90,13 +93,13 @@ public abstract class SplitPanel extends Fragment {
 		navigator.closeView(index);
 	}
 
-	// change the weight of the general layout
+	// Change the weight of the general layout
 	public void changeWeight(float value) {
 		weight = value;
 		if (created) {
 			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
 					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, value);
-			generalLayout.setLayoutParams(params);
+			splitPanelLayout.setLayoutParams(params);
 		}
 	}
 
@@ -112,10 +115,12 @@ public abstract class SplitPanel extends Fragment {
 		((MainActivity) getActivity()).errorMessage(message);
 	}
 
+	// Saves the weight of this SplitPanel during saveState
 	public void saveState(Editor editor) {
 		editor.putFloat("weight" + index, weight);
 	}
 
+	// Restores the weight of this SplitPanel during saveState
 	public void loadState(SharedPreferences preferences) {
 		changeWeight(preferences.getFloat("weight" + index, 0.5f));
 	}

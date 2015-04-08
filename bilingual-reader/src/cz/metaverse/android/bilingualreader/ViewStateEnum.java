@@ -24,6 +24,11 @@ THE SOFTWARE.
 
 package cz.metaverse.android.bilingualreader;
 
+/**
+ * 
+ * Enum that is used to describe the state of the book-viewing panels.
+ *
+ */
 public enum ViewStateEnum {
 	books, notes, invisible
 }

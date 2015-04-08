@@ -6,8 +6,9 @@
 
     <SeekBar
         android:id="@+id/progressBar"
-        android:layout_width="match_parent"
         android:max="100"
+        android:paddingTop="15dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <LinearLayout
@@ -16,7 +17,6 @@
         android:layout_gravity="center"
         android:background="#3E80B4"
         android:orientation="horizontal" >
-
     </LinearLayout>
-
+    
 </LinearLayout>

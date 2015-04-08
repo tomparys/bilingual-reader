@@ -11,40 +11,48 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.SeekBar;
 
+/**
+ * 
+ * Dialog to set the relative size of the upper and lower book panel.
+ *  Accessible from the main menu.
+ *
+ */
 public class SetPanelSize extends DialogFragment {
 
 	protected SeekBar seekbar;
 	protected float value = (float) 0.2;
-	protected int sBv = 50;
+	protected int seekBarValue = 50;
 	protected Context context;
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 
+		// Get the dialog builder and layout inflater
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		// Get the layout inflater
 		LayoutInflater inflater = getActivity().getLayoutInflater();
+		
 		// Inflate and set the layout for the dialog
-		// Pass null as the parent view because its going in the dialog layout
-
+		// 	Pass null as the parent view because its going in the dialog layout
 		View view = inflater.inflate(R.layout.set_panel_size, null);
 
+		// Load the seek bar value
 		final SharedPreferences preferences = ((MainActivity) getActivity())
 				.getPreferences(Context.MODE_PRIVATE);
-
-		sBv = preferences.getInt("seekBarValue", 50);
+		
+		seekBarValue = preferences.getInt("seekBarValue", 50);
 		seekbar = (SeekBar) view.findViewById(R.id.progressBar);
-		seekbar.setProgress(sBv);
+		seekbar.setProgress(seekBarValue);
 
+		// Set title
 		builder.setTitle(getString(R.string.SetSizeTitle));
 		builder.setView(view);
 
-		// (inflater.inflate(R.layout.setsize, null))
-		// Add action buttons
+		// Add ok button
 		builder.setPositiveButton(getString(R.string.OK),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int id) {
+						// Get the resulting value from the seekbar
 						float actual = (float) seekbar.getProgress();
 						value = actual / (float) seekbar.getMax();
 						if (value <= 0.1)
@@ -52,18 +60,27 @@ public class SetPanelSize extends DialogFragment {
 						if (value >= 0.9)
 							value = (float) 0.9;
 
+						// Set the value to view.
 						((MainActivity) getActivity()).changeViewsSize(value);
+						
+						// Save the value to shared preferences
 						SharedPreferences.Editor editor = preferences.edit();
-						sBv = seekbar.getProgress();
-						editor.putInt("seekBarValue", sBv);
+						editor.putInt("seekBarValue", seekBarValue);
 						editor.commit();
+
+						// Save the actual value for future showing of the seekbar
+						seekBarValue = seekbar.getProgress();
 					}
 				});
+		
+		// Add cancel button
 		builder.setNegativeButton(getString(R.string.Cancel),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 					}
 				});
+
+		// Create the dialog
 		return builder.create();
 	}
 
