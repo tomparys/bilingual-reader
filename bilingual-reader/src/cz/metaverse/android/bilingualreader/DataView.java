@@ -34,12 +34,17 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 //Panel specialized in visualizing HTML-data
+/**
+ * 
+ * Fragment that extends SplitPanel by using WebView to display content.
+ *
+ */
 public class DataView extends SplitPanel {
-	protected WebView view;
+	protected WebView webView;
 	protected String data;
 	
 	@Override
-	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)	{
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		View v = inflater.inflate(R.layout.activity_data_view, container, false);
 		return v;
@@ -48,10 +53,12 @@ public class DataView extends SplitPanel {
 	@Override
     public void onActivityCreated(Bundle saved) {
 		super.onActivityCreated(saved);
-		view = (WebView) getView().findViewById(R.id.Viewport);
+		webView = (WebView) getView().findViewById(R.id.Viewport);
 		
-		view.setWebViewClient(new WebViewClient() {
+		// Set an Extended WebViewClient
+		webView.setWebViewClient(new WebViewClient() {
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				// Set a new book page when a link is pressed inside the web view
 				try {
 					navigator.setBookPage(url, index);
 				} catch (Exception e) {
@@ -64,14 +71,23 @@ public class DataView extends SplitPanel {
 		loadData(data);
 	}
 	
+	/**
+	 * Loads text into the webview
+	 * @param source String to display
+	 */
 	public void loadData(String source)
 	{
-		data=source;
+		this.data = source;
 		
-		if(created)
-			view.loadData(data, getActivity().getApplicationContext().getResources().getString(R.string.textOrHTML), null);
+		if (created)
+			webView.loadData(data, 
+				getActivity().getApplicationContext().getResources().getString(R.string.textOrHTML),
+				null);
 	}
 
+	/**
+	 * Saves the currently displayed text in the web view
+	 */
 	@Override
 	public void saveState(Editor editor)
 	{
@@ -79,6 +95,9 @@ public class DataView extends SplitPanel {
 		editor.putString("data"+index, data);
 	}
 	
+	/**
+	 * Restores the currently displayed text into the web view
+	 */
 	@Override
 	public void loadState(SharedPreferences preferences)
 	{

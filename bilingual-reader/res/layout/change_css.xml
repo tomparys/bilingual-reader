@@ -2,147 +2,157 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/changeFontTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:text="@string/change_Font_Color"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/songName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/spinnerColor"
-        android:text="@string/ChangeBackgroundColor"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/spinnerBack"
-        android:text="@string/ChangeFont"
-        android:textSize="18sp" />
-
-    <Spinner
-        android:id="@+id/spinnerFontFamily"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/textView2"
-        android:entries="@array/FontStyle" />
-
-    <Spinner
-        android:id="@+id/spinnerBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/spinnerColor"
-        android:layout_toRightOf="@+id/songName"
-        android:entries="@array/ColorBack" />
-
-    <TextView
-        android:id="@+id/textView8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/spinnerAlign"
-        android:text="@string/Margin"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/spinnerFontFamily"
-        android:text="@string/LineHeight"
-        android:textSize="18sp" />
-
-    <Spinner
-        android:id="@+id/spinnerLH"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/spinnerAlign"
-        android:layout_alignParentLeft="true"
-        android:layout_alignRight="@+id/songName"
-        android:layout_alignTop="@+id/spinnerAlign"
-        android:entries="@array/LineHeight" />
-
-    <Spinner
-        android:id="@+id/spinnerRight"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/spinnerAlign"
-        android:layout_below="@+id/textView8"
-        android:entries="@array/Margin" />
-
-    <Spinner
-        android:id="@+id/spinnerLeft"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/spinnerRight"
-        android:layout_toLeftOf="@+id/spinnerAlign"
-        android:entries="@array/Margin" />
-
-    <Spinner
-        android:id="@+id/spinnerAlign"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView5"
-        android:layout_toRightOf="@+id/spinnerLH"
-        android:entries="@array/testAlignOption" />
-
-    <Spinner
-        android:id="@+id/spinnerFS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/textView5"
-        android:layout_alignLeft="@+id/textView3"
-        android:entries="@array/FontSize" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/spinnerBack"
-        android:layout_toRightOf="@+id/textView5"
-        android:text="@string/FontSize"
-        android:textSize="18sp" />
-
-    <Spinner
-        android:id="@+id/spinnerColor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView5"
-        android:layout_alignParentTop="true"
-        android:entries="@array/ColorFont" />
-
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textView4"
-        android:layout_alignBottom="@+id/textView4"
-        android:layout_alignLeft="@+id/spinnerAlign"
-        android:text="@string/TextAlign"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="18sp" />
-
-    <Button
-        android:id="@+id/buttonDefault"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/spinnerRight"
-        android:text="@string/DefaultSettings" />
-
+	<RelativeLayout
+	    android:id="@+id/RelativeLayout2"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_centerHorizontal="true"
+	    android:layout_margin="10dp"
+	    android:orientation="vertical">
+	
+	    <TextView
+	        android:id="@+id/changeFontColorTV"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignParentTop="true"
+	        android:text="@string/change_Font_Color"
+	        android:textSize="18sp" />
+	
+	    <TextView
+	        android:id="@+id/changeBackgroundColorTV"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@+id/spinnerColor"
+	        android:text="@string/ChangeBackgroundColor"
+	        android:textSize="18sp" />
+	
+	    <TextView
+	        android:id="@+id/changeFontTV"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@+id/spinnerBackgroundColor"
+	        android:text="@string/ChangeFont"
+	        android:textSize="18sp" />
+	
+	    <Spinner
+	        android:id="@+id/spinnerFontFamily"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@+id/changeFontTV"
+	        android:entries="@array/FontStyle" />
+	
+	    <Spinner
+	        android:id="@+id/spinnerBackgroundColor"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/spinnerColor"
+	        android:layout_toRightOf="@+id/changeBackgroundColorTV"
+	        android:entries="@array/ColorBack" />
+	
+	    <TextView
+	        android:id="@+id/changeMarginTV"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@+id/spinnerAlign"
+	        android:text="@string/Margin"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	    <TextView
+	        android:id="@+id/changeLineHeightTV"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@+id/spinnerFontFamily"
+	        android:text="@string/LineHeight"
+	        android:textSize="18sp" />
+	
+	    <Spinner
+	        android:id="@+id/spinnerLineHeight"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignBottom="@+id/spinnerAlign"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignRight="@+id/changeBackgroundColorTV"
+	        android:layout_alignTop="@+id/spinnerAlign"
+	        android:entries="@array/LineHeight" />
+	
+	    <Spinner
+	        android:id="@+id/spinnerLeftMargin"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignTop="@+id/spinnerRightMargin"
+	        android:layout_toLeftOf="@+id/spinnerAlign"
+	        android:entries="@array/Margin" />
+	
+	    <Spinner
+	        android:id="@+id/spinnerRightMargin"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/spinnerAlign"
+	        android:layout_below="@+id/changeMarginTV"
+	        android:entries="@array/Margin" />
+	
+	    <Spinner
+	        android:id="@+id/spinnerAlign"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/changeTextAlignTV"
+	        android:layout_toRightOf="@+id/spinnerLineHeight"
+	        android:entries="@array/testAlignOption" />
+	
+	    <Spinner
+	        android:id="@+id/spinnerFontSize"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_above="@+id/changeTextAlignTV"
+	        android:layout_alignLeft="@+id/changeFontSizeTV"
+	        android:entries="@array/FontSize" />
+	
+	    <TextView
+	        android:id="@+id/changeFontSizeTV"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/spinnerBackgroundColor"
+	        android:layout_toRightOf="@+id/spinnerFontFamily"
+	        android:layout_alignLeft="@+id/changeTextAlignTV"
+	        android:text="@string/FontSize"
+	        android:textSize="18sp" />
+	
+	    <Spinner
+	        android:id="@+id/spinnerColor"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/changeTextAlignTV"
+	        android:layout_alignParentTop="true"
+	        android:entries="@array/ColorFont" />
+	
+	    <TextView
+	        android:id="@+id/changeTextAlignTV"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignBaseline="@+id/changeLineHeightTV"
+	        android:layout_alignBottom="@+id/changeLineHeightTV"
+	        android:layout_alignLeft="@+id/spinnerAlign"
+	        android:text="@string/TextAlign"
+	        android:textAppearance="?android:attr/textAppearanceMedium"
+	        android:textSize="18sp" />
+	
+	    <Button
+	        android:id="@+id/buttonDefault"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_centerHorizontal="true"
+	        android:layout_below="@+id/spinnerRightMargin"
+	        android:text="@string/DefaultSettings" />
+	
+	</RelativeLayout>
 </RelativeLayout>

@@ -32,6 +32,13 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+/**
+ * 
+ * Language chooser for epubs that contain more than one language at once.
+ * 	It has no use in our application - TODO.
+ *
+ */
+
 public class LanguageChooser extends DialogFragment {
 	String[] languages;
 	int book;

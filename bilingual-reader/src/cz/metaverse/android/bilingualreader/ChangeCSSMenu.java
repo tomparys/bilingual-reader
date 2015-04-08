@@ -14,45 +14,50 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
 
+/**
+ * 
+ * Customize display style dialog.
+ *
+ */
 public class ChangeCSSMenu extends DialogFragment {
 
-	protected float value = (float) 0.2;
-	protected Button[] buttons = new Button[5];
+	protected Button defaultButton;
 	protected Builder builder;
 	protected Spinner spinColor;
-	protected Spinner spinBack;
+	protected Spinner spinBgColor;
 	protected Spinner spinFontStyle;
 	protected Spinner spinAlignText;
 	protected Spinner spinFontSize;
-	protected Spinner spinLineH;
-	protected Button defaultButton;
+	protected Spinner spinLineHeight;
 	protected Spinner spinLeft;
 	protected Spinner spinRight;
-	protected int colInt, backInt, fontInt, alignInt, sizeInt, heightInt,
-			marginLInt, marginRInt;
-	protected MainActivity a;
+	protected int colorInt, bgColorInt, fontInt, alignInt, sizeInt, heightInt,
+				  marginLeftInt, marginRightInt;
+	protected MainActivity activity;
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 
+		// Get the dialog builder and layout inflater
 		builder = new AlertDialog.Builder(getActivity());
-		// Get the layout inflater
 		LayoutInflater inflater = getActivity().getLayoutInflater();
+		
 		// Inflate and set the layout for the dialog
 		// Pass null as the parent view because its going in the dialog layout
-
-		a = (MainActivity)getActivity();
+		activity = (MainActivity) getActivity();
 		View view = inflater.inflate(R.layout.change_css, null);
 
-		final SharedPreferences preferences = a.getPreferences(Context.MODE_PRIVATE);
+		// Get saved preferences
+		final SharedPreferences preferences = activity.getPreferences(Context.MODE_PRIVATE);
 
+		// ---- Set up individual setting widgets
 		spinColor = (Spinner) view.findViewById(R.id.spinnerColor);
-		colInt = preferences.getInt("spinColorValue", 0);
-		spinColor.setSelection(colInt);
+		colorInt = preferences.getInt("spinColorValue", 0);
+		spinColor.setSelection(colorInt);
 
-		spinBack = (Spinner) view.findViewById(R.id.spinnerBack);
-		backInt = preferences.getInt("spinBackValue", 0);
-		spinBack.setSelection(backInt);
+		spinBgColor = (Spinner) view.findViewById(R.id.spinnerBackgroundColor);
+		bgColorInt = preferences.getInt("spinBackValue", 0);
+		spinBgColor.setSelection(bgColorInt);
 
 		spinFontStyle = (Spinner) view.findViewById(R.id.spinnerFontFamily);
 		fontInt = preferences.getInt("spinFontStyleValue", 0);
@@ -62,53 +67,52 @@ public class ChangeCSSMenu extends DialogFragment {
 		alignInt = preferences.getInt("spinAlignTextValue", 0);
 		spinAlignText.setSelection(alignInt);
 
-		spinFontSize = (Spinner) view.findViewById(R.id.spinnerFS);
+		spinFontSize = (Spinner) view.findViewById(R.id.spinnerFontSize);
 		sizeInt = preferences.getInt("spinFontSizeValue", 0);
 		spinFontSize.setSelection(sizeInt);
 
-		spinLineH = (Spinner) view.findViewById(R.id.spinnerLH);
+		spinLineHeight = (Spinner) view.findViewById(R.id.spinnerLineHeight);
 		heightInt = preferences.getInt("spinLineHValue", 0);
-		spinLineH.setSelection(heightInt);
+		spinLineHeight.setSelection(heightInt);
 
-		spinLeft = (Spinner) view.findViewById(R.id.spinnerLeft);
-		marginLInt = preferences.getInt("spinLeftValue", 0);
-		spinLeft.setSelection(marginLInt);
+		spinLeft = (Spinner) view.findViewById(R.id.spinnerLeftMargin);
+		marginLeftInt = preferences.getInt("spinLeftValue", 0);
+		spinLeft.setSelection(marginLeftInt);
 
-		spinRight = (Spinner) view.findViewById(R.id.spinnerRight);
-		marginRInt = preferences.getInt("spinRightValue", 0);
-		spinRight.setSelection(marginRInt);
+		spinRight = (Spinner) view.findViewById(R.id.spinnerRightMargin);
+		marginRightInt = preferences.getInt("spinRightValue", 0);
+		spinRight.setSelection(marginRightInt);
 
+		// The button that says "Default" that resets the settings
 		defaultButton = (Button) view.findViewById(R.id.buttonDefault);
-		// editTextTop = (EditText) view.findViewById(R.id.editText1);
-		// editTextBottom = (EditText) view.findViewById(R.id.editText2);
-		// editTextLeft = (EditText) view.findViewById(R.id.editText3);
-		// editTextRight = (EditText) view.findViewById(R.id.editText4);
 
+		// Set title and set the view
 		builder.setTitle("Style");
 		builder.setView(view);
 
+		// ------ Set listeners for the widgets
 		spinColor
 				.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
 					@Override
 					public void onItemSelected(AdapterView<?> parent,
 							View view, int position, long id) {
-						colInt = (int) id;
+						colorInt = (int) id;
 						switch ((int) id) {
 						case 0:
-							a.setColor(getString(R.string.black_rgb));
+							activity.setColor(getString(R.string.black_rgb));
 							break;
 						case 1:
-							a.setColor(getString(R.string.red_rgb));
+							activity.setColor(getString(R.string.red_rgb));
 							break;
 						case 2:
-							a.setColor(getString(R.string.green_rgb));
+							activity.setColor(getString(R.string.green_rgb));
 							break;
 						case 3:
-							a.setColor(getString(R.string.blue_rgb));
+							activity.setColor(getString(R.string.blue_rgb));
 							break;
 						case 4:
-							a.setColor(getString(R.string.white_rgb));
+							activity.setColor(getString(R.string.white_rgb));
 							break;
 						default:
 							break;
@@ -117,31 +121,30 @@ public class ChangeCSSMenu extends DialogFragment {
 
 					@Override
 					public void onNothingSelected(AdapterView<?> arg0) {
-
 					}
 				});
 
-		spinBack.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		spinBgColor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int position, long id) {
-				backInt = (int) id;
+				bgColorInt = (int) id;
 				switch ((int) id) {
 				case 0:
-					a.setBackColor(getString(R.string.white_rgb));
+					activity.setBackColor(getString(R.string.white_rgb));
 					break;
 				case 1:
-					a.setBackColor(getString(R.string.red_rgb));
+					activity.setBackColor(getString(R.string.red_rgb));
 					break;
 				case 2:
-					a.setBackColor(getString(R.string.green_rgb));
+					activity.setBackColor(getString(R.string.green_rgb));
 					break;
 				case 3:
-					a.setBackColor(getString(R.string.blue_rgb));
+					activity.setBackColor(getString(R.string.blue_rgb));
 					break;
 				case 4:
-					a.setBackColor(getString(R.string.black_rgb));
+					activity.setBackColor(getString(R.string.black_rgb));
 					break;
 				default:
 					break;
@@ -150,7 +153,6 @@ public class ChangeCSSMenu extends DialogFragment {
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
-
 			}
 		});
 
@@ -163,13 +165,13 @@ public class ChangeCSSMenu extends DialogFragment {
 						fontInt = (int) id;
 						switch ((int) id) {
 						case 0:
-							a.setFontType(getString(R.string.Arial));
+							activity.setFontType(getString(R.string.Arial));
 							break;
 						case 1:
-							a.setFontType(getString(R.string.Serif));
+							activity.setFontType(getString(R.string.Serif));
 							break;
 						case 2:
-							a.setFontType(getString(R.string.Monospace));
+							activity.setFontType(getString(R.string.Monospace));
 							break;
 						default:
 							break;
@@ -178,7 +180,6 @@ public class ChangeCSSMenu extends DialogFragment {
 
 					@Override
 					public void onNothingSelected(AdapterView<?> arg0) {
-
 					}
 				});
 
@@ -191,16 +192,16 @@ public class ChangeCSSMenu extends DialogFragment {
 						alignInt = (int) id;
 						switch ((int) id) {
 						case 0:
-							a.setAlign(getString(R.string.Left_Align));
+							activity.setAlign(getString(R.string.Left_Align));
 							break;
 						case 1:
-							a.setAlign(getString(R.string.Center_Align));
+							activity.setAlign(getString(R.string.Center_Align));
 							break;
 						case 2:
-							a.setAlign(getString(R.string.Right_Align));
+							activity.setAlign(getString(R.string.Right_Align));
 							break;
 						case 3:
-							a.setAlign(getString(R.string.Justify));
+							activity.setAlign(getString(R.string.Justify));
 							break;
 						default:
 							break;
@@ -209,7 +210,6 @@ public class ChangeCSSMenu extends DialogFragment {
 
 					@Override
 					public void onNothingSelected(AdapterView<?> arg0) {
-
 					}
 				});
 
@@ -222,22 +222,22 @@ public class ChangeCSSMenu extends DialogFragment {
 						sizeInt = (int) id;
 						switch ((int) id) {
 						case 0:
-							a.setFontSize("100");
+							activity.setFontSize("100");
 							break;
 						case 1:
-							a.setFontSize("125");
+							activity.setFontSize("125");
 							break;
 						case 2:
-							a.setFontSize("150");
+							activity.setFontSize("150");
 							break;
 						case 3:
-							a.setFontSize("175");
+							activity.setFontSize("175");
 							break;
 						case 4:
-							a.setFontSize("200");
+							activity.setFontSize("200");
 							break;
 						case 5:
-							a.setFontSize("90");
+							activity.setFontSize("90");
 							break;
 						default:
 							break;
@@ -246,11 +246,10 @@ public class ChangeCSSMenu extends DialogFragment {
 
 					@Override
 					public void onNothingSelected(AdapterView<?> arg0) {
-
 					}
 				});
 
-		spinLineH
+		spinLineHeight
 				.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
 					@Override
@@ -259,22 +258,22 @@ public class ChangeCSSMenu extends DialogFragment {
 						heightInt = (int) id;
 						switch ((int) id) {
 						case 0:
-							a.setLineHeight("1");
+							activity.setLineHeight("1");
 							break;
 						case 1:
-							a.setLineHeight("1.25");
+							activity.setLineHeight("1.25");
 							break;
 						case 2:
-							a.setLineHeight("1.5");
+							activity.setLineHeight("1.5");
 							break;
 						case 3:
-							a.setLineHeight("1.75");
+							activity.setLineHeight("1.75");
 							break;
 						case 4:
-							a.setLineHeight("2");
+							activity.setLineHeight("2");
 							break;
 						case 5:
-							a.setLineHeight("0.9");
+							activity.setLineHeight("0.9");
 							break;
 						default:
 							break;
@@ -283,7 +282,6 @@ public class ChangeCSSMenu extends DialogFragment {
 
 					@Override
 					public void onNothingSelected(AdapterView<?> arg0) {
-
 					}
 				});
 
@@ -292,25 +290,25 @@ public class ChangeCSSMenu extends DialogFragment {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int position, long id) {
-				marginLInt = (int) id;
+				marginLeftInt = (int) id;
 				switch ((int) id) {
 				case 0:
-					a.setMarginLeft("0");
+					activity.setMarginLeft("0");
 					break;
 				case 1:
-					a.setMarginLeft("5");
+					activity.setMarginLeft("5");
 					break;
 				case 2:
-					a.setMarginLeft("10");
+					activity.setMarginLeft("10");
 					break;
 				case 3:
-					a.setMarginLeft("15");
+					activity.setMarginLeft("15");
 					break;
 				case 4:
-					a.setMarginLeft("20");
+					activity.setMarginLeft("20");
 					break;
 				case 5:
-					a.setMarginLeft("25");
+					activity.setMarginLeft("25");
 					break;
 				default:
 					break;
@@ -319,7 +317,6 @@ public class ChangeCSSMenu extends DialogFragment {
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
-
 			}
 		});
 
@@ -329,25 +326,25 @@ public class ChangeCSSMenu extends DialogFragment {
 					@Override
 					public void onItemSelected(AdapterView<?> parent,
 							View view, int position, long id) {
-						marginRInt = (int) id;
+						marginRightInt = (int) id;
 						switch ((int) id) {
 						case 0:
-							a.setMarginRight("0");
+							activity.setMarginRight("0");
 							break;
 						case 1:
-							a.setMarginRight("5");
+							activity.setMarginRight("5");
 							break;
 						case 2:
-							a.setMarginRight("10");
+							activity.setMarginRight("10");
 							break;
 						case 3:
-							a.setMarginRight("15");
+							activity.setMarginRight("15");
 							break;
 						case 4:
-							a.setMarginRight("20");
+							activity.setMarginRight("20");
 							break;
 						case 5:
-							a.setMarginRight("25");
+							activity.setMarginRight("25");
 							break;
 						default:
 							break;
@@ -356,24 +353,24 @@ public class ChangeCSSMenu extends DialogFragment {
 
 					@Override
 					public void onNothingSelected(AdapterView<?> arg0) {
-
 					}
 				});
 
+		// The button that says "Default".
 		defaultButton.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-
-				a.setColor("");
-				a.setBackColor("");
-				a.setFontType("");
-				a.setFontSize("");
-				a.setLineHeight("");
-				a.setAlign("");
-				a.setMarginLeft("");
-				a.setMarginRight("");
-				a.setCSS();
+				// Reset all settings to their defaults and dismiss the dialog.
+				activity.setColor("");
+				activity.setBackColor("");
+				activity.setFontType("");
+				activity.setFontSize("");
+				activity.setLineHeight("");
+				activity.setAlign("");
+				activity.setMarginLeft("");
+				activity.setMarginRight("");
+				activity.setCSS();
 				SharedPreferences.Editor editor = preferences.edit();
 				editor.putInt("spinColorValue", 0);
 				editor.putInt("spinBackValue", 0);
@@ -389,31 +386,30 @@ public class ChangeCSSMenu extends DialogFragment {
 			}
 		});
 
+		// The OK button
 		builder.setPositiveButton(getString(R.string.OK),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 
-						// a.setLineHeight(editTextLineH.getText()
-						// .toString());
-						// a.setMargin(editTextTop.getText()
-						// .toString(), editTextBottom.getText()
-						// .toString(), editTextLeft.getText().toString(),
-						// editTextRight.getText().toString());
-						a.setCSS();
+						// Tell activity to apply changes
+						activity.setCSS();
 
+						// Save all settings into the preferences memory store.
 						SharedPreferences.Editor editor = preferences.edit();
-						editor.putInt("spinColorValue", colInt);
-						editor.putInt("spinBackValue", backInt);
+						editor.putInt("spinColorValue", colorInt);
+						editor.putInt("spinBackValue", bgColorInt);
 						editor.putInt("spinFontStyleValue", fontInt);
 						editor.putInt("spinAlignTextValue", alignInt);
 						editor.putInt("spinFontSizeValue", sizeInt);
 						editor.putInt("spinLineHValue", heightInt);
-						editor.putInt("spinLeftValue", marginLInt);
-						editor.putInt("spinRightValue", marginRInt);
+						editor.putInt("spinLeftValue", marginLeftInt);
+						editor.putInt("spinRightValue", marginRightInt);
 						editor.commit();
 					}
 				});
+		
+		// The Cancel button
 		builder.setNegativeButton(getString(R.string.Cancel),
 				new DialogInterface.OnClickListener() {
 
@@ -422,6 +418,7 @@ public class ChangeCSSMenu extends DialogFragment {
 					}
 				});
 
+		// Finally, create the dialogue and return it.
 		return builder.create();
 	}
 }

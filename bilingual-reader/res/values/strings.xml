@@ -121,10 +121,10 @@
     <string name="Left_Align">Left</string>
     <string name="Center_Align">Center</string>
     <string name="Right_Align">Right</string>
-    <string name="DefaultSettings">Default</string>
+    <string name="DefaultSettings">Reset to default</string>
     <string name="px">px</string>
     <string name="open">Open...</string>
-    <string name="Margin">Margin(px):</string>
+    <string name="Margin">Margin left, right (px):</string>
 
     <string-array name="FontSize">
         <item>100%</item>

@@ -40,11 +40,16 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+/**
+ * 
+ * Activity which offers a list of epubs the user can open.
+ *
+ */
 public class FileChooser extends Activity {
 
 	static List<File> epubs;
 	static List<String> names;
-	ArrayAdapter<String> adapter;
+	ArrayAdapter<String> arrayAdapter;
 	static File selected;
 	boolean firstTime;
 
@@ -53,46 +58,54 @@ public class FileChooser extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.file_chooser_layout);
 
+		// Populate list of epubs if needed
 		if ((epubs == null) || (epubs.size() == 0)) {
 			epubs = epubList(Environment.getExternalStorageDirectory());
 		}
 
+		// Populate the ListView with data
 		ListView list = (ListView) findViewById(R.id.fileListView);
 		names = fileNames(epubs);
-		adapter = new ArrayAdapter<String>(this,
+		arrayAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, names);
 
+		// On click listener
 		list.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> listView, View itemView,
 					int position, long itemId) {
+				
+				// End this Activity by sending the Intent result with the epub absolute path.
 				selected = epubs.get(position);
 				Intent resultIntent = new Intent();
-				// TODO: hardcoded string
 				resultIntent.putExtra("bpath", selected.getAbsolutePath());
 				setResult(Activity.RESULT_OK, resultIntent);
 				finish();
 			}
 		});
 
-		list.setAdapter(adapter);
+		// Activate the list
+		list.setAdapter(arrayAdapter);
 	}
 
-	// TODO: hardcoded string
+	/**
+	 * Returns file names from a list of files
+	 * @param files list of files
+	 * @return list of file names
+	 */
 	private List<String> fileNames(List<File> files) {
 		List<String> res = new ArrayList<String>();
 		for (int i = 0; i < files.size(); i++) {
 			res.add(files.get(i).getName().replace(".epub", ""));
-			/*
-			 * NOTE: future
-			res.add(files.get(i).getName().replace(".epub", "").replace(".e0", ""));
-			*/
 		}
 		return res;
 	}
 
-	// TODO: hardcoded string
-	// TODO: check with mimetype, not with filename extension
+	/**
+	 * Recursively returns a lsit of epub files in a given dir.
+	 * @param dir to search
+	 * @return list of epub Files
+	 */
 	private List<File> epubList(File dir) {
 		List<File> res = new ArrayList<File>();
 		if (dir.isDirectory()) {
@@ -100,20 +113,15 @@ public class FileChooser extends Activity {
 			if (f != null) {
 				for (int i = 0; i < f.length; i++) {
 					if (f[i].isDirectory()) {
+						// Directory: Recursive call with the new directory as parameter.
 						res.addAll(epubList(f[i]));
 					} else {
+						// File: check if it's .epub, if so, add to results.
+						// 	TODO: check with mimetype, not with filename extension
 						String lowerCasedName = f[i].getName().toLowerCase();
 						if (lowerCasedName.endsWith(".epub")) {
 							res.add(f[i]);
 						}
-
-						/*
-						 * NOTE: future
-						if ((lowerCasedName.endsWith(".epub"))
-								|| (lowerCasedName.endsWith(".e0"))) {
-							res.add(f[i]);
-						}
-						*/
 					}
 				}
 			}
@@ -121,19 +129,28 @@ public class FileChooser extends Activity {
 		return res;
 	}
 
+	/**
+	 * Refreshes the epub list
+	 */
 	private void refreshList() {
 		epubs = epubList(Environment.getExternalStorageDirectory());
 		names.clear();
 		names.addAll(fileNames(epubs));
-		this.adapter.notifyDataSetChanged();
+		this.arrayAdapter.notifyDataSetChanged();
 	}
 
+	/**
+	 * Opens menu in case the user clicks it.
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.file_chooser, menu);
 		return true;
 	}
 
+	/**
+	 * Menu item selected.
+	 */
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.update:
