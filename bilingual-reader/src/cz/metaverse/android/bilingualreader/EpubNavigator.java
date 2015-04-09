@@ -101,7 +101,7 @@ public class EpubNavigator {
 		if (views[index] == null || !(views[index] instanceof BookView))
 			changePanel(new BookView(), index);
 
-		((BookView) views[index]).state = state;
+		((BookView) views[index]).enumState = state;
 		((BookView) views[index]).loadPage(pathOfPage);
 	}
 
@@ -141,7 +141,7 @@ public class EpubNavigator {
 
 		// case: note or another panel over a book
 		if (books[index] != null
-				&& (!(views[index] instanceof BookView) || (((BookView) views[index]).state != ViewStateEnum.books))) {
+				&& (!(views[index] instanceof BookView) || (((BookView) views[index]).enumState != ViewStateEnum.books))) {
 			BookView v = new BookView();
 			changePanel(v, index);
 			v.loadPage(books[index].getCurrentPageURL());
@@ -166,7 +166,7 @@ public class EpubNavigator {
 				if (views[index] != null) {
 					views[index].setKey(index); // update the panel key
 					if (views[index] instanceof BookView
-							&& ((BookView) views[index]).state == ViewStateEnum.books)
+							&& ((BookView) views[index]).enumState == ViewStateEnum.books)
 						((BookView) views[index]).loadPage(books[index]
 								.getCurrentPageURL()); // reload the book page
 				}

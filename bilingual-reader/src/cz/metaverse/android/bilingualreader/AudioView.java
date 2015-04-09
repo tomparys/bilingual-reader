@@ -47,10 +47,16 @@ import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
-// Panel specialized to show a list of audio files and play the desired one
-// The audio files are stored in an array of array.
-// The first index indicates the different audio files,
-// the second one indicates the different extensions for the same audio file
+/**
+ * 
+ * SplitPanel specialized to show a list of audio files and to play the desired one.
+ * 		The audio files are stored in an array of array.
+ * 		The first index indicates the different audio files,
+ * 			the second one indicates the different extensions for the same audio file.
+ * 
+ * Not used in our application.
+ * 
+ */
 public class AudioView extends SplitPanel {
 	String[][] audio;
 	ListView list;

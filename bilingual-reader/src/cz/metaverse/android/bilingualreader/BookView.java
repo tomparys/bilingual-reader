@@ -39,11 +39,15 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-// Panel specialized in visualizing EPUB pages
+/**
+ * 
+ * An Extension of the SplitPanel Panel specialized in visualizing EPUB pages.
+ *
+ */
 public class BookView extends SplitPanel {
-	public ViewStateEnum state = ViewStateEnum.books;
+	public ViewStateEnum enumState = ViewStateEnum.books;
 	protected String viewedPage;
-	protected WebView view;
+	protected WebView webView;
 	protected float swipeOriginX, swipeOriginY;
 	
 	@Override
@@ -53,20 +57,24 @@ public class BookView extends SplitPanel {
 		return v;
 	}
 	
+	/**
+	 * onActivityCreated()
+	 */
 	@Override
     public void onActivityCreated(Bundle saved) {
 		super.onActivityCreated(saved);
-		view = (WebView) getView().findViewById(R.id.Viewport);
+		webView = (WebView) getView().findViewById(R.id.Viewport);
 		
-		// enable JavaScript for cool things to happen!
-		view.getSettings().setJavaScriptEnabled(true);
+		// Enable JavaScript for cool things to happen!
+		webView.getSettings().setJavaScriptEnabled(true);
 		
-		// ----- SWIPE PAGE
-		view.setOnTouchListener(new OnTouchListener() {
+		// Set touch listener with the option to SWIPE pages.
+		webView.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 	
-				if (state == ViewStateEnum.books)
+				if (enumState == ViewStateEnum.books)
+					// Call mothod that will evaluate the swipe and swipes the page if appropriate. 
 					swipePage(v, event, 0);
 								
 				WebView view = (WebView) v;
@@ -74,29 +82,36 @@ public class BookView extends SplitPanel {
 			}
 		});
 
-		// ----- NOTE & LINK
-		view.setOnLongClickListener(new OnLongClickListener() {
+		// Set long-click listener - NOTE & LINK
+		webView.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
-					Message msg = new Message();
-					msg.setTarget(new Handler() {
-						@Override
-						public void handleMessage(Message msg) {
-							super.handleMessage(msg);
-							String url = msg.getData().getString(
-									getString(R.string.url));
-							if (url != null)
-								navigator.setNote(url, index);
-						}
-					});
-					view.requestFocusNodeHref(msg);
+				// Create a message
+				Message msg = new Message();
+				msg.setTarget(new Handler() {
+					// New handler for the message
+					@Override
+					public void handleMessage(Message msg) {
+						super.handleMessage(msg);
+						// Extract url from the message
+						String url = msg.getData().getString(
+								getString(R.string.url));
+						// If url isn't empty, set note with the url into this SplitPanel/fragment.
+						if (url != null)
+							navigator.setNote(url, index);
+					}
+				});
+				// Puts data about the last pressed object into the message.
+				webView.requestFocusNodeHref(msg);
 				
 				return false;
 			}
 		});
 		
-		view.setWebViewClient(new WebViewClient() {
+		// Set a custom WebViewClient that has overwritten method for loading URLs. 
+		webView.setWebViewClient(new WebViewClient() {
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				// Set book page through the navigator if possible.
 				try {
 					navigator.setBookPage(url, index);
 				} catch (Exception e) {
@@ -106,40 +121,57 @@ public class BookView extends SplitPanel {
 			}
 		});
 		
+		// Load the page.
 		loadPage(viewedPage);
 	}
 	
+	/**
+	 * Load page through URL path.
+	 * @param path to load
+	 */
 	public void loadPage(String path)
 	{
 		viewedPage = path;
 		if(created)
-			view.loadUrl(path);
+			webView.loadUrl(path);
 	}
 	
-	// Change page
+	/**
+	 * Evaluates a swipe action and changes page if appropriate.
+	 * @param v The WebView where the swipe took place
+	 * @param event The MotionEvent of the swipe
+	 * @param book TODO
+	 */
 	protected void swipePage(View v, MotionEvent event, int book) {
+		// Analyze the motion event.
 		int action = MotionEventCompat.getActionMasked(event);
 
 		switch (action) {
+		// Finger was just laid on the screen - save the original coordinates.
 		case (MotionEvent.ACTION_DOWN):
 			swipeOriginX = event.getX();
 			swipeOriginY = event.getY();
 			break;
 
+		// Finger was just lifted - calculate what kind of swipe has it been.
 		case (MotionEvent.ACTION_UP):
-			int quarterWidth = (int) (screenWidth * 0.25);
+			int quarterWidth = (int) (screenWidth * 0.25); // A quarter of the screen's width
 			float diffX = swipeOriginX - event.getX();
 			float diffY = swipeOriginY - event.getY();
 			float absDiffX = Math.abs(diffX);
 			float absDiffY = Math.abs(diffY);
 
 			if ((diffX > quarterWidth) && (absDiffX > absDiffY)) {
+				// If swipe was to the left and over 1/4 of the screen wide,
+				// 		and swipe was more broad than high 
 				try {
 					navigator.goToNextChapter(index);
 				} catch (Exception e) {
 					errorMessage(getString(R.string.error_cannotTurnPage));
 				}
 			} else if ((diffX < -quarterWidth) && (absDiffX > absDiffY)) {
+				// If swipe was to the right and over 1/4 of the screen wide,
+				// 		and swipe was more broad than high
 				try {
 					navigator.goToPrevChapter(index);
 				} catch (Exception e) {
@@ -151,19 +183,25 @@ public class BookView extends SplitPanel {
 
 	}
 	
+	/**
+	 * Save state and content of the page.
+	 */
 	@Override
 	public void saveState(Editor editor) {
 		super.saveState(editor);
-		editor.putString("state"+index, state.name());
+		editor.putString("state"+index, enumState.name());
 		editor.putString("page"+index, viewedPage);
 	}
 	
+	/**
+	 * Load state and content of the page.
+	 */
 	@Override
 	public void loadState(SharedPreferences preferences)
 	{
 		super.loadState(preferences);
+		enumState = ViewStateEnum.valueOf(preferences.getString("state"+index, ViewStateEnum.books.name()));
 		loadPage(preferences.getString("page"+index, ""));
-		state = ViewStateEnum.valueOf(preferences.getString("state"+index, ViewStateEnum.books.name()));
 	}
 	
 }
