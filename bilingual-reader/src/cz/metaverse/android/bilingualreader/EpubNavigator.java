@@ -35,22 +35,33 @@ public class EpubNavigator {
 
 	private int nBooks;
 	private EpubManipulator[] books;
-	private SplitPanel[] views;
+	private SplitPanel[] splitViews;
 	private boolean[] extractAudio;
 	private boolean synchronizedReadingActive;
 	private boolean parallelText = false;
 	private MainActivity activity;
 	private static Context context;
 
+	/**
+	 * Initialize EpubNavigator.
+	 * @param numberOfBooks	number of book-viewing panels open
+	 * @param a				the MainActivity from which this is launched
+	 */
 	public EpubNavigator(int numberOfBooks, MainActivity a) {
 		nBooks = numberOfBooks;
 		books = new EpubManipulator[nBooks];
-		views = new SplitPanel[nBooks];
+		splitViews = new SplitPanel[nBooks];
 		extractAudio = new boolean[nBooks];
 		activity = a;
 		context = a.getBaseContext();
 	}
 
+	/**
+	 * Opens a book on its first page.
+	 * @param path	Path of the book
+	 * @param index	Index of the panel into which to open it
+	 * @return		Success
+	 */
 	public boolean openBook(String path, int index) {
 		try {
 			if (books[index] != null)
@@ -66,13 +77,20 @@ public class EpubNavigator {
 		}
 	}
 
+	/**
+	 * Sets a given book page in a given panel.
+	 * @param page	Page to be set
+	 * @param index	The Panel the page is to be set in
+	 */
 	public void setBookPage(String page, int index) {
 
 		if (books[index] != null) {
 			books[index].goToPage(page);
+			
+			// Extract audio into the other panel if appropriate.
 			if (extractAudio[index]) {
-				if (views[(index + 1) % nBooks] instanceof AudioView)
-					((AudioView) views[(index + 1) % nBooks])
+				if (splitViews[(index + 1) % nBooks] instanceof AudioView)
+					((AudioView) splitViews[(index + 1) % nBooks])
 							.setAudioList(books[index].getAudio());
 				else
 					extractAudio(index);
@@ -82,71 +100,115 @@ public class EpubNavigator {
 		loadPageIntoView(page, index);
 	}
 
-	// set the page in the next panel
+	/** 
+	 * Set note = Set the page in the next panel
+	 * @param page	To be set
+	 * @param index	The panel that will NOT be changed
+	 */
 	public void setNote(String page, int index) {
 		loadPageIntoView(page, (index + 1) % nBooks);
 	}
 
+	/**
+	 * Load given page into given panel
+	 * @param pathOfPage	Path of the page to be loaded
+	 * @param index			Index of the panel
+	 */
 	public void loadPageIntoView(String pathOfPage, int index) {
-		ViewStateEnum state = ViewStateEnum.notes;
+		ViewStateEnum enumState = ViewStateEnum.notes;
 
-		if (books[index] != null)
+		// If the page is contained in the opened book in this panel, set enumState to *books*
+		if (books[index] != null) {
 			if ((pathOfPage.equals(books[index].getCurrentPageURL()))
-					|| (books[index].getPageIndex(pathOfPage) >= 0))
-				state = ViewStateEnum.books;
+					|| (books[index].getPageIndex(pathOfPage) >= 0)) {
+				enumState = ViewStateEnum.books;
+			}
+		}
 
+		// If this panel has no opened book, set enumState to *notes*
 		if (books[index] == null)
-			state = ViewStateEnum.notes;
+			enumState = ViewStateEnum.notes;
 
-		if (views[index] == null || !(views[index] instanceof BookView))
+		// If this panel isn't yet open or isn't instance of BookView, open it and make it BookView.
+		if (splitViews[index] == null || !(splitViews[index] instanceof BookView))
 			changePanel(new BookView(), index);
 
-		((BookView) views[index]).enumState = state;
-		((BookView) views[index]).loadPage(pathOfPage);
+		// Set state and load appropriate page.
+		((BookView) splitViews[index]).enumState = enumState;
+		((BookView) splitViews[index]).loadPage(pathOfPage);
 	}
 
-	// if synchronized reading is active, change chapter in each books
-	public void goToNextChapter(int book) throws Exception {
-		setBookPage(books[book].goToNextChapter(), book);
+	/**
+	 * Go to next chapter,
+	 * 	if synchronized reading is active, change chapter in both books.
+	 * @param index			the panel wherein to primarily change chapter
+	 * @throws Exception
+	 */
+	public void goToNextChapter(int index) throws Exception {
+		setBookPage(books[index].goToNextChapter(), index);
 
-		if (synchronizedReadingActive)
-			for (int i = 1; i < nBooks; i++)
-				if (books[(book + i) % nBooks] != null)
-					setBookPage(books[(book + i) % nBooks].goToNextChapter(),
-							(book + i) % nBooks);
+		if (synchronizedReadingActive) {
+			for (int i = 1; i < nBooks; i++) {
+				if (books[(index + i) % nBooks] != null) {
+					setBookPage(books[(index + i) % nBooks].goToNextChapter(),
+							(index + i) % nBooks);
+				}
+			}
+		}
 	}
 
-	// if synchronized reading is active, change chapter in each books
-	public void goToPrevChapter(int book) throws Exception {
-		setBookPage(books[book].goToPreviousChapter(), book);
+	/**
+	 * Go to previous chapter,
+	 * 	if synchronized reading is active, change chapter in each books.
+	 * @param index			the panel	
+	 * @throws Exception
+	 */
+	public void goToPrevChapter(int index) throws Exception {
+		setBookPage(books[index].goToPreviousChapter(), index);
 
-		if (synchronizedReadingActive)
-			for (int i = 1; i < nBooks; i++)
-				if (books[(book + i) % nBooks] != null)
+		if (synchronizedReadingActive) {
+			for (int i = 1; i < nBooks; i++) {
+				if (books[(index + i) % nBooks] != null) {
 					setBookPage(
-							books[(book + i) % nBooks].goToPreviousChapter(),
-							(book + i) % nBooks);
+							books[(index + i) % nBooks].goToPreviousChapter(),
+							(index + i) % nBooks);
+				}
+			}
+		}
 	}
 
+	/**
+	 * Close one of the panels
+	 * @param index		The panel to be closed
+	 */
 	public void closeView(int index) {
-		if (views[index] instanceof AudioView) {
-			((AudioView) views[index]).stop();
+		// If it's AudioView panel, stop the playback.
+		if (splitViews[index] instanceof AudioView) {
+			((AudioView) splitViews[index]).stop();
 			extractAudio[index > 0 ? index - 1 : nBooks - 1] = false;
 		}
-		if (extractAudio[index]
-				&& views[(index + 1) % nBooks] instanceof AudioView) {
+		// If the other panel is an AudioView panel opened from this one, close the other one as well.
+		if (extractAudio[index] && splitViews[(index + 1) % nBooks] instanceof AudioView) {
 			closeView((index + 1) % nBooks);
 			extractAudio[index] = false;
 		}
 
-		// case: note or another panel over a book
-		if (books[index] != null
-				&& (!(views[index] instanceof BookView) || (((BookView) views[index]).enumState != ViewStateEnum.books))) {
+		// If this panel isn't a BookView or if this panel's enumState isn't *books*,
+		//   BUT there is a book (EpubManipulator) opened for this panel
+		if (books[index] != null &&
+				(
+						!(splitViews[index] instanceof BookView)
+						|| (((BookView) splitViews[index]).enumState != ViewStateEnum.books)
+				)
+			) {
+			// Make this panel into a BookView with the opened book instead of closing it.
 			BookView v = new BookView();
 			changePanel(v, index);
 			v.loadPage(books[index].getCurrentPageURL());
-		} else // all other cases
+		}
+		else // all other cases
 		{
+			// Remove the epub ebook
 			if (books[index] != null)
 				try {
 					books[index].destroy();
@@ -154,33 +216,53 @@ public class EpubNavigator {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			activity.removePanel(views[index]);
+			// Remove the panel
+			activity.removePanel(splitViews[index]);
 
+			// If this is the 1st panel (index=0), move the 2nd panel to the first position in the variables
 			while (index < nBooks - 1) {
-				books[index] = books[index + 1]; // shift left all books
-				if (books[index] != null) // updating their folder
-					books[index].changeDirName(index + ""); // according to the
-															// index
+				books[index] = books[index + 1];
+				if (books[index] != null)
+					books[index].changeDirName(index + "");
 
-				views[index] = views[index + 1]; // shift left every panel
-				if (views[index] != null) {
-					views[index].setKey(index); // update the panel key
-					if (views[index] instanceof BookView
-							&& ((BookView) views[index]).enumState == ViewStateEnum.books)
-						((BookView) views[index]).loadPage(books[index]
-								.getCurrentPageURL()); // reload the book page
+				splitViews[index] = splitViews[index + 1]; // shift left the 2nd panel
+				if (splitViews[index] != null) {
+					// Update the panel key
+					splitViews[index].setKey(index);
+					
+					if (splitViews[index] instanceof BookView
+							&& ((BookView) splitViews[index]).enumState == ViewStateEnum.books) {
+						
+						// Reload the book page into the panel
+						((BookView) splitViews[index]).loadPage(books[index].getCurrentPageURL());
+					}
+
 				}
-				index++;
+				index++; // Generalization for more than 2 panels - unused currently
 			}
-			books[nBooks - 1] = null; // last book and last view
-			views[nBooks - 1] = null; // don't exist anymore
+
+			// Last book and last view don't exist anymore
+			books[nBooks - 1] = null; 
+			splitViews[nBooks - 1] = null;
 		}
 	}
 
+	/**
+	 * Get languages available in this epub
+	 */
 	public String[] getLanguagesBook(int index) {
 		return books[index].getLanguages();
 	}
 
+	/**
+	 * if books[book] contains more than 1 language, it opens the same book in the other panel, opens the same page
+	 *  and sets the first language into the given panel (id book) and the second language into the other.
+	 * 	If all goes well it activates SynchronizedReading.
+	 * @param book				id of the panel with the book that we want to open in parallel text mode
+	 * @param firstLanguage		id of the first language to open
+	 * @param secondLanguage	id of the second language to open
+	 * @return
+	 */
 	public boolean parallelText(int book, int firstLanguage, int secondLanguage) {
 		boolean ok = true;
 
@@ -212,6 +294,9 @@ public class EpubNavigator {
 		synchronizedReadingActive = value;
 	}
 
+	/**
+	 * Flips the state of SynchronizedReading (active -> inactive, inactive -> active).
+	 */
 	public boolean flipSynchronizedReadingActive() {
 		if (exactlyOneBookOpen())
 			return false;
@@ -219,6 +304,13 @@ public class EpubNavigator {
 		return true;
 	}
 
+	/**
+	 * If panel *from* went to a new page, opens the same page in the other panel. 
+	 * @param from
+	 * @param to
+	 * @return
+	 * @throws Exception
+	 */
 	public boolean synchronizeView(int from, int to) throws Exception {
 		if (!exactlyOneBookOpen()) {
 			setBookPage(books[to].goToPage(books[from]
@@ -228,8 +320,11 @@ public class EpubNavigator {
 			return false;
 	}
 
-	// display book metadata
-	// returns true if metadata are available, false otherwise
+	/**
+	 * Display book metadata
+	 * @param book	id of the panel containing the book
+	 * @return		true if metadata are available, false otherwise
+	 */
 	public boolean displayMetadata(int book) {
 		boolean res = true;
 
@@ -243,7 +338,11 @@ public class EpubNavigator {
 		return res;
 	}
 
-	// return true if TOC is available, false otherwise
+	/**
+	 * Displays Table of Contents or returns false.
+	 * @param book	id of the relevant panel
+	 * @return		true if TOC is available, false otherwise
+	 */
 	public boolean displayTOC(int book) {
 		boolean res = true;
 
@@ -254,6 +353,9 @@ public class EpubNavigator {
 		return res;
 	}
 
+	/**
+	 * Passes CSS data to the book, redisplays the page.
+	 */
 	public void changeCSS(int book, String[] settings) {
 		books[book].addCSS(settings);
 		loadPageIntoView(books[book].getCurrentPageURL(), book);
@@ -270,10 +372,14 @@ public class EpubNavigator {
 		return false;
 	}
 
+	/**
+	 * Changes the screen area ratio between the two opened panels. 
+	 * @param weight
+	 */
 	public void changeViewsSize(float weight) {
-		if (views[0] != null && views[1] != null) {
-			views[0].changeWeight(1 - weight);
-			views[1].changeWeight(weight);
+		if (splitViews[0] != null && splitViews[1] != null) {
+			splitViews[0].changeWeight(1 - weight);
+			splitViews[1].changeWeight(weight);
 		}
 	}
 
@@ -285,6 +391,9 @@ public class EpubNavigator {
 		return synchronizedReadingActive;
 	}
 
+	/**
+	 * @return true if at least one book is open
+	 */
 	public boolean atLeastOneBookOpen() {
 		for (int i = 0; i < nBooks; i++)
 			if (books[i] != null)
@@ -292,6 +401,9 @@ public class EpubNavigator {
 		return false;
 	}
 
+	/**
+	 * @return true if exactly one book is open
+	 */
 	public boolean exactlyOneBookOpen() {
 		int i = 0;
 		// find the first not null book
@@ -313,29 +425,41 @@ public class EpubNavigator {
 			return false; // there's more than one opened book
 	}
 
-	// change the panel in position "index" with the new panel p
+	/**
+	 * Changes the panel in position *index* with the new panel *p* 
+	 * @param p			Instance of SplitPanel or one of its descendants (BookView, DataView, AudioView)
+	 * @param index		Index of the relevant panel
+	 */
 	public void changePanel(SplitPanel p, int index) {
-		if (views[index] != null) {
-			activity.removePanelWithoutClosing(views[index]);
-			p.changeWeight(views[index].getWeight());
+		if (splitViews[index] != null) {
+			activity.removePanelWithoutClosing(splitViews[index]);
+			p.changeWeight(splitViews[index].getWeight());
 		}
 
-		if (p.isAdded())
+		// If the given panel is already open, remove it.
+		if (p.isAdded()) {
 			activity.removePanelWithoutClosing(p);
+		}
 
-		views[index] = p;
+		splitViews[index] = p;
 		activity.addPanel(p);
 		p.setKey(index);
 
-		for (int i = index + 1; i < views.length; i++)
-			if (views[i] != null) {
-				activity.detachPanel(views[i]);
-				activity.attachPanel(views[i]);
+		// Detach and re-attach panels that are after the newly changed one.
+		for (int i = index + 1; i < splitViews.length; i++)
+			if (splitViews[i] != null) {
+				activity.detachPanel(splitViews[i]);
+				activity.attachPanel(splitViews[i]);
 			}
 	}
 
-	// TODO: update when a new SplitPanel's inherited class is created
+	/**
+	 * Returns a class extending SplitPanel based on className in a String 
+	 * @param className		String containing the className
+	 * @return				the SplitPanel instance
+	 */
 	private SplitPanel newPanelByClassName(String className) {
+		// TODO: update when a new SplitPanel's inherited class is created
 		if (className.equals(BookView.class.getName()))
 			return new BookView();
 		if (className.equals(DataView.class.getName()))
@@ -345,14 +469,19 @@ public class EpubNavigator {
 		return null;
 	}
 
+	/**
+	 * Save the state of the app before its closing (both by the user or by the operating system).
+	 * @param editor	SharedPreferences editor instance
+	 */
 	public void saveState(Editor editor) {
 
 		editor.putBoolean(getS(R.string.sync), synchronizedReadingActive);
 		editor.putBoolean(getS(R.string.parallelTextBool), parallelText);
 
-		// Save Books
+		// Save each book
 		for (int i = 0; i < nBooks; i++)
 			if (books[i] != null) {
+				// Save data about the book and position in it
 				editor.putInt(getS(R.string.CurrentPageBook) + i,
 						books[i].getCurrentSpineElementIndex());
 				editor.putInt(getS(R.string.LanguageBook) + i,
@@ -362,14 +491,17 @@ public class EpubNavigator {
 				editor.putString(getS(R.string.pathBook) + i,
 						books[i].getFileName());
 				editor.putBoolean(getS(R.string.exAudio) + i, extractAudio[i]);
+				
+				// Close the book
 				try {
-					books[i].closeStream();
+					books[i].closeFileInputStream();
 				} catch (IOException e) {
 					Log.e(getS(R.string.error_CannotCloseStream),
 							getS(R.string.Book_Stream) + (i + 1));
 					e.printStackTrace();
 				}
 			} else {
+				// Put null values for this panel if no book is open for it
 				editor.putInt(getS(R.string.CurrentPageBook) + i, 0);
 				editor.putInt(getS(R.string.LanguageBook) + i, 0);
 				editor.putString(getS(R.string.nameEpub) + i, null);
@@ -378,40 +510,46 @@ public class EpubNavigator {
 
 		// Save views
 		for (int i = 0; i < nBooks; i++)
-			if (views[i] != null) {
-				editor.putString(getS(R.string.ViewType) + i, views[i]
+			if (splitViews[i] != null) {
+				editor.putString(getS(R.string.ViewType) + i, splitViews[i]
 						.getClass().getName());
-				views[i].saveState(editor);
-				activity.removePanelWithoutClosing(views[i]);
-			} else
+				splitViews[i].saveState(editor);
+				activity.removePanelWithoutClosing(splitViews[i]);
+			}
+			else {
 				editor.putString(getS(R.string.ViewType) + i, "");
+			}
 	}
 
+	/**
+	 * Load the state of the app after it is reopened.
+	 * @param preferences	SharedPreferences instance
+	 * @return				successfulness
+	 */
 	public boolean loadState(SharedPreferences preferences) {
 		boolean ok = true;
-		synchronizedReadingActive = preferences.getBoolean(getS(R.string.sync),
-				false);
-		parallelText = preferences.getBoolean(getS(R.string.parallelTextBool),
-				false);
+		synchronizedReadingActive = preferences.getBoolean(getS(R.string.sync), false);
+		parallelText = preferences.getBoolean(getS(R.string.parallelTextBool), false);
 
+		// Load each panel and its book
 		int current, lang;
 		String name, path;
 		for (int i = 0; i < nBooks; i++) {
+			// Data about the book in the panel
 			current = preferences.getInt(getS(R.string.CurrentPageBook) + i, 0);
 			lang = preferences.getInt(getS(R.string.LanguageBook) + i, 0);
 			name = preferences.getString(getS(R.string.nameEpub) + i, null);
 			path = preferences.getString(getS(R.string.pathBook) + i, null);
-			extractAudio[i] = preferences.getBoolean(
-					getS(R.string.exAudio) + i, false);
-			// try loading a book already extracted
+			extractAudio[i] = preferences.getBoolean(getS(R.string.exAudio) + i, false);
+			
+			// Try loading the already extracted book
 			if (path != null) {
 				try {
-					books[i] = new EpubManipulator(path, name, current, lang,
-							context);
+					books[i] = new EpubManipulator(path, name, current, lang, context);
 					books[i].goToPage(current);
 				} catch (Exception e1) {
 
-					// exception: retry this way
+					// Exception: Retry with re-extracting the book
 					try {
 						books[i] = new EpubManipulator(path, i + "", context);
 						books[i].goToPage(current);
@@ -421,7 +559,7 @@ public class EpubNavigator {
 						ok = false;
 					}
 				} catch (Error e) {
-					// error: retry this way
+					// Exception: Retry with re-extracting the book
 					try {
 						books[i] = new EpubManipulator(path, i + "", context);
 						books[i].goToPage(current);
@@ -438,21 +576,28 @@ public class EpubNavigator {
 		return ok;
 	}
 
+	/**
+	 * Recreates the panels from last time based on saved preferences
+	 * @param preferences
+	 */
 	public void loadViews(SharedPreferences preferences) {
 		for (int i = 0; i < nBooks; i++) {
-			views[i] = newPanelByClassName(preferences.getString(
+			splitViews[i] = newPanelByClassName(preferences.getString(
 					getS(R.string.ViewType) + i, ""));
-			if (views[i] != null) {
-				activity.addPanel(views[i]);
-				views[i].setKey(i);
-				if (views[i] instanceof AudioView)
-					((AudioView) views[i]).setAudioList(books[i > 0 ? i - 1
-							: nBooks - 1].getAudio());
-				views[i].loadState(preferences);
+			if (splitViews[i] != null) {
+				activity.addPanel(splitViews[i]);
+				splitViews[i].setKey(i);
+				if (splitViews[i] instanceof AudioView) {
+					((AudioView) splitViews[i]).setAudioList(books[i > 0 ? i - 1 : nBooks - 1].getAudio());
+				}
+				splitViews[i].loadState(preferences);
 			}
 		}
 	}
 
+	/**
+	 * Shorthand for context.getResources().getString(id)
+	 */
 	public String getS(int id) {
 		return context.getResources().getString(id);
 	}

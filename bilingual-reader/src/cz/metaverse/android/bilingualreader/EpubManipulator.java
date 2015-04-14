@@ -54,29 +54,41 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
+/**
+ * 
+ * EpubManipulator is a class that handless epub files themselves.
+ * 	It can read the contents of epub ebooks, read individual pages, write into them, and much more.
+ *
+ */
 public class EpubManipulator {
 	private Book book;
 	private int currentSpineElementIndex;
 	private String currentPage;
 	private String[] spineElementPaths;
-	// NOTE: currently, counting the number of XHTML pages
-	private int pageCount;
+	private int pageCount;	// NOTE: currently, counting the number of XHTML pages
 	private int currentLanguage;
 	private List<String> availableLanguages;
-	// tells whether a page has a translation available
-	private List<Boolean> translations;
+	private List<Boolean> translations; 	// tells whether a page has a translation available
 	private String decompressedFolder;
 	private String pathOPF;
-	private static Context context;
-	private static String location = Environment.getExternalStorageDirectory()
-			+ "/epubtemp/";
-
+	
 	private String fileName;
-	FileInputStream fs;
+	FileInputStream fileInputStream;
 	private String actualCSS = "";
 	private String[][] audio;
 
-	// book from fileName
+	// Static variables
+	private static Context context;
+	private static String tempLocation = Environment.getExternalStorageDirectory()
+			+ "/BilingualReader/epubtemp/";
+
+	/**
+	 * Initialize EpubManupulator with a book from given fileName.
+	 * @param fileName		Path of the epub to work with
+	 * @param destFolder 	Subpath where to unzip the ebook (usually an index 0-2)
+	 * @param theContext 	Base context of the encapsulating activity
+	 * @throws Exception
+	 */
 	public EpubManipulator(String fileName, String destFolder,
 			Context theContext) throws Exception {
 
@@ -87,8 +99,8 @@ public class EpubManipulator {
 			context = theContext;
 		}
 
-		this.fs = new FileInputStream(fileName);
-		this.book = (new EpubReader()).readEpub(fs);
+		this.fileInputStream = new FileInputStream(fileName);
+		this.book = (new EpubReader()).readEpub(fileInputStream);
 
 		this.fileName = fileName;
 		this.decompressedFolder = destFolder;
@@ -105,13 +117,13 @@ public class EpubManipulator {
 
 		this.spineElementPaths = new String[spineElements.size()];
 
-		unzip(fileName, location + decompressedFolder);
+		unzipEpub(fileName, tempLocation + decompressedFolder);
 
-		pathOPF = getPathOPF(location + decompressedFolder);
+		pathOPF = getPathOPF(tempLocation + decompressedFolder);
 
 		for (int i = 0; i < spineElements.size(); ++i) {
 			// TODO: is there a robust path joiner in the java libs?
-			this.spineElementPaths[i] = "file://" + location
+			this.spineElementPaths[i] = "file://" + tempLocation
 					+ decompressedFolder + "/" + pathOPF + "/"
 					+ spineElements.get(i);
 		}
@@ -119,10 +131,20 @@ public class EpubManipulator {
 		if (spineElements.size() > 0) {
 			goToPage(0);
 		}
-		createTocFile();
+		createTableOfContentsFile();
 	}
 
-	// book from already decompressed folder
+	/**
+	 * Initialize EpubManupulator with a book from given fileName with an already decompressed contents.
+	 * @param fileName		Path of the epub to work with
+	 * @param folder		Path of the folder where the epub is decompressed
+	 * @param spineIndex
+	 * @param language
+	 * @param theContext
+	 * @throws Exception
+	 * 
+	 * TODO unify with the first initializator.
+	 */
 	public EpubManipulator(String fileName, String folder, int spineIndex,
 			int language, Context theContext) throws Exception {
 		List<String> spineElements;
@@ -132,8 +154,8 @@ public class EpubManipulator {
 			context = theContext;
 		}
 
-		this.fs = new FileInputStream(fileName);
-		this.book = (new EpubReader()).readEpub(fs);
+		this.fileInputStream = new FileInputStream(fileName);
+		this.book = (new EpubReader()).readEpub(fileInputStream);
 		this.fileName = fileName;
 		this.decompressedFolder = folder;
 
@@ -146,17 +168,21 @@ public class EpubManipulator {
 		this.pageCount = spineElements.size();
 		this.spineElementPaths = new String[spineElements.size()];
 
-		pathOPF = getPathOPF(location + folder);
+		pathOPF = getPathOPF(tempLocation + folder);
 
 		for (int i = 0; i < spineElements.size(); ++i) {
 			// TODO: is there a robust path joiner in the java libs?
-			this.spineElementPaths[i] = "file://" + location + folder + "/"
+			this.spineElementPaths[i] = "file://" + tempLocation + folder + "/"
 					+ pathOPF + "/" + spineElements.get(i);
 		}
 		goToPage(spineIndex);
 	}
 
-	// set language from index
+	/**
+	 * Set the current language we read in this book.
+	 * @param lang	index of the language in the epub
+	 * @throws Exception
+	 */
 	public void setLanguage(int lang) throws Exception {
 		if ((lang >= 0) && (lang <= this.availableLanguages.size())) {
 			this.currentLanguage = lang;
@@ -164,7 +190,11 @@ public class EpubManipulator {
 		goToPage(this.currentSpineElementIndex);
 	}
 
-	// set language from an identifier string
+	/**
+	 * Set the current language we read in this book
+	 * @param lang		an identifier string of the desired language
+	 * @throws Exception
+	 */
 	public void setLanguage(String lang) throws Exception {
 		int i = 0;
 		while ((i < this.availableLanguages.size())
@@ -174,6 +204,9 @@ public class EpubManipulator {
 		setLanguage(i);
 	}
 
+	/**
+	 * @return a list of available languages.
+	 */
 	// TODO: lookup table of language names from language codes
 	public String[] getLanguages() {
 		String[] lang = new String[availableLanguages.size()];
@@ -183,7 +216,12 @@ public class EpubManipulator {
 		return lang;
 	}
 
-	// create parallel text mapping
+	/**
+	 * Goes through the chapters and finds out if they have parallel translations.
+	 * (create parallel text mapping)
+	 * @param spineList 
+	 * @param pages
+	 */
 	private void pages(List<SpineReference> spineList, List<String> pages) {
 		int langIndex;
 		String lang;
@@ -214,25 +252,38 @@ public class EpubManipulator {
 		}
 	}
 
-	// language index from language string (id)
-	private int languageIndexFromID(String id) {
+	// 
+	/**
+	 * Finds whether given language has already been encountered.
+	 * 	(language index from language string (id))
+	 * @param lang  language string
+	 * @return	
+	 */
+	private int languageIndexFromID(String lang) {
 		int i = 0;
 		while ((i < availableLanguages.size())
-				&& (!(availableLanguages.get(i).equals(id)))) {
+				&& (!(availableLanguages.get(i).equals(lang)))) {
 			i++;
 		}
 		return i;
 	}
 
+	/**
+	 * Returns path of the directory where is the .opf file inside the unzipped epub directory.
+	 * @param unzipDir	Path of the directory where the epub is unzipped
+	 * @return			Path to the DIRECTORY where the .opf file resides.
+	 * @throws IOException
+	 */
 	// TODO: better parsing
 	private static String getPathOPF(String unzipDir) throws IOException {
 		String pathOPF = "";
 		// get the OPF path, directly from container.xml
-		BufferedReader br = new BufferedReader(new FileReader(unzipDir
-				+ "/META-INF/container.xml"));
+		BufferedReader br = new BufferedReader(new FileReader(unzipDir + "/META-INF/container.xml"));
 		String line;
 		while ((line = br.readLine()) != null) {
 			if (line.indexOf(getS(R.string.full_path)) > -1) {
+				// Finds the index of the words "full-path", then finds the position of the following
+				//	two " characters and extracts the text between them into pathOPF.
 				int start = line.indexOf(getS(R.string.full_path));
 				int start2 = line.indexOf("\"", start);
 				int stop2 = line.indexOf("\"", start2 + 1);
@@ -246,19 +297,25 @@ public class EpubManipulator {
 
 		// in case the OPF file is in the root directory
 		if (!pathOPF.contains("/"))
-			pathOPF = "";
+			pathOPF = ""; // we only need the directory, not the file name
 
 		// remove the OPF file name and the preceding '/'
 		int last = pathOPF.lastIndexOf('/');
 		if (last > -1) {
-			pathOPF = pathOPF.substring(0, last);
+			pathOPF = pathOPF.substring(0, last); // we only need the directory, not the file name
 		}
 
 		return pathOPF;
 	}
 
+	/**
+	 * Unzips the contents of the epub file into a temp directory.
+	 * @param inputZip					What file to unzip
+	 * @param destinationDirectory		Where to unzip
+	 * @throws IOException
+	 */
 	// TODO: more efficient unzipping
-	public void unzip(String inputZip, String destinationDirectory)
+	public void unzipEpub(String inputZip, String destinationDirectory)
 			throws IOException {
 		int BUFFER = 2048;
 		List<String> zipFiles = new ArrayList<String>();
@@ -309,7 +366,7 @@ public class EpubManipulator {
 
 		for (Iterator<String> iter = zipFiles.iterator(); iter.hasNext();) {
 			String zipName = (String) iter.next();
-			unzip(zipName,
+			unzipEpub(zipName,
 					destinationDirectory
 							+ File.separatorChar
 							+ zipName.substring(0,
@@ -317,38 +374,57 @@ public class EpubManipulator {
 		}
 	}
 
-	public void closeStream() throws IOException {
-		fs.close();
+	/**
+	 * Close the file input stream.
+	 * @throws IOException
+	 */
+	public void closeFileInputStream() throws IOException {
+		fileInputStream.close();
 		book = null;
 	}
 
-	// close the stream and delete the extraction folder
+	/**
+	 * Close the stream and delete the extraction folder.
+	 * @throws IOException
+	 */
 	public void destroy() throws IOException {
-		closeStream();
-		File c = new File(location + decompressedFolder);
+		closeFileInputStream();
+		File c = new File(tempLocation + decompressedFolder);
 		deleteDir(c);
 	}
 
-	// recursively delete a directory
+	/**
+	 * Recursively delete a directory
+	 * @param f	Directory to delete
+	 */
 	private void deleteDir(File f) {
-		if (f.isDirectory())
-			for (File child : f.listFiles())
+		if (f.isDirectory()) {
+			for (File child : f.listFiles()) {
 				deleteDir(child);
+			}
+		}	
 		f.delete();
 	}
 
-	// change the decompressedFolder name
+	/**
+	 * Change the decompressedFolder name
+	 * @param newName	new name
+	 */
 	public void changeDirName(String newName) {
-		File dir = new File(location + decompressedFolder);
-		File newDir = new File(location + newName);
+		// Rename the directory
+		File dir = new File(tempLocation + decompressedFolder);
+		File newDir = new File(tempLocation + newName);
 		dir.renameTo(newDir);
 
+		// Readress the spineElementPaths
 		for (int i = 0; i < spineElementPaths.length; ++i)
 			// TODO: is there a robust path joiner in the java libs?
 			spineElementPaths[i] = spineElementPaths[i].replace("file://"
-					+ location + decompressedFolder, "file://" + location
+					+ tempLocation + decompressedFolder, "file://" + tempLocation
 					+ newName);
 		decompressedFolder = newName;
+		
+		// Reopen the current page
 		try {
 			goToPage(currentSpineElementIndex);
 		} catch (Exception e) {
@@ -357,15 +433,26 @@ public class EpubManipulator {
 		}
 	}
 
-	// obtain a page in the current language
+	/**
+	 * Obtain a page in the current language
+	 * @param page	page to obtain
+	 * @return		page in the current language
+	 * @throws Exception
+	 */
 	public String goToPage(int page) throws Exception {
 		return goToPage(page, this.currentLanguage);
 	}
 
-	// obtain a page in the given language
+	/** 
+	 * Obtain a page in the given language.
+	 * @param page	page to obtain
+	 * @param lang	language to obtain the page in
+	 * @return		page in the given language
+	 * @throws Exception
+	 */
 	public String goToPage(int page, int lang) throws Exception {
 		String spineElement;
-		String extension;
+		String fileExtension;
 		if (page < 0) {
 			page = 0;
 		}
@@ -376,14 +463,17 @@ public class EpubManipulator {
 
 		spineElement = this.spineElementPaths[currentSpineElementIndex];
 
-		// TODO: better parsing
+		// If this page has alternative translations
 		if (this.translations.get(page)) {
-			extension = spineElement.substring(spineElement.lastIndexOf("."));
+			// TODO: better parsing
+			fileExtension = spineElement.substring(spineElement.lastIndexOf("."));
+			// Get the first part of the filename (without the language code and extension
+			//	- e.g. (first_part.)EN.epub)
 			spineElement = spineElement.substring(0,
 					spineElement.lastIndexOf(this.availableLanguages.get(0)));
-
+			// Add the desired language and extension
 			spineElement = spineElement + this.availableLanguages.get(lang)
-					+ extension;
+					+ fileExtension;
 		}
 
 		this.currentPage = spineElement;
@@ -393,18 +483,27 @@ public class EpubManipulator {
 		return spineElement;
 	}
 
+	/**
+	 * Go to next chapter
+	 */
 	public String goToNextChapter() throws Exception {
 		return goToPage(this.currentSpineElementIndex + 1);
 	}
 
+	/**
+	 * Go to previous chapter
+	 */
 	public String goToPreviousChapter() throws Exception {
 		return goToPage(this.currentSpineElementIndex - 1);
 	}
 
-	// create an HTML page with book metadata
-	// TODO: style it and escape metadata values
-	// TODO: use StringBuilder
+	/**
+	 * Create an HTML page with book metadata
+	 * @return html page
+	 */
 	public String metadata() {
+		// TODO: style it and escape metadata values
+		// TODO: use StringBuilder
 		List<String> tmp;
 		Metadata metadata = book.getMetadata();
 		String html = getS(R.string.htmlBodyTableOpen);
@@ -486,9 +585,12 @@ public class EpubManipulator {
 		return html;
 	}
 
-	public String r_createTocFile(TOCReference e) {
+	/**
+	 * Helper function to createTableOfContentsFile()
+	 */
+	public String r_createTableOfContentsFile(TOCReference e) {
 
-		String childrenPath = "file://" + location + decompressedFolder + "/"
+		String childrenPath = "file://" + tempLocation + decompressedFolder + "/"
 				+ pathOPF + "/" + e.getCompleteHref();
 
 		String html = "<ul><li>" + "<a href=\"" + childrenPath + "\">"
@@ -497,13 +599,15 @@ public class EpubManipulator {
 		List<TOCReference> children = e.getChildren();
 
 		for (int j = 0; j < children.size(); j++)
-			html += r_createTocFile(children.get(j));
+			html += r_createTableOfContentsFile(children.get(j));
 
 		return html;
 	}
 
-	// Create an html file, which contain the TOC, in the EPUB folder
-	public void createTocFile() {
+	/**
+	 * Create an html file, which contain the Table of Contents, in the EPUB folder.
+	 */
+	public void createTableOfContentsFile() {
 		List<TOCReference> tmp;
 		TableOfContents toc = book.getTableOfContents();
 		String html = "<html><body><ul>";
@@ -513,7 +617,7 @@ public class EpubManipulator {
 		if (tmp.size() > 0) {
 			html += getS(R.string.tocReference);
 			for (int i = 0; i < tmp.size(); i++) {
-				String path = "file://" + location + decompressedFolder + "/"
+				String path = "file://" + tempLocation + decompressedFolder + "/"
 						+ pathOPF + "/" + tmp.get(i).getCompleteHref();
 
 				html += "<li>" + "<a href=\"" + path + "\">"
@@ -523,7 +627,7 @@ public class EpubManipulator {
 				List<TOCReference> children = tmp.get(i).getChildren();
 
 				for (int j = 0; j < children.size(); j++)
-					html += r_createTocFile(children.get(j));
+					html += r_createTableOfContentsFile(children.get(j));
 
 			}
 		}
@@ -531,7 +635,7 @@ public class EpubManipulator {
 		html += getS(R.string.tablebodyhtmlClose);
 
 		// write down the html file
-		String filePath = location + decompressedFolder + "/Toc.html";
+		String filePath = tempLocation + decompressedFolder + "/Toc.html";
 		try {
 			File file = new File(filePath);
 			FileWriter fw = new FileWriter(file);
@@ -543,13 +647,18 @@ public class EpubManipulator {
 		}
 	}
 
-	// return the path of the Toc.html file
+	/**
+	 * @return the path of the Toc.html file
+	 */
 	public String tableOfContents() {
-		return "File://" + location + decompressedFolder + "/Toc.html";
+		return "File://" + tempLocation + decompressedFolder + "/Toc.html";
 	}
 
-	// determine whether a book has the requested page
-	// if so, return its index; return -1 otherwise
+	/**
+	 * Determine whether a book has the requested page
+	 * 	if so, return its index; return -1 otherwise
+	 * @return -1 if page not found, otherwise index of said page
+	 */
 	public int getPageIndex(String page) {
 		int result = -1;
 		String lang;
@@ -569,7 +678,11 @@ public class EpubManipulator {
 		return result;
 	}
 
-	// set the current page and its language
+	/**
+	 * Go to specified page (and set its language as current language)
+	 * @param page 	to go to
+	 * @return 		success
+	 */
 	public boolean goToPage(String page) {
 		int index = getPageIndex(page);
 		boolean res = false;
@@ -589,10 +702,15 @@ public class EpubManipulator {
 		return res;
 	}
 
-	// return the language of the page according to the
-	// ISO 639-1 naming convention:
-	// foo.XX.html where X \in [a-z]
-	// or an empty string if language not found
+	/**
+	 * Return the language of the page according to the
+	 * 	ISO 639-1 naming convention:
+	 *  foo.XX.html where X \in [a-z]
+	 *  or an empty string if language not found.
+	 *  
+	 * @param page 	to get the language of
+	 * @return 		language code ISO 639-1 or empty string
+	 */
 	public String getPageLanguage(String page) {
 		String[] tmp = page.split("\\.");
 		// Language XY is present if the string format is "pagename.XY.xhtml",
@@ -606,6 +724,10 @@ public class EpubManipulator {
 		return "";
 	}
 
+	/**
+	 * Set the CSS according to the settings
+	 * @param settings
+	 */
 	// TODO work in progress
 	public void addCSS(String[] settings) {
 		// CSS
@@ -651,7 +773,10 @@ public class EpubManipulator {
 
 	}
 
-	// change from relative path (that begin with ./ or ../) to absolute path
+	/**
+	 * Audio: Adjust audio links:
+	 * 	change from relative path (that begin with ./ or ../) to absolute path
+	 */
 	private void adjustAudioLinks() {
 		for (int i = 0; i < audio.length; i++)
 			for (int j = 0; j < audio[i].length; j++) {
@@ -669,7 +794,9 @@ public class EpubManipulator {
 			}
 	}
 
-	// Extract all the src field of an audio tag
+	/**
+	 * Audio: Extract all the src field of an audio tag
+	 */
 	private ArrayList<String> getAudioSources(String audioTag) {
 		ArrayList<String> srcs = new ArrayList<String>();
 		Pattern p = Pattern.compile("src=\"[^\"]*\"");
@@ -680,7 +807,9 @@ public class EpubManipulator {
 		return srcs;
 	}
 
-	// Extract all audio tags from an xhtml page
+	/**
+	 * Extract all audio tags from an xhtml page
+	 */
 	private ArrayList<String> getAudioTags(String page) {
 		ArrayList<String> res = new ArrayList<String>();
 
@@ -712,16 +841,20 @@ public class EpubManipulator {
 		return audio;
 	}
 
-	/*
-	 * TODO don't work properly, forse non necessario public boolean
-	 * deleteCSS(String path) { path = path.replace("file:///", ""); String
-	 * source = readPage(path); source =
-	 * source.replace("<style type=\"text/css\">.</style></head>", "</head>");
-	 * return writePage(path, source); }
+	/* TODO don't work properly, forse non necessario
+	 public boolean deleteCSS(String path) {
+ 		path = path.replace("file:///", "");
+ 		String source = readPage(path);
+  		source = source.replace("<style type=\"text/css\">.</style></head>", "</head>");
+  		return writePage(path, source);
+	 }
 	 */
 
-	// TODO work in progress
+	/**
+	 * Reads given page, returns string with text/data
+	 */
 	private String readPage(String path) {
+		// TODO work in progress
 		try {
 			FileInputStream input = new FileInputStream(path);
 			byte[] fileData = new byte[input.available()];
@@ -736,8 +869,15 @@ public class EpubManipulator {
 		}
 	}
 
-	// TODO work in progress
+	/**
+	 * Writes given string onto a given page.
+	 * 
+	 * @param path	of the page to be written to
+	 * @param xhtml	String of the text/data to be written
+	 * @return		success
+	 */
 	private boolean writePage(String path, String xhtml) {
+		// TODO work in progress
 		try {
 			File file = new File(path);
 			FileWriter fw = new FileWriter(file);
