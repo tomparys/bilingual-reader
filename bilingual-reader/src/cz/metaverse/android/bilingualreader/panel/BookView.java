@@ -22,8 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package cz.metaverse.android.bilingualreader;
+package cz.metaverse.android.bilingualreader.panel;
 
+import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.R.id;
+import cz.metaverse.android.bilingualreader.R.layout;
+import cz.metaverse.android.bilingualreader.R.string;
+import cz.metaverse.android.bilingualreader.helper.ViewStateEnum;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;

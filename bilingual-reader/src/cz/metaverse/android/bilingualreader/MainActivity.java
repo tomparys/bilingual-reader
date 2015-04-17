@@ -24,6 +24,11 @@ THE SOFTWARE.
 
 package cz.metaverse.android.bilingualreader;
 
+import cz.metaverse.android.bilingualreader.dialog.ChangeCSSMenu;
+import cz.metaverse.android.bilingualreader.dialog.LanguageChooser;
+import cz.metaverse.android.bilingualreader.dialog.SetPanelSize;
+import cz.metaverse.android.bilingualreader.manager.EpubNavigator;
+import cz.metaverse.android.bilingualreader.panel.SplitPanel;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
@@ -39,7 +44,7 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-	protected EpubNavigator navigator;
+	public EpubNavigator navigator;
 	protected int bookSelector;
 	protected int panelCount;
 	protected String[] cssSettings;
@@ -523,7 +528,7 @@ public class MainActivity extends Activity {
 	 * Change the relative weight of the two panels.
 	 * @param weight	weight of the first panel (0 to 1)
 	 */
-	protected void changeViewsSize(float weight) {
+	public void changeViewsSize(float weight) {
 		navigator.changeViewsSize(weight);
 	}
 

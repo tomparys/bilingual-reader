@@ -28,15 +28,15 @@
         <activity android:name="cz.metaverse.android.bilingualreader.FileChooser" >
         </activity>
         <activity
-            android:name="cz.metaverse.android.bilingualreader.BookView"
+            android:name="cz.metaverse.android.bilingualreader.panel.BookView"
             android:label="@string/title_activity_book_view" >
         </activity>
         <activity
-            android:name="cz.metaverse.android.bilingualreader.DataView"
+            android:name="cz.metaverse.android.bilingualreader.panel.DataView"
             android:label="@string/title_activity_data_view" >
         </activity>
         <activity
-            android:name="cz.metaverse.android.bilingualreader.AudioView"
+            android:name="cz.metaverse.android.bilingualreader.panel.AudioView"
             android:label="@string/title_activity_audio_view" >
         </activity>
     </application>

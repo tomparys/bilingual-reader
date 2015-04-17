@@ -22,10 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
  */
 
-package cz.metaverse.android.bilingualreader;
+package cz.metaverse.android.bilingualreader.dialog;
 
 import java.util.ArrayList;
 
+import cz.metaverse.android.bilingualreader.MainActivity;
+import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.R.string;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;

@@ -22,10 +22,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
  */
 
-package cz.metaverse.android.bilingualreader;
+package cz.metaverse.android.bilingualreader.manager;
 
 import java.io.IOException;
 
+import cz.metaverse.android.bilingualreader.MainActivity;
+import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.R.string;
+import cz.metaverse.android.bilingualreader.helper.ViewStateEnum;
+import cz.metaverse.android.bilingualreader.panel.AudioView;
+import cz.metaverse.android.bilingualreader.panel.BookView;
+import cz.metaverse.android.bilingualreader.panel.DataView;
+import cz.metaverse.android.bilingualreader.panel.SplitPanel;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
