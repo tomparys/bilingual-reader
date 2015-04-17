@@ -62,7 +62,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
  * Not used in our application.
  * 
  */
-public class AudioView extends SplitPanel {
+public class AudioPanel extends SplitPanel {
 	String[][] audio;
 	ListView list;
 	private MediaPlayer player;

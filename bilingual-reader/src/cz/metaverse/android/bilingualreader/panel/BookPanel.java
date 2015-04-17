@@ -28,7 +28,7 @@ import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.R.id;
 import cz.metaverse.android.bilingualreader.R.layout;
 import cz.metaverse.android.bilingualreader.R.string;
-import cz.metaverse.android.bilingualreader.helper.ViewStateEnum;
+import cz.metaverse.android.bilingualreader.helper.PanelViewStateEnum;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -49,8 +49,8 @@ import android.webkit.WebViewClient;
  * An Extension of the SplitPanel Panel specialized in visualizing EPUB pages.
  *
  */
-public class BookView extends SplitPanel {
-	public ViewStateEnum enumState = ViewStateEnum.books;
+public class BookPanel extends SplitPanel {
+	public PanelViewStateEnum enumState = PanelViewStateEnum.books;
 	protected String viewedPage;
 	protected WebView webView;
 	protected float swipeOriginX, swipeOriginY;
@@ -78,7 +78,7 @@ public class BookView extends SplitPanel {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 	
-				if (enumState == ViewStateEnum.books)
+				if (enumState == PanelViewStateEnum.books)
 					// Call mothod that will evaluate the swipe and swipes the page if appropriate. 
 					swipePage(v, event, 0);
 								
@@ -205,7 +205,7 @@ public class BookView extends SplitPanel {
 	public void loadState(SharedPreferences preferences)
 	{
 		super.loadState(preferences);
-		enumState = ViewStateEnum.valueOf(preferences.getString("state"+index, ViewStateEnum.books.name()));
+		enumState = PanelViewStateEnum.valueOf(preferences.getString("state"+index, PanelViewStateEnum.books.name()));
 		loadPage(preferences.getString("page"+index, ""));
 	}
 	

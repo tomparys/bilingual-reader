@@ -22,7 +22,7 @@ import android.widget.SeekBar;
  *  Accessible from the main menu.
  *
  */
-public class SetPanelSize extends DialogFragment {
+public class PanelSizeDialog extends DialogFragment {
 
 	protected SeekBar seekbar;
 	protected float value = (float) 0.2;

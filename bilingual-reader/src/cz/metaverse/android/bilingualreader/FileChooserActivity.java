@@ -45,7 +45,7 @@ import android.widget.ListView;
  * Activity which offers a list of epubs the user can open.
  *
  */
-public class FileChooser extends Activity {
+public class FileChooserActivity extends Activity {
 
 	static List<File> epubs;
 	static List<String> names;

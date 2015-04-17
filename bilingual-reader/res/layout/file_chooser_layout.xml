@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
 	android:layout_margin="@dimen/all_margin"
 	    android:padding="@dimen/all_margin"
-    tools:context=".FileChooser" >
+    tools:context=".FileChooserActivity" >
 
     <ListView
         android:id="@+id/fileListView"

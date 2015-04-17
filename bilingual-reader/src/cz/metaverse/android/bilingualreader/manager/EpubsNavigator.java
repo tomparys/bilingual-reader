@@ -29,17 +29,17 @@ import java.io.IOException;
 import cz.metaverse.android.bilingualreader.MainActivity;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.R.string;
-import cz.metaverse.android.bilingualreader.helper.ViewStateEnum;
-import cz.metaverse.android.bilingualreader.panel.AudioView;
-import cz.metaverse.android.bilingualreader.panel.BookView;
-import cz.metaverse.android.bilingualreader.panel.DataView;
+import cz.metaverse.android.bilingualreader.helper.PanelViewStateEnum;
+import cz.metaverse.android.bilingualreader.panel.AudioPanel;
+import cz.metaverse.android.bilingualreader.panel.BookPanel;
+import cz.metaverse.android.bilingualreader.panel.DataPanel;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Log;
 
-public class EpubNavigator {
+public class EpubsNavigator {
 
 	private int nBooks;
 	private EpubManipulator[] books;
@@ -55,7 +55,7 @@ public class EpubNavigator {
 	 * @param numberOfBooks	number of book-viewing panels open
 	 * @param a				the MainActivity from which this is launched
 	 */
-	public EpubNavigator(int numberOfBooks, MainActivity a) {
+	public EpubsNavigator(int numberOfBooks, MainActivity a) {
 		nBooks = numberOfBooks;
 		books = new EpubManipulator[nBooks];
 		splitViews = new SplitPanel[nBooks];
@@ -76,7 +76,7 @@ public class EpubNavigator {
 				books[index].destroy();
 
 			books[index] = new EpubManipulator(path, index + "", context);
-			changePanel(new BookView(), index);
+			changePanel(new BookPanel(), index);
 			setBookPage(books[index].getSpineElementPath(0), index);
 
 			return true;
@@ -97,8 +97,8 @@ public class EpubNavigator {
 			
 			// Extract audio into the other panel if appropriate.
 			if (extractAudio[index]) {
-				if (splitViews[(index + 1) % nBooks] instanceof AudioView)
-					((AudioView) splitViews[(index + 1) % nBooks])
+				if (splitViews[(index + 1) % nBooks] instanceof AudioPanel)
+					((AudioPanel) splitViews[(index + 1) % nBooks])
 							.setAudioList(books[index].getAudio());
 				else
 					extractAudio(index);
@@ -123,27 +123,27 @@ public class EpubNavigator {
 	 * @param index			Index of the panel
 	 */
 	public void loadPageIntoView(String pathOfPage, int index) {
-		ViewStateEnum enumState = ViewStateEnum.notes;
+		PanelViewStateEnum enumState = PanelViewStateEnum.notes;
 
 		// If the page is contained in the opened book in this panel, set enumState to *books*
 		if (books[index] != null) {
 			if ((pathOfPage.equals(books[index].getCurrentPageURL()))
 					|| (books[index].getPageIndex(pathOfPage) >= 0)) {
-				enumState = ViewStateEnum.books;
+				enumState = PanelViewStateEnum.books;
 			}
 		}
 
 		// If this panel has no opened book, set enumState to *notes*
 		if (books[index] == null)
-			enumState = ViewStateEnum.notes;
+			enumState = PanelViewStateEnum.notes;
 
 		// If this panel isn't yet open or isn't instance of BookView, open it and make it BookView.
-		if (splitViews[index] == null || !(splitViews[index] instanceof BookView))
-			changePanel(new BookView(), index);
+		if (splitViews[index] == null || !(splitViews[index] instanceof BookPanel))
+			changePanel(new BookPanel(), index);
 
 		// Set state and load appropriate page.
-		((BookView) splitViews[index]).enumState = enumState;
-		((BookView) splitViews[index]).loadPage(pathOfPage);
+		((BookPanel) splitViews[index]).enumState = enumState;
+		((BookPanel) splitViews[index]).loadPage(pathOfPage);
 	}
 
 	/**
@@ -191,12 +191,12 @@ public class EpubNavigator {
 	 */
 	public void closeView(int index) {
 		// If it's AudioView panel, stop the playback.
-		if (splitViews[index] instanceof AudioView) {
-			((AudioView) splitViews[index]).stop();
+		if (splitViews[index] instanceof AudioPanel) {
+			((AudioPanel) splitViews[index]).stop();
 			extractAudio[index > 0 ? index - 1 : nBooks - 1] = false;
 		}
 		// If the other panel is an AudioView panel opened from this one, close the other one as well.
-		if (extractAudio[index] && splitViews[(index + 1) % nBooks] instanceof AudioView) {
+		if (extractAudio[index] && splitViews[(index + 1) % nBooks] instanceof AudioPanel) {
 			closeView((index + 1) % nBooks);
 			extractAudio[index] = false;
 		}
@@ -205,12 +205,12 @@ public class EpubNavigator {
 		//   BUT there is a book (EpubManipulator) opened for this panel
 		if (books[index] != null &&
 				(
-						!(splitViews[index] instanceof BookView)
-						|| (((BookView) splitViews[index]).enumState != ViewStateEnum.books)
+						!(splitViews[index] instanceof BookPanel)
+						|| (((BookPanel) splitViews[index]).enumState != PanelViewStateEnum.books)
 				)
 			) {
 			// Make this panel into a BookView with the opened book instead of closing it.
-			BookView v = new BookView();
+			BookPanel v = new BookPanel();
 			changePanel(v, index);
 			v.loadPage(books[index].getCurrentPageURL());
 		}
@@ -238,11 +238,11 @@ public class EpubNavigator {
 					// Update the panel key
 					splitViews[index].setKey(index);
 					
-					if (splitViews[index] instanceof BookView
-							&& ((BookView) splitViews[index]).enumState == ViewStateEnum.books) {
+					if (splitViews[index] instanceof BookPanel
+							&& ((BookPanel) splitViews[index]).enumState == PanelViewStateEnum.books) {
 						
 						// Reload the book page into the panel
-						((BookView) splitViews[index]).loadPage(books[index].getCurrentPageURL());
+						((BookPanel) splitViews[index]).loadPage(books[index].getCurrentPageURL());
 					}
 
 				}
@@ -337,7 +337,7 @@ public class EpubNavigator {
 		boolean res = true;
 
 		if (books[book] != null) {
-			DataView dv = new DataView();
+			DataPanel dv = new DataPanel();
 			dv.loadData(books[book].metadata());
 			changePanel(dv, book);
 		} else
@@ -372,7 +372,7 @@ public class EpubNavigator {
 	public boolean extractAudio(int book) {
 		if (books[book].getAudio().length > 0) {
 			extractAudio[book] = true;
-			AudioView a = new AudioView();
+			AudioPanel a = new AudioPanel();
 			a.setAudioList(books[book].getAudio());
 			changePanel(a, (book + 1) % nBooks);
 			return true;
@@ -468,12 +468,12 @@ public class EpubNavigator {
 	 */
 	private SplitPanel newPanelByClassName(String className) {
 		// TODO: update when a new SplitPanel's inherited class is created
-		if (className.equals(BookView.class.getName()))
-			return new BookView();
-		if (className.equals(DataView.class.getName()))
-			return new DataView();
-		if (className.equals(AudioView.class.getName()))
-			return new AudioView();
+		if (className.equals(BookPanel.class.getName()))
+			return new BookPanel();
+		if (className.equals(DataPanel.class.getName()))
+			return new DataPanel();
+		if (className.equals(AudioPanel.class.getName()))
+			return new AudioPanel();
 		return null;
 	}
 
@@ -595,8 +595,8 @@ public class EpubNavigator {
 			if (splitViews[i] != null) {
 				activity.addPanel(splitViews[i]);
 				splitViews[i].setKey(i);
-				if (splitViews[i] instanceof AudioView) {
-					((AudioView) splitViews[i]).setAudioList(books[i > 0 ? i - 1 : nBooks - 1].getAudio());
+				if (splitViews[i] instanceof AudioPanel) {
+					((AudioPanel) splitViews[i]).setAudioList(books[i > 0 ? i - 1 : nBooks - 1].getAudio());
 				}
 				splitViews[i].loadState(preferences);
 			}

@@ -25,18 +25,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="cz.metaverse.android.bilingualreader.FileChooser" >
+        <activity android:name="cz.metaverse.android.bilingualreader.FileChooserActivity" >
         </activity>
         <activity
-            android:name="cz.metaverse.android.bilingualreader.panel.BookView"
+            android:name="cz.metaverse.android.bilingualreader.panel.BookPanel"
             android:label="@string/title_activity_book_view" >
         </activity>
         <activity
-            android:name="cz.metaverse.android.bilingualreader.panel.DataView"
+            android:name="cz.metaverse.android.bilingualreader.panel.DataPanel"
             android:label="@string/title_activity_data_view" >
         </activity>
         <activity
-            android:name="cz.metaverse.android.bilingualreader.panel.AudioView"
+            android:name="cz.metaverse.android.bilingualreader.panel.AudioPanel"
             android:label="@string/title_activity_audio_view" >
         </activity>
     </application>

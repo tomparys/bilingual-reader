@@ -43,7 +43,7 @@ import android.webkit.WebViewClient;
  * Fragment that extends SplitPanel by using WebView to display content.
  *
  */
-public class DataView extends SplitPanel {
+public class DataPanel extends SplitPanel {
 	protected WebView webView;
 	protected String data;
 	

@@ -24,10 +24,10 @@ THE SOFTWARE.
 
 package cz.metaverse.android.bilingualreader;
 
-import cz.metaverse.android.bilingualreader.dialog.ChangeCSSMenu;
-import cz.metaverse.android.bilingualreader.dialog.LanguageChooser;
-import cz.metaverse.android.bilingualreader.dialog.SetPanelSize;
-import cz.metaverse.android.bilingualreader.manager.EpubNavigator;
+import cz.metaverse.android.bilingualreader.dialog.ChangeCSSDialog;
+import cz.metaverse.android.bilingualreader.dialog.LanguageChooserDialog;
+import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
+import cz.metaverse.android.bilingualreader.manager.EpubsNavigator;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
 import android.app.Activity;
 import android.app.DialogFragment;
@@ -44,7 +44,7 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-	public EpubNavigator navigator;
+	public EpubsNavigator navigator;
 	protected int bookSelector;
 	protected int panelCount;
 	protected String[] cssSettings;
@@ -57,7 +57,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		navigator = new EpubNavigator(2, this);
+		navigator = new EpubsNavigator(2, this);
 
 		panelCount = 0;
 		cssSettings = new String[8];
@@ -70,7 +70,7 @@ public class MainActivity extends Activity {
 		// If there are no panels, start FileChooser.
 		if (panelCount == 0) {
 			bookSelector = 0;
-			Intent goToChooser = new Intent(this, FileChooser.class);
+			Intent goToChooser = new Intent(this, FileChooserActivity.class);
 			startActivityForResult(goToChooser, 0);
 		}
 	}
@@ -200,14 +200,14 @@ public class MainActivity extends Activity {
 		// User wants to open a new book (possibly even a panel)
 		case R.id.FirstEPUB:
 			bookSelector = 0;
-			Intent goToChooser1 = new Intent(this, FileChooser.class);
+			Intent goToChooser1 = new Intent(this, FileChooserActivity.class);
 			goToChooser1.putExtra(getString(R.string.second), getString(R.string.time));
 			startActivityForResult(goToChooser1, 0);
 			return true;
 			
 		case R.id.SecondEPUB:
 			bookSelector = 1;
-			Intent goToChooser2 = new Intent(this, FileChooser.class);
+			Intent goToChooser2 = new Intent(this, FileChooserActivity.class);
 			goToChooser2.putExtra(getString(R.string.second), getString(R.string.time));
 			startActivityForResult(goToChooser2, 0);
 			return true;
@@ -301,7 +301,7 @@ public class MainActivity extends Activity {
 		case R.id.changeSize:
 			try {
 				// Display dialog to pick new relative size of the panels.
-				DialogFragment newFragment = new SetPanelSize();
+				DialogFragment newFragment = new PanelSizeDialog();
 				newFragment.show(getFragmentManager(), "");
 			} catch (Exception e) {
 				errorMessage(getString(R.string.error_cannotChangeSizes));
@@ -313,7 +313,7 @@ public class MainActivity extends Activity {
 			try {
 				// Display the style dialog.
 				if (navigator.exactlyOneBookOpen() == true) {
-					DialogFragment newFragment = new ChangeCSSMenu();
+					DialogFragment newFragment = new ChangeCSSDialog();
 					newFragment.show(getFragmentManager(), "");
 					bookSelector = 0;
 				}
@@ -325,7 +325,7 @@ public class MainActivity extends Activity {
 		case R.id.StyleBook1:
 			try {
 				// Display the style dialog.
-				DialogFragment newFragment = new ChangeCSSMenu();
+				DialogFragment newFragment = new ChangeCSSDialog();
 				newFragment.show(getFragmentManager(), "");
 				bookSelector = 0;
 			} catch (Exception e) {
@@ -336,7 +336,7 @@ public class MainActivity extends Activity {
 		case R.id.StyleBook2:
 			try {
 				// Display the style dialog.
-				DialogFragment newFragment = new ChangeCSSMenu();
+				DialogFragment newFragment = new ChangeCSSDialog();
 				newFragment.show(getFragmentManager(), "");
 				bookSelector = 1;
 			} catch (Exception e) {
@@ -462,7 +462,7 @@ public class MainActivity extends Activity {
 			bundle.putInt(getString(R.string.tome), book);
 			bundle.putStringArray(getString(R.string.lang), languages);
 
-			LanguageChooser langChooser = new LanguageChooser();
+			LanguageChooserDialog langChooser = new LanguageChooserDialog();
 			langChooser.setArguments(bundle);
 			langChooser.show(getFragmentManager(), "");
 		} else {

@@ -24,7 +24,7 @@ import android.widget.Spinner;
  * Customize display style dialog.
  *
  */
-public class ChangeCSSMenu extends DialogFragment {
+public class ChangeCSSDialog extends DialogFragment {
 
 	protected Button defaultButton;
 	protected Builder builder;

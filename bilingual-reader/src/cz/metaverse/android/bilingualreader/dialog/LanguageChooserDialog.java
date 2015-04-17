@@ -42,7 +42,7 @@ import android.os.Bundle;
  *
  */
 
-public class LanguageChooser extends DialogFragment {
+public class LanguageChooserDialog extends DialogFragment {
 	String[] languages;
 	int book;
 	boolean[] selected;

@@ -28,7 +28,7 @@ import cz.metaverse.android.bilingualreader.MainActivity;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.R.id;
 import cz.metaverse.android.bilingualreader.R.layout;
-import cz.metaverse.android.bilingualreader.manager.EpubNavigator;
+import cz.metaverse.android.bilingualreader.manager.EpubsNavigator;
 import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -54,7 +54,7 @@ public abstract class SplitPanel extends Fragment {
 	protected int index;
 	protected RelativeLayout contentBoxLayout;
 	protected Button closeButton;
-	protected EpubNavigator navigator;
+	protected EpubsNavigator navigator;
 	protected int screenWidth;
 	protected int screenHeight;
 	protected float weight = 0.5f; // weight of the generalLayout
