@@ -28,10 +28,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.app.Activity;
-import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -58,14 +60,16 @@ public class FileChooserActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.file_chooser_layout);
 
-		// Populate list of epubs if needed
-		if ((epubs == null) || (epubs.size() == 0)) {
-			epubs = epubList(Environment.getExternalStorageDirectory());
+		// If either names or epubs isn't initialized, create empty lists for them.
+		boolean populateList = false;
+		if (names == null || epubs == null) {
+			names = new ArrayList<String>();
+			epubs = new ArrayList<File>();
+			populateList = true;
 		}
 
-		// Populate the ListView with data
+		// Prepare the ListView for data
 		ListView list = (ListView) findViewById(R.id.fileListView);
-		names = fileNames(epubs);
 		arrayAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, names);
 
@@ -86,57 +90,48 @@ public class FileChooserActivity extends Activity {
 
 		// Activate the list
 		list.setAdapter(arrayAdapter);
+
+		// Populate list of epubs if needed
+		if (epubs == null || epubs.size() == 0 || populateList) {
+			new FindEpubsTask().execute(getEpubSearchDirectory());
+		}
+	}
+	
+	/**
+	 * @return Directory file where to search for epubs.
+	 */
+	private File getEpubSearchDirectory() {
+		return Environment.getExternalStorageDirectory();
 	}
 
 	/**
-	 * Returns file names from a list of files
-	 * @param files list of files
-	 * @return list of file names
+	 * Displays one more book into the list.
+	 * @param newEpub new epub file to display
 	 */
-	private List<String> fileNames(List<File> files) {
-		List<String> res = new ArrayList<String>();
-		for (int i = 0; i < files.size(); i++) {
-			res.add(files.get(i).getName().replace(".epub", ""));
-		}
-		return res;
+	public void addEpub(File newEpub) {
+		epubs.add(newEpub);
+		names.add(fileName(newEpub));
+		arrayAdapter.notifyDataSetChanged();
 	}
 
+
 	/**
-	 * Recursively returns a lsit of epub files in a given dir.
-	 * @param dir to search
-	 * @return list of epub Files
+	 * Returns file name of a file
+	 * @param file
+	 * @return file name
 	 */
-	private List<File> epubList(File dir) {
-		List<File> res = new ArrayList<File>();
-		if (dir.isDirectory()) {
-			File[] f = dir.listFiles();
-			if (f != null) {
-				for (int i = 0; i < f.length; i++) {
-					if (f[i].isDirectory()) {
-						// Directory: Recursive call with the new directory as parameter.
-						res.addAll(epubList(f[i]));
-					} else {
-						// File: check if it's .epub, if so, add to results.
-						// 	TODO: check with mimetype, not with filename extension
-						String lowerCasedName = f[i].getName().toLowerCase();
-						if (lowerCasedName.endsWith(".epub")) {
-							res.add(f[i]);
-						}
-					}
-				}
-			}
-		}
-		return res;
+	private String fileName(File file) {
+		return file.getName().replace(".epub", "");
 	}
 
 	/**
 	 * Refreshes the epub list
 	 */
 	private void refreshList() {
-		epubs = epubList(Environment.getExternalStorageDirectory());
 		names.clear();
-		names.addAll(fileNames(epubs));
-		this.arrayAdapter.notifyDataSetChanged();
+		epubs.clear();
+		
+		new FindEpubsTask().execute(getEpubSearchDirectory());
 	}
 
 	/**
@@ -158,5 +153,78 @@ public class FileChooserActivity extends Activity {
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	
+	/**
+	 * 
+	 * AsyncTask instance for loading epubs in the background while progress dialog circles in foreground.
+	 *
+	 */
+	private class FindEpubsTask extends AsyncTask<File, File, Boolean> {
+		private ProgressDialog progressDialog;
+
+		@Override
+		protected void onPreExecute() {
+			// Start ProgressDialog
+			progressDialog = ProgressDialog.show(FileChooserActivity.this, "",
+					FileChooserActivity.this.getText(R.string.searching_for_epubs), true, false);
+
+		};
+		
+		@Override
+	    protected Boolean doInBackground(File... directory) {
+			// Start computing the list in the background.
+	    	epubList(directory[0]);
+	    	return true;
+	    }
+	    
+		/**
+		 * Recursively returns a lsit of epub files in a given dir.
+		 * @param dir to search
+		 * @return list of epub Files
+		 */
+		private List<File> epubList(File dir) {
+			// Check if the AsyncTask has been cancelled, if so, end.
+			if (isCancelled()) {
+				return null;
+			}
+			
+			List<File> res = new ArrayList<File>();
+			if (dir.isDirectory()) {
+				File[] f = dir.listFiles();
+				if (f != null) {
+					for (int i = 0; i < f.length; i++) {
+						if (f[i].isDirectory()) {
+							// Directory: Recursive call with the new directory as parameter.
+							res.addAll(epubList(f[i]));
+						} else {
+							// File: check if it's .epub, if so, add to results.
+							// 	TODO: check with mimetype, not with filename extension
+							String lowerCasedName = f[i].getName().toLowerCase();
+							if (lowerCasedName.endsWith(".epub")) {
+								res.add(f[i]);
+								// Send this file back to the UI thread to be displayed.
+								publishProgress(f[i]);
+							}
+						}
+					}
+				}
+			}
+			return res;
+		}
+
+		@Override
+	    protected void onProgressUpdate(File... file) {
+			// Send this file back to the UI thread to be displayed.
+			addEpub(file[0]);
+	    }
+
+		@Override
+	    protected void onPostExecute(Boolean result) {
+	        // Stop the ProgressDialog
+			progressDialog.dismiss();
+	    }
+
 	}
 }

@@ -170,5 +170,6 @@
     <string name="rew">&lt;&lt;</string>
     <string name="exAudio">exAudio</string>
     <string name="no_audio">Can\'t find any audio file</string>
+    <string name="searching_for_epubs">Searching for EPUB files.</string>
 
 </resources>
