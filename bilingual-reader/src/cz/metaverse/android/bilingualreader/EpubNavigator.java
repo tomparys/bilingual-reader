@@ -250,12 +250,12 @@ public class EpubNavigator {
 	/**
 	 * Get languages available in this epub
 	 */
-	public String[] getLanguagesBook(int index) {
+	public String[] getLanguagesInABook(int index) {
 		return books[index].getLanguages();
 	}
 
 	/**
-	 * if books[book] contains more than 1 language, it opens the same book in the other panel, opens the same page
+	 * If books[book] contains more than 1 language, it opens the same book in the other panel, opens the same page
 	 *  and sets the first language into the given panel (id book) and the second language into the other.
 	 * 	If all goes well it activates SynchronizedReading.
 	 * @param book				id of the panel with the book that we want to open in parallel text mode

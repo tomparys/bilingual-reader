@@ -5,10 +5,10 @@
                 <item android:id="@+id/SecondEPUB" android:title="@string/Open_Book_2"/>
             </menu>
     </item>
-    <item android:id="@+id/Front" android:title="@string/Enable_Parallel_Texts">
+    <item android:id="@+id/Parallel" android:title="@string/Enable_Parallel_Texts">
         <menu>
-            <item android:id="@+id/FirstFront" android:title="@string/From_Book_1" android:visible="false"/>
-            <item android:id="@+id/SecondFront" android:title="@string/From_Book_2" android:visible="false"/>
+            <item android:id="@+id/FirstParallel" android:title="@string/From_Book_1" android:visible="false"/>
+            <item android:id="@+id/SecondParallel" android:title="@string/From_Book_2" android:visible="false"/>
         </menu>
     </item>
       
@@ -16,8 +16,8 @@
     <item android:id="@+id/Align" android:title="@string/Reset_Sync_Views" android:visible="false">
         <menu>
             
-            <item android:id="@+id/PconS" android:title="@string/Sync_Book_1_with_Book_2"/>
-            <item android:id="@+id/SconP" android:title="@string/Sync_Book_2_with_Book_1"/>
+            <item android:id="@+id/Align1with2" android:title="@string/Sync_Book_1_with_Book_2"/>
+            <item android:id="@+id/Align2with1" android:title="@string/Sync_Book_2_with_Book_1"/>
         </menu>
     </item>
    
