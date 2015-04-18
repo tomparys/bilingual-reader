@@ -26,11 +26,6 @@ package cz.metaverse.android.bilingualreader.panel;
 
 import java.io.File;
 
-import cz.metaverse.android.bilingualreader.MainActivity;
-import cz.metaverse.android.bilingualreader.R;
-import cz.metaverse.android.bilingualreader.R.id;
-import cz.metaverse.android.bilingualreader.R.layout;
-import cz.metaverse.android.bilingualreader.R.string;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.ActivityInfo;
@@ -51,6 +46,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import cz.metaverse.android.bilingualreader.MainActivity;
+import cz.metaverse.android.bilingualreader.R;
 
 /**
  * 

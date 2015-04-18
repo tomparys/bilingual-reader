@@ -24,11 +24,6 @@ THE SOFTWARE.
 
 package cz.metaverse.android.bilingualreader.panel;
 
-import cz.metaverse.android.bilingualreader.MainActivity;
-import cz.metaverse.android.bilingualreader.R;
-import cz.metaverse.android.bilingualreader.R.id;
-import cz.metaverse.android.bilingualreader.R.layout;
-import cz.metaverse.android.bilingualreader.manager.EpubsNavigator;
 import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -41,6 +36,9 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import cz.metaverse.android.bilingualreader.MainActivity;
+import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.manager.EpubsNavigator;
 
 /**
  * 

@@ -26,18 +26,17 @@ package cz.metaverse.android.bilingualreader.manager;
 
 import java.io.IOException;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.util.Log;
 import cz.metaverse.android.bilingualreader.MainActivity;
 import cz.metaverse.android.bilingualreader.R;
-import cz.metaverse.android.bilingualreader.R.string;
 import cz.metaverse.android.bilingualreader.helper.PanelViewStateEnum;
 import cz.metaverse.android.bilingualreader.panel.AudioPanel;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
 import cz.metaverse.android.bilingualreader.panel.DataPanel;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.util.Log;
 
 public class EpubsNavigator {
 

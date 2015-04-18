@@ -24,18 +24,15 @@ THE SOFTWARE.
 
 package cz.metaverse.android.bilingualreader.panel;
 
-import cz.metaverse.android.bilingualreader.R;
-import cz.metaverse.android.bilingualreader.R.id;
-import cz.metaverse.android.bilingualreader.R.layout;
-import cz.metaverse.android.bilingualreader.R.string;
-import android.os.Bundle;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import cz.metaverse.android.bilingualreader.R;
 
 //Panel specialized in visualizing HTML-data
 /**

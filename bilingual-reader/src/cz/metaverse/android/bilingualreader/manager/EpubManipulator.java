@@ -42,8 +42,6 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import cz.metaverse.android.bilingualreader.R;
-import cz.metaverse.android.bilingualreader.R.string;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Metadata;
@@ -55,6 +53,7 @@ import nl.siegmann.epublib.epub.EpubReader;
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
+import cz.metaverse.android.bilingualreader.R;
 
 /**
  * 

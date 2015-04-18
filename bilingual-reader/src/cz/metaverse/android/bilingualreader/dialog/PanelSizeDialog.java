@@ -1,10 +1,5 @@
 package cz.metaverse.android.bilingualreader.dialog;
 
-import cz.metaverse.android.bilingualreader.MainActivity;
-import cz.metaverse.android.bilingualreader.R;
-import cz.metaverse.android.bilingualreader.R.id;
-import cz.metaverse.android.bilingualreader.R.layout;
-import cz.metaverse.android.bilingualreader.R.string;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -15,6 +10,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.SeekBar;
+import cz.metaverse.android.bilingualreader.MainActivity;
+import cz.metaverse.android.bilingualreader.R;
 
 /**
  * 

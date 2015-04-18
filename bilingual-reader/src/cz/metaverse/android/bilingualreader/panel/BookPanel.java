@@ -24,11 +24,6 @@ THE SOFTWARE.
 
 package cz.metaverse.android.bilingualreader.panel;
 
-import cz.metaverse.android.bilingualreader.R;
-import cz.metaverse.android.bilingualreader.R.id;
-import cz.metaverse.android.bilingualreader.R.layout;
-import cz.metaverse.android.bilingualreader.R.string;
-import cz.metaverse.android.bilingualreader.helper.PanelViewStateEnum;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -43,6 +38,8 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.helper.PanelViewStateEnum;
 
 /**
  * 
