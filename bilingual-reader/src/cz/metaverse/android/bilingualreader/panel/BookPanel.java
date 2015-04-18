@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package cz.metaverse.android.bilingualreader.panel;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -62,6 +63,7 @@ public class BookPanel extends SplitPanel {
 	/**
 	 * onActivityCreated()
 	 */
+	@SuppressLint("SetJavaScriptEnabled") // Our opensource application has nothing to hide.
 	@Override
     public void onActivityCreated(Bundle saved) {
 		super.onActivityCreated(saved);
@@ -72,15 +74,14 @@ public class BookPanel extends SplitPanel {
 		
 		// Set touch listener with the option to SWIPE pages.
 		webView.setOnTouchListener(new OnTouchListener() {
+			@SuppressLint("ClickableViewAccessibility") // Performed inside the swipePage method
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-	
-				if (enumState == PanelViewStateEnum.books)
-					// Call mothod that will evaluate the swipe and swipes the page if appropriate. 
-					swipePage(v, event, 0);
+			
+				// Call a method that will evaluate the swipe and swipes the page if appropriate. 
+				swipePage(v, event);
 								
-				WebView view = (WebView) v;
-				return view.onTouchEvent(event);
+				return v.onTouchEvent(event);
 			}
 		});
 
@@ -142,44 +143,49 @@ public class BookPanel extends SplitPanel {
 	 * Evaluates a swipe action and changes page if appropriate.
 	 * @param v The WebView where the swipe took place
 	 * @param event The MotionEvent of the swipe
-	 * @param book TODO
 	 */
-	protected void swipePage(View v, MotionEvent event, int book) {
+	protected void swipePage(View v, MotionEvent event) {
 		// Analyze the motion event.
 		int action = MotionEventCompat.getActionMasked(event);
 
 		switch (action) {
 		// Finger was just laid on the screen - save the original coordinates.
 		case (MotionEvent.ACTION_DOWN):
-			swipeOriginX = event.getX();
-			swipeOriginY = event.getY();
+	        if (enumState == PanelViewStateEnum.books) {
+				swipeOriginX = event.getX();
+				swipeOriginY = event.getY();
+	        }
 			break;
 
 		// Finger was just lifted - calculate what kind of swipe has it been.
 		case (MotionEvent.ACTION_UP):
-			int quarterWidth = (int) (screenWidth * 0.25); // A quarter of the screen's width
-			float diffX = swipeOriginX - event.getX();
-			float diffY = swipeOriginY - event.getY();
-			float absDiffX = Math.abs(diffX);
-			float absDiffY = Math.abs(diffY);
-
-			if ((diffX > quarterWidth) && (absDiffX > absDiffY)) {
-				// If swipe was to the left and over 1/4 of the screen wide,
-				// 		and swipe was more broad than high 
-				try {
-					navigator.goToNextChapter(index);
-				} catch (Exception e) {
-					errorMessage(getString(R.string.error_cannotTurnPage));
-				}
-			} else if ((diffX < -quarterWidth) && (absDiffX > absDiffY)) {
-				// If swipe was to the right and over 1/4 of the screen wide,
-				// 		and swipe was more broad than high
-				try {
-					navigator.goToPrevChapter(index);
-				} catch (Exception e) {
-					errorMessage(getString(R.string.error_cannotTurnPage));
-				}
-			}
+	        if (enumState == PanelViewStateEnum.books) {
+				int quarterWidth = (int) (screenWidth * 0.25); // A quarter of the screen's width
+				float diffX = swipeOriginX - event.getX();
+				float diffY = swipeOriginY - event.getY();
+				float absDiffX = Math.abs(diffX);
+				float absDiffY = Math.abs(diffY);
+	
+				if ((diffX > quarterWidth) && (absDiffX > absDiffY)) {
+					// If swipe was to the left and over 1/4 of the screen wide,
+					// 		and swipe was more broad than high 
+					try {
+						navigator.goToNextChapter(index);
+					} catch (Exception e) {
+						errorMessage(getString(R.string.error_cannotTurnPage));
+					}
+				} else if ((diffX < -quarterWidth) && (absDiffX > absDiffY)) {
+					// If swipe was to the right and over 1/4 of the screen wide,
+					// 		and swipe was more broad than high
+					try {
+						navigator.goToPrevChapter(index);
+					} catch (Exception e) {
+						errorMessage(getString(R.string.error_cannotTurnPage));
+					}
+				}	
+	        }
+		
+	        v.performClick(); // Android system mandates we pass the baton to the onClick listener now. 
 			break;
 		}
 
