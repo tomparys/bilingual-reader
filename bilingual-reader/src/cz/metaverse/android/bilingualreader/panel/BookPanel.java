@@ -63,7 +63,7 @@ public class BookPanel extends SplitPanel {
 	/**
 	 * onActivityCreated()
 	 */
-	@SuppressLint("SetJavaScriptEnabled") // Our opensource application has nothing to hide.
+	@SuppressLint("SetJavaScriptEnabled") // Our opensource application has literally nothing to hide.
 	@Override
     public void onActivityCreated(Bundle saved) {
 		super.onActivityCreated(saved);
@@ -74,8 +74,8 @@ public class BookPanel extends SplitPanel {
 		
 		// Set touch listener with the option to SWIPE pages.
 		webView.setOnTouchListener(new OnTouchListener() {
-			@SuppressLint("ClickableViewAccessibility") // Performed inside the swipePage method
-			@Override
+			@SuppressLint("ClickableViewAccessibility") // The "performClick" method is launched inside the swipePage method,
+			@Override									//  which eclipse fails to realize.
 			public boolean onTouch(View v, MotionEvent event) {
 			
 				// Call a method that will evaluate the swipe and swipes the page if appropriate. 
@@ -89,22 +89,29 @@ public class BookPanel extends SplitPanel {
 		webView.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
-				// Create a message
+				
+				// Create a message and its handler
 				Message msg = new Message();
+				
 				msg.setTarget(new Handler() {
-					// New handler for the message
+					
+					// A handler for the message
 					@Override
 					public void handleMessage(Message msg) {
 						super.handleMessage(msg);
+						
 						// Extract url from the message
-						String url = msg.getData().getString(
-								getString(R.string.url));
+						String url = msg.getData().getString(getString(R.string.url));
+						
 						// If url isn't empty, set note with the url into this SplitPanel/fragment.
-						if (url != null)
+						if (url != null) {
 							navigator.setNote(url, index);
+						}
 					}
 				});
-				// Puts data about the last pressed object into the message.
+				
+				// Puts data about the last pressed object into the message and dispatches it.
+				//  If the user didn't click on anything, message is not dispatched.
 				webView.requestFocusNodeHref(msg);
 				
 				return false;
