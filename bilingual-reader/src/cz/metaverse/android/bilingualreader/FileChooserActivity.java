@@ -41,6 +41,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 /**
  * 
@@ -101,7 +102,16 @@ public class FileChooserActivity extends Activity {
 	 * @return Directory file where to search for epubs.
 	 */
 	private File getEpubSearchDirectory() {
-		return Environment.getExternalStorageDirectory();
+		// Opens the so far hard-coded directory where to look for epubs.
+		String root = Environment.getExternalStorageDirectory().toString();
+		File ebooksDir = new File(root+getString(R.string.epubs_search_directory));
+
+		if(ebooksDir.exists()) {
+			return ebooksDir;
+		} else {
+			// If the directory doesn't exist, return the root dir.
+			return Environment.getExternalStorageDirectory() ;
+		}
 	}
 
 	/**
