@@ -24,11 +24,6 @@ THE SOFTWARE.
 
 package cz.metaverse.android.bilingualreader;
 
-import cz.metaverse.android.bilingualreader.dialog.ChangeCSSDialog;
-import cz.metaverse.android.bilingualreader.dialog.LanguageChooserDialog;
-import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
-import cz.metaverse.android.bilingualreader.manager.EpubsNavigator;
-import cz.metaverse.android.bilingualreader.panel.SplitPanel;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
@@ -37,10 +32,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import cz.metaverse.android.bilingualreader.dialog.ChangeCSSDialog;
+import cz.metaverse.android.bilingualreader.dialog.LanguageChooserDialog;
+import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
+import cz.metaverse.android.bilingualreader.manager.EpubsNavigator;
+import cz.metaverse.android.bilingualreader.panel.SplitPanel;
 
 public class MainActivity extends Activity {
 
@@ -48,6 +49,9 @@ public class MainActivity extends Activity {
 	protected int bookSelector;
 	protected int panelCount;
 	protected String[] cssSettings;
+	// ActionMode is a mode when a specific menu is displayed on top of the app when user selects text in one of the panels.
+	private ActionMode actionMode = null;
+    
 
 	/**
 	 * Called when the application gets started.
@@ -123,6 +127,11 @@ public class MainActivity extends Activity {
 		}
 	}
 
+	
+	// ============================================================================================
+	//		Options Menu
+	// ============================================================================================
+	
 	/**
 	 * Called when menu is opened.
 	 */
@@ -374,10 +383,69 @@ public class MainActivity extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
+	
+	
+	// ============================================================================================
+	//		Text Selection Menu
+	// ============================================================================================
+	
+	/**
+	 * Called when user selects text in one of the panels.
+	 */
+	@Override
+	public void onActionModeStarted(ActionMode newActionMode) {
+		if (actionMode == null) {
+			actionMode = newActionMode;
+			Menu menu = actionMode.getMenu();
 
+			// Remove irrelevant menu items
+			//menu.clear(); // In case we wan to remove the default menu items (select all, copy, paste, search) 
+			menu.getItem(0).setVisible(false); // Removes the "Select all" button
+			menu.getItem(3).setVisible(false); // Removes the "Search" button
+
+			// Inflate our additional menu items
+			actionMode.getMenuInflater().inflate(R.menu.text_selection_menu, menu);
+		}
+
+		super.onActionModeStarted(actionMode);
+	}
+
+	/**
+	 * Called when one of the text_selection_menu.xml items gets clicked.
+	 * 
+	 * 	The name of the method is arbitrary, and is set in the XML file using the "android:onClick" property.
+	 */
+	public void onTextSelectionMenuItemClicked(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.dictionary_menu_item:
+			// User pressed the Dictionary menu button
+			// TODO
+			Toast.makeText(this, "TODO Dictionary search", Toast.LENGTH_SHORT).show();
+			break;
+		default:
+			break;
+		}
+
+		// This will likely always be true, but check it anyway, just in case
+		if (actionMode != null) {
+			//actionMode.finish();
+		}
+	}
+
+	/**
+	 * Called to notify the activity that ActionMode has ended.
+	 */
+	@Override
+	public void onActionModeFinished(ActionMode mode) {
+		actionMode = null;
+		super.onActionModeFinished(mode);
+	}
 	
-	// ---- Panels Manager
-	
+
+	// ============================================================================================
+	//		Panels Manager
+	// ============================================================================================
+
 	/**
 	 * Adds a panel to view for the first time.
 	 * @param p SplitPanel instance
@@ -442,6 +510,11 @@ public class MainActivity extends Activity {
 		}
 	}
 
+	
+	// ============================================================================================
+	//		Misc
+	// ============================================================================================
+	
 	/**
 	 * Choose language.
 	 * @param book
