@@ -2,14 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/copy_menu_item"
+        android:showAsAction="always"
+        android:icon="@drawable/ic_action_copy"
+        android:title="Copy"/>
+    <item
+        android:id="@+id/share_menu_item"
+        android:showAsAction="always"
+        android:icon="@drawable/ic_action_share"
+        android:title="Share"/>
+    <item
         android:id="@+id/dictionary_menu_item"
         android:showAsAction="always"
-        android:title="@string/dictionary">
-    </item>
+        android:title="@string/dictionary"/>
     <item
         android:id="@+id/srs_menu_item"
         android:showAsAction="always"
-        android:title="@string/add_to_srs">
-    </item>
+        android:title="@string/add_to_srs"/>
 
 </menu>

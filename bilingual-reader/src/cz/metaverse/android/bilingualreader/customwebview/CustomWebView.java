@@ -7,7 +7,6 @@ import android.view.ActionMode;
 import android.view.ActionMode.Callback;
 import android.view.GestureDetector;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ViewParent;
@@ -21,6 +20,7 @@ public class CustomWebView extends WebView {
 	private Context context;
 	
 	// override all other constructor to avoid crash
+	@SuppressLint("SetJavaScriptEnabled") // Our opensource application has literally nothing to hide.
 	public CustomWebView(Context context) {
 	    super(context);
 	    this.context = context;
@@ -60,8 +60,6 @@ public class CustomWebView extends WebView {
 	    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 	        mActionMode = mode;
 	        
-	        // TODO: Share button needs to be added, copy button would be awesome as well.
-	
 			// Inflate our menu items
 			mActionMode.getMenuInflater().inflate(R.menu.text_selection_menu, menu);
 	        return true;
@@ -74,22 +72,31 @@ public class CustomWebView extends WebView {
 	
 	    @Override
 	    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-	
+	    	// TODO items need to be implemented
 	        switch (item.getItemId()) {
+	        case R.id.copy_menu_item:
+	        	getSelectedData();
+	        	Toast.makeText(ReaderActivity.debugContext, "TODO copy", Toast.LENGTH_SHORT).show();
+	        	break;
+	        case R.id.share_menu_item:
+	        	getSelectedData();
+	        	Toast.makeText(ReaderActivity.debugContext, "TODO share", Toast.LENGTH_SHORT).show();
+	        	break;
 	        case R.id.dictionary_menu_item:
 	            getSelectedData();
 	            Toast.makeText(ReaderActivity.debugContext, "TODO Dictionary search", Toast.LENGTH_SHORT).show();
-	            mode.finish(); 
-	            return true;
+	            break;
 	        case R.id.srs_menu_item:
 	        	getSelectedData();
 	        	Toast.makeText(ReaderActivity.debugContext, "TODO Add to SRS", Toast.LENGTH_SHORT).show();
-	            mode.finish();
-	            return true;
+	        	break;
 	        default:
 	            mode.finish();
 	            return false;
 	        }
+	        
+	        mode.finish();
+	        return true;
 	    }
 	    @Override
 	    public void onDestroyActionMode(ActionMode mode) {
