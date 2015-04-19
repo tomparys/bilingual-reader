@@ -30,7 +30,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Log;
-import cz.metaverse.android.bilingualreader.MainActivity;
+import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.helper.PanelViewStateEnum;
 import cz.metaverse.android.bilingualreader.panel.AudioPanel;
@@ -46,7 +46,7 @@ public class EpubsNavigator {
 	private boolean[] extractAudio;
 	private boolean synchronizedReadingActive;
 	private boolean parallelText = false;
-	private MainActivity activity;
+	private ReaderActivity activity;
 	private static Context context;
 
 	/**
@@ -54,7 +54,7 @@ public class EpubsNavigator {
 	 * @param numberOfBooks	number of book-viewing panels open
 	 * @param a				the MainActivity from which this is launched
 	 */
-	public EpubsNavigator(int numberOfBooks, MainActivity a) {
+	public EpubsNavigator(int numberOfBooks, ReaderActivity a) {
 		nBooks = numberOfBooks;
 		books = new EpubManipulator[nBooks];
 		splitViews = new SplitPanel[nBooks];

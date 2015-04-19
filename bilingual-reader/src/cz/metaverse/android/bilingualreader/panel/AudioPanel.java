@@ -46,7 +46,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import cz.metaverse.android.bilingualreader.MainActivity;
+import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.R;
 
 /**
@@ -232,7 +232,7 @@ public class AudioPanel extends SplitPanel {
 				}
 
 				float weight = (float) height
-						/ ((MainActivity) getActivity()).getHeight();
+						/ ((ReaderActivity) getActivity()).getHeight();
 				if (weight > 0.5f)
 					weight = 0.5f;
 				navigator.changeViewsSize(1 - weight);
@@ -278,7 +278,7 @@ public class AudioPanel extends SplitPanel {
 				}
 			if (err) {
 				playpause.setEnabled(false);
-				((MainActivity) getActivity())
+				((ReaderActivity) getActivity())
 						.errorMessage(getString(R.string.error_openaudiofile));
 			}
 

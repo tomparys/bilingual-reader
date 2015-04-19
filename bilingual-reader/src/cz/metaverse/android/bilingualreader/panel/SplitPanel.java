@@ -36,7 +36,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import cz.metaverse.android.bilingualreader.MainActivity;
+import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.manager.EpubsNavigator;
 
@@ -60,7 +60,7 @@ public abstract class SplitPanel extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		navigator = ((MainActivity) getActivity()).navigator;
+		navigator = ((ReaderActivity) getActivity()).navigator;
 		View v = inflater.inflate(R.layout.activity_split_panel, container,
 				false);
 		created = false;
@@ -114,7 +114,7 @@ public abstract class SplitPanel extends Fragment {
 	}
 
 	public void errorMessage(String message) {
-		((MainActivity) getActivity()).errorMessage(message);
+		((ReaderActivity) getActivity()).errorMessage(message);
 	}
 
 	// Saves the weight of this SplitPanel during saveState

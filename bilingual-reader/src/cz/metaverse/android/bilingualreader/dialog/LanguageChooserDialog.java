@@ -31,7 +31,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import cz.metaverse.android.bilingualreader.MainActivity;
+import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.R;
 
 /**
@@ -97,11 +97,11 @@ public class LanguageChooserDialog extends DialogFragment {
 						}
 
 						if (number_selected_elements >= 2)
-							((MainActivity) getActivity()).startParallelText(
+							((ReaderActivity) getActivity()).startParallelText(
 									book, first, second);
 
 						else if (number_selected_elements == 1)
-							((MainActivity) getActivity()).startParallelText(
+							((ReaderActivity) getActivity()).startParallelText(
 									book, first, -1);
 
 					}

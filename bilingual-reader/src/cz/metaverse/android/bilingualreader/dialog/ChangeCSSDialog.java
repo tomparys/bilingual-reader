@@ -13,7 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
-import cz.metaverse.android.bilingualreader.MainActivity;
+import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.R;
 
 /**
@@ -35,7 +35,7 @@ public class ChangeCSSDialog extends DialogFragment {
 	protected Spinner spinRight;
 	protected int colorInt, bgColorInt, fontInt, alignInt, sizeInt, heightInt,
 				  marginLeftInt, marginRightInt;
-	protected MainActivity activity;
+	protected ReaderActivity activity;
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -46,7 +46,7 @@ public class ChangeCSSDialog extends DialogFragment {
 		
 		// Inflate and set the layout for the dialog
 		// Pass null as the parent view because its going in the dialog layout
-		activity = (MainActivity) getActivity();
+		activity = (ReaderActivity) getActivity();
 		View view = inflater.inflate(R.layout.change_css, null);
 
 		// Get saved preferences

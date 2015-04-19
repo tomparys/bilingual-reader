@@ -43,7 +43,7 @@ import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
 import cz.metaverse.android.bilingualreader.manager.EpubsNavigator;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
 
-public class MainActivity extends Activity {
+public class ReaderActivity extends Activity {
 
 	public EpubsNavigator navigator;
 	protected int bookSelector;

@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.SeekBar;
-import cz.metaverse.android.bilingualreader.MainActivity;
+import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.R;
 
 /**
@@ -38,7 +38,7 @@ public class PanelSizeDialog extends DialogFragment {
 		View view = inflater.inflate(R.layout.set_panel_size, null);
 
 		// Load the seek bar value
-		final SharedPreferences preferences = ((MainActivity) getActivity())
+		final SharedPreferences preferences = ((ReaderActivity) getActivity())
 				.getPreferences(Context.MODE_PRIVATE);
 		
 		seekBarValue = preferences.getInt("seekBarValue", 50);
@@ -63,7 +63,7 @@ public class PanelSizeDialog extends DialogFragment {
 							value = (float) 0.9;
 
 						// Set the value to view.
-						((MainActivity) getActivity()).changeViewsSize(value);
+						((ReaderActivity) getActivity()).changeViewsSize(value);
 						
 						// Save the value to shared preferences
 						SharedPreferences.Editor editor = preferences.edit();
