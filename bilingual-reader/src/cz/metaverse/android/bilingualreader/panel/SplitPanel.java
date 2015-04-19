@@ -59,8 +59,7 @@ public abstract class SplitPanel extends Fragment {
 	protected boolean created; // tells whether the fragment has been created
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		navigator = ((MainActivity) getActivity()).navigator;
 		View v = inflater.inflate(R.layout.activity_split_panel, container,
 				false);
