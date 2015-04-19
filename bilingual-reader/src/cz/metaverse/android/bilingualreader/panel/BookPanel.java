@@ -52,6 +52,8 @@ public class BookPanel extends SplitPanel {
 	protected String viewedPage;
 	protected WebView webView;
 	protected float swipeOriginX, swipeOriginY;
+	// Position within the page loaded from before
+	protected Integer loadPositionX, loadPositionY;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)	{
@@ -142,8 +144,17 @@ public class BookPanel extends SplitPanel {
 	public void loadPage(String path)
 	{
 		viewedPage = path;
-		if(created)
+		if(created) {
 			webView.loadUrl(path);
+			
+			// Load position from before if this is a page opening from before. 
+			if (loadPositionX != null && loadPositionY != null) {
+				webView.setScrollX(loadPositionX);
+				webView.setScrollY(loadPositionY);
+				loadPositionX = null;
+				loadPositionY = null;
+			}
+		}
 	}
 	
 	/**
@@ -206,6 +217,10 @@ public class BookPanel extends SplitPanel {
 		super.saveState(editor);
 		editor.putString("state"+index, enumState.name());
 		editor.putString("page"+index, viewedPage);
+		
+		// Save the position within the page.
+		editor.putInt("positionX"+index, webView.getScrollX());
+		editor.putInt("positionY"+index, webView.getScrollY());
 	}
 	
 	/**
@@ -217,6 +232,10 @@ public class BookPanel extends SplitPanel {
 		super.loadState(preferences);
 		enumState = PanelViewStateEnum.valueOf(preferences.getString("state"+index, PanelViewStateEnum.books.name()));
 		loadPage(preferences.getString("page"+index, ""));
+		
+		// Load the position within the page from before to be used when webView is instantiated.
+		loadPositionX = preferences.getInt("positionX"+index, 0);
+		loadPositionY = preferences.getInt("positionY"+index, 0);
 	}
 	
 }
