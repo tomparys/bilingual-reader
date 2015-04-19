@@ -51,7 +51,10 @@ public class MainActivity extends Activity {
 	protected String[] cssSettings;
 	// ActionMode is a mode when a specific menu is displayed on top of the app when user selects text in one of the panels.
 	private ActionMode actionMode = null;
-    
+	
+	// Used exclusively for debugging purposes (e.g. Displaying toasts without context)
+	public static Context debugContext;	// TODO remove when no longer needed
+	
 
 	/**
 	 * Called when the application gets started.
@@ -59,6 +62,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		debugContext = getBaseContext();
 		setContentView(R.layout.activity_main);
 
 		navigator = new EpubsNavigator(2, this);
