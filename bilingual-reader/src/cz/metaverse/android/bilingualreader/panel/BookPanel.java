@@ -39,7 +39,9 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.RelativeLayout;
 import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.customwebview.CustomWebView;
 import cz.metaverse.android.bilingualreader.helper.PanelViewStateEnum;
 
 /**
@@ -50,7 +52,7 @@ import cz.metaverse.android.bilingualreader.helper.PanelViewStateEnum;
 public class BookPanel extends SplitPanel {
 	public PanelViewStateEnum enumState = PanelViewStateEnum.books;
 	protected String viewedPage;
-	protected WebView webView;
+	protected CustomWebView webView;
 	protected float swipeOriginX, swipeOriginY;
 	// Position within the page loaded from before
 	protected Integer loadPositionX, loadPositionY;
@@ -69,7 +71,11 @@ public class BookPanel extends SplitPanel {
 	@Override
     public void onActivityCreated(Bundle saved) {
 		super.onActivityCreated(saved);
-		webView = (WebView) getView().findViewById(R.id.Viewport);
+		
+		// TODO: Make so the button shows as well, ideally move the layout back into the XML file.
+		webView = new CustomWebView(getActivity());
+		RelativeLayout relativeLayout = (RelativeLayout) getView().findViewById(R.id.ViewportLayout);
+		relativeLayout.addView(webView);
 		
 		// Enable JavaScript for cool things to happen!
 		webView.getSettings().setJavaScriptEnabled(true);

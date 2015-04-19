@@ -393,57 +393,6 @@ public class ReaderActivity extends Activity {
 	//		Text Selection Menu
 	// ============================================================================================
 	
-	/**
-	 * Called when user selects text in one of the panels.
-	 */
-	@Override
-	public void onActionModeStarted(ActionMode newActionMode) {
-		if (actionMode == null) {
-			actionMode = newActionMode;
-			Menu menu = actionMode.getMenu();
-
-			// Remove irrelevant menu items
-			//menu.clear(); // In case we wan to remove the default menu items (select all, copy, paste, search) 
-			menu.getItem(0).setVisible(false); // Removes the "Select all" button
-			menu.getItem(3).setVisible(false); // Removes the "Search" button
-
-			// Inflate our additional menu items
-			actionMode.getMenuInflater().inflate(R.menu.text_selection_menu, menu);
-		}
-
-		super.onActionModeStarted(actionMode);
-	}
-
-	/**
-	 * Called when one of the text_selection_menu.xml items gets clicked.
-	 * 
-	 * 	The name of the method is arbitrary, and is set in the XML file using the "android:onClick" property.
-	 */
-	public void onTextSelectionMenuItemClicked(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.dictionary_menu_item:
-			// User pressed the Dictionary menu button
-			// TODO
-			Toast.makeText(this, "TODO Dictionary search", Toast.LENGTH_SHORT).show();
-			break;
-		default:
-			break;
-		}
-
-		// This will likely always be true, but check it anyway, just in case
-		if (actionMode != null) {
-			//actionMode.finish();
-		}
-	}
-
-	/**
-	 * Called to notify the activity that ActionMode has ended.
-	 */
-	@Override
-	public void onActionModeFinished(ActionMode mode) {
-		actionMode = null;
-		super.onActionModeFinished(mode);
-	}
 	
 
 	// ============================================================================================

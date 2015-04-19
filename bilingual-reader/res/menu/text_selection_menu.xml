@@ -4,8 +4,12 @@
     <item
         android:id="@+id/dictionary_menu_item"
         android:showAsAction="always"
-        android:onClick="onTextSelectionMenuItemClicked"
         android:title="@string/dictionary">
+    </item>
+    <item
+        android:id="@+id/srs_menu_item"
+        android:showAsAction="always"
+        android:title="@string/add_to_srs">
     </item>
 
 </menu>
