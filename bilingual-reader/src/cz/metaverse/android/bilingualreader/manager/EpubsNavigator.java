@@ -521,7 +521,10 @@ public class EpubsNavigator {
 				editor.putString(getS(R.string.ViewType) + i, splitViews[i]
 						.getClass().getName());
 				splitViews[i].saveState(editor);
-				activity.removePanelWithoutClosing(splitViews[i]);
+				
+				// There is no need to remove panels upon losing focus.
+				// 	Leaving it here commented out from the original project in case it causes trouble. 
+				//activity.removePanelWithoutClosing(splitViews[i]);
 			}
 			else {
 				editor.putString(getS(R.string.ViewType) + i, "");
