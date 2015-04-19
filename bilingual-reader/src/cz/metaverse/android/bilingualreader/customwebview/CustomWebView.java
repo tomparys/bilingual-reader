@@ -22,12 +22,12 @@ public class CustomWebView extends WebView {
 	// override all other constructor to avoid crash
 	@SuppressLint("SetJavaScriptEnabled") // Our opensource application has literally nothing to hide.
 	public CustomWebView(Context context) {
-	    super(context);
-	    this.context = context;
-	    WebSettings webviewSettings = getSettings();
-	    webviewSettings.setJavaScriptEnabled(true);
-	    // add JavaScript interface for copy
-	    addJavascriptInterface(new WebAppInterface(context), "JSInterface");
+		super(context);
+		this.context = context;
+		WebSettings webviewSettings = getSettings();
+		webviewSettings.setJavaScriptEnabled(true);
+		// add JavaScript interface for copy
+		addJavascriptInterface(new WebAppInterface(context), "JSInterface");
 	}
 	
 	// setting custom action bar
@@ -38,118 +38,118 @@ public class CustomWebView extends WebView {
 	// this will over ride the default action bar on long press
 	@Override
 	public ActionMode startActionMode(Callback callback) {
-	    ViewParent parent = getParent();
-	    if (parent == null) {
-	        return null;
-	    }
-	    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-	        String name = callback.getClass().toString();
-	        if (name.contains("SelectActionModeCallback")) {
-	            mSelectActionModeCallback = callback;
-	            mDetector = new GestureDetector(context,
-	                    new CustomGestureListener());
-	        }
-	    }
-	    CustomActionModeCallback mActionModeCallback = new CustomActionModeCallback();
-	    return parent.startActionModeForChild(this, mActionModeCallback);
+		ViewParent parent = getParent();
+		if (parent == null) {
+			return null;
+		}
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+			String name = callback.getClass().toString();
+			if (name.contains("SelectActionModeCallback")) {
+				mSelectActionModeCallback = callback;
+				mDetector = new GestureDetector(context,
+						new CustomGestureListener());
+			}
+		}
+		CustomActionModeCallback mActionModeCallback = new CustomActionModeCallback();
+		return parent.startActionModeForChild(this, mActionModeCallback);
 	}
 	
 	private class CustomActionModeCallback implements ActionMode.Callback {
 	
-	    @Override
-	    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-	        mActionMode = mode;
-	        
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			mActionMode = mode;
+			
 			// Inflate our menu items
 			mActionMode.getMenuInflater().inflate(R.menu.text_selection_menu, menu);
-	        return true;
-	    }
+			return true;
+		}
 	
-	    @Override
-	    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-	        return false; 
-	    }
+		@Override
+		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			return false; 
+		}
 	
-	    @Override
-	    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-	    	// TODO items need to be implemented
-	        switch (item.getItemId()) {
-	        case R.id.copy_menu_item:
-	        	getSelectedData();
-	        	Toast.makeText(ReaderActivity.debugContext, "TODO copy", Toast.LENGTH_SHORT).show();
-	        	break;
-	        case R.id.share_menu_item:
-	        	getSelectedData();
-	        	Toast.makeText(ReaderActivity.debugContext, "TODO share", Toast.LENGTH_SHORT).show();
-	        	break;
-	        case R.id.dictionary_menu_item:
-	            getSelectedData();
-	            Toast.makeText(ReaderActivity.debugContext, "TODO Dictionary search", Toast.LENGTH_SHORT).show();
-	            break;
-	        case R.id.srs_menu_item:
-	        	getSelectedData();
-	        	Toast.makeText(ReaderActivity.debugContext, "TODO Add to SRS", Toast.LENGTH_SHORT).show();
-	        	break;
-	        default:
-	            mode.finish();
-	            return false;
-	        }
-	        
-	        mode.finish();
-	        return true;
-	    }
-	    @Override
-	    public void onDestroyActionMode(ActionMode mode) {
-	        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-	            clearFocus();
-	        }else{
-	             if (mSelectActionModeCallback != null) {
-	                 mSelectActionModeCallback.onDestroyActionMode(mode);
-	             }
-	             mActionMode = null;
-	        }
-	    }
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+			// TODO items need to be implemented
+			switch (item.getItemId()) {
+			case R.id.copy_menu_item:
+				getSelectedData();
+				Toast.makeText(ReaderActivity.debugContext, "TODO copy", Toast.LENGTH_SHORT).show();
+				break;
+			case R.id.share_menu_item:
+				getSelectedData();
+				Toast.makeText(ReaderActivity.debugContext, "TODO share", Toast.LENGTH_SHORT).show();
+				break;
+			case R.id.dictionary_menu_item:
+				getSelectedData();
+				Toast.makeText(ReaderActivity.debugContext, "TODO Dictionary search", Toast.LENGTH_SHORT).show();
+				break;
+			case R.id.srs_menu_item:
+				getSelectedData();
+				Toast.makeText(ReaderActivity.debugContext, "TODO Add to SRS", Toast.LENGTH_SHORT).show();
+				break;
+			default:
+				mode.finish();
+				return false;
+			}
+			
+			mode.finish();
+			return true;
+		}
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+				clearFocus();
+			}else{
+				 if (mSelectActionModeCallback != null) {
+					 mSelectActionModeCallback.onDestroyActionMode(mode);
+				 }
+				 mActionMode = null;
+			}
+		}
 	}
 	@SuppressLint("NewApi") // The code checks the API version and uses the appropriate method.
 	private void getSelectedData(){
 	
-	    String js= "(function getSelectedText() {"+
-	            "var txt;"+
-	            "if (window.getSelection) {"+
-	                "txt = window.getSelection().toString();"+
-	            "} else if (window.document.getSelection) {"+
-	                "txt = window.document.getSelection().toString();"+
-	            "} else if (window.document.selection) {"+
-	                "txt = window.document.selection.createRange().text;"+
-	            "}"+
-	            "JSInterface.getText(txt);"+
-	          "})()";
-	    // calling the js function
-	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-	        evaluateJavascript("javascript:"+js, null);
-	    }else{
-	        loadUrl("javascript:"+js);
-	    }
+		String js= "(function getSelectedText() {"+
+				"var txt;"+
+				"if (window.getSelection) {"+
+					"txt = window.getSelection().toString();"+
+				"} else if (window.document.getSelection) {"+
+					"txt = window.document.getSelection().toString();"+
+				"} else if (window.document.selection) {"+
+					"txt = window.document.selection.createRange().text;"+
+				"}"+
+				"JSInterface.getText(txt);"+
+			  "})()";
+		// calling the js function
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			evaluateJavascript("javascript:"+js, null);
+		}else{
+			loadUrl("javascript:"+js);
+		}
 	}
 	
 	private class CustomGestureListener extends GestureDetector.SimpleOnGestureListener {
-	    @Override
-	    public boolean onSingleTapUp(MotionEvent e) {
-	        if (mActionMode != null) {
-	            mActionMode.finish();
-	            return true;
-	        }
-	        return false;
-	    }
+		@Override
+		public boolean onSingleTapUp(MotionEvent e) {
+			if (mActionMode != null) {
+				mActionMode.finish();
+				return true;
+			}
+			return false;
+		}
 	}
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-	    // Send the event to our gesture detector
-	    // If it is implemented, there will be a return value
-	    if(mDetector !=null)
-	        mDetector.onTouchEvent(event);
-	    // If the detected gesture is unimplemented, send it to the superclass
-	    return super.onTouchEvent(event);
+		// Send the event to our gesture detector
+		// If it is implemented, there will be a return value
+		if(mDetector !=null)
+			mDetector.onTouchEvent(event);
+		// If the detected gesture is unimplemented, send it to the superclass
+		return super.onTouchEvent(event);
 	}
 }
