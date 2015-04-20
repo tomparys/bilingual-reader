@@ -17,7 +17,7 @@ import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.R;
 
 /**
- * 
+ *
  * Customize display style dialog.
  *
  */
@@ -43,7 +43,7 @@ public class ChangeCSSDialog extends DialogFragment {
 		// Get the dialog builder and layout inflater
 		builder = new AlertDialog.Builder(getActivity());
 		LayoutInflater inflater = getActivity().getLayoutInflater();
-		
+
 		// Inflate and set the layout for the dialog
 		// Pass null as the parent view because its going in the dialog layout
 		activity = (ReaderActivity) getActivity();
@@ -410,7 +410,7 @@ public class ChangeCSSDialog extends DialogFragment {
 						editor.commit();
 					}
 				});
-		
+
 		// The Cancel button
 		builder.setNegativeButton(getString(R.string.Cancel),
 				new DialogInterface.OnClickListener() {

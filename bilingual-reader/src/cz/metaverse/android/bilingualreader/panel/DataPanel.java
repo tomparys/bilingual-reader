@@ -36,28 +36,29 @@ import cz.metaverse.android.bilingualreader.R;
 
 //Panel specialized in visualizing HTML-data
 /**
- * 
+ *
  * Fragment that extends SplitPanel by using WebView to display content.
  *
  */
 public class DataPanel extends SplitPanel {
 	protected WebView webView;
 	protected String data;
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		View v = inflater.inflate(R.layout.activity_data_view, container, false);
 		return v;
 	}
-	
+
 	@Override
     public void onActivityCreated(Bundle saved) {
 		super.onActivityCreated(saved);
 		webView = (WebView) getView().findViewById(R.id.Viewport);
-		
+
 		// Set an Extended WebViewClient
 		webView.setWebViewClient(new WebViewClient() {
+			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 				// Set a new book page when a link is pressed inside the web view
 				try {
@@ -68,10 +69,10 @@ public class DataPanel extends SplitPanel {
 				return true;
 			}
 		});
-		
+
 		loadData(data);
 	}
-	
+
 	/**
 	 * Loads text into the webview
 	 * @param source String to display
@@ -79,9 +80,9 @@ public class DataPanel extends SplitPanel {
 	public void loadData(String source)
 	{
 		this.data = source;
-		
+
 		if (created)
-			webView.loadData(data, 
+			webView.loadData(data,
 				getActivity().getApplicationContext().getResources().getString(R.string.textOrHTML),
 				null);
 	}
@@ -95,7 +96,7 @@ public class DataPanel extends SplitPanel {
 		super.saveState(editor);
 		editor.putString("data"+index, data);
 	}
-	
+
 	/**
 	 * Restores the currently displayed text into the web view
 	 */

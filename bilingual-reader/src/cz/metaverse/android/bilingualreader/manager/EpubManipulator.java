@@ -56,7 +56,7 @@ import android.util.Log;
 import cz.metaverse.android.bilingualreader.R;
 
 /**
- * 
+ *
  * EpubManipulator is a class that handless epub files themselves.
  * 	It can read the contents of epub ebooks, read individual pages, write into them, and much more.
  *
@@ -72,7 +72,7 @@ public class EpubManipulator {
 	private List<Boolean> translations; 	// tells whether a page has a translation available
 	private String decompressedFolder;
 	private String pathOPF;
-	
+
 	private String fileName;
 	FileInputStream fileInputStream;
 	private String actualCSS = "";
@@ -143,7 +143,7 @@ public class EpubManipulator {
 	 * @param language
 	 * @param theContext
 	 * @throws Exception
-	 * 
+	 *
 	 * TODO unify with the first initializator.
 	 */
 	public EpubManipulator(String fileName, String folder, int spineIndex,
@@ -220,7 +220,7 @@ public class EpubManipulator {
 	/**
 	 * Goes through the chapters and finds out if they have parallel translations.
 	 * (create parallel text mapping)
-	 * @param spineList 
+	 * @param spineList
 	 * @param pages
 	 */
 	private void pages(List<SpineReference> spineList, List<String> pages) {
@@ -253,12 +253,12 @@ public class EpubManipulator {
 		}
 	}
 
-	// 
+	//
 	/**
 	 * Finds whether given language has already been encountered.
 	 * 	(language index from language string (id))
 	 * @param lang  language string
-	 * @return	
+	 * @return
 	 */
 	private int languageIndexFromID(String lang) {
 		int i = 0;
@@ -403,7 +403,7 @@ public class EpubManipulator {
 			for (File child : f.listFiles()) {
 				deleteDir(child);
 			}
-		}	
+		}
 		f.delete();
 	}
 
@@ -424,7 +424,7 @@ public class EpubManipulator {
 					+ tempLocation + decompressedFolder, "file://" + tempLocation
 					+ newName);
 		decompressedFolder = newName;
-		
+
 		// Reopen the current page
 		try {
 			goToPage(currentSpineElementIndex);
@@ -444,7 +444,7 @@ public class EpubManipulator {
 		return goToPage(page, this.currentLanguage);
 	}
 
-	/** 
+	/**
 	 * Obtain a page in the given language.
 	 * @param page	page to obtain
 	 * @param lang	language to obtain the page in
@@ -708,7 +708,7 @@ public class EpubManipulator {
 	 * 	ISO 639-1 naming convention:
 	 *  foo.XX.html where X \in [a-z]
 	 *  or an empty string if language not found.
-	 *  
+	 *
 	 * @param page 	to get the language of
 	 * @return 		language code ISO 639-1 or empty string
 	 */
@@ -872,7 +872,7 @@ public class EpubManipulator {
 
 	/**
 	 * Writes given string onto a given page.
-	 * 
+	 *
 	 * @param path	of the page to be written to
 	 * @param xhtml	String of the text/data to be written
 	 * @return		success

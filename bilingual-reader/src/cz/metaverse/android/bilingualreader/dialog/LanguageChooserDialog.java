@@ -35,7 +35,7 @@ import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.R;
 
 /**
- * 
+ *
  * Language chooser for epubs that contain more than one language at once.
  * 	It has no use in our application - TODO.
  *

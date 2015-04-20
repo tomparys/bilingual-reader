@@ -15,9 +15,9 @@ import android.webkit.WebView;
 import cz.metaverse.android.bilingualreader.R;
 
 /**
- * 
+ *
  * Custom extension of WebView that allows finding out what text has the user selected.
- * 	It accomplishes this through the use of javascript injection. 
+ * 	It accomplishes this through the use of javascript injection.
  *
  */
 public class SelectionWebView extends WebView {
@@ -26,8 +26,8 @@ public class SelectionWebView extends WebView {
 	private ActionMode mActionMode;
 	private ActionMode.Callback mSelectActionModeCallback;
 	private GestureDetector mDetector;
-	
-	
+
+
 	/**
 	 * Constructor in case of XML initialization.
 	 * @param context		Activity context
@@ -39,7 +39,7 @@ public class SelectionWebView extends WebView {
 		this.context = context;
 		WebSettings webviewSettings = getSettings();
 		webviewSettings.setJavaScriptEnabled(true);
-		// Add JavaScript interface for communication between JS and Java code. 
+		// Add JavaScript interface for communication between JS and Java code.
 		addJavascriptInterface(new WebAppInterface(context), "JSInterface");
 	}
 
@@ -50,7 +50,7 @@ public class SelectionWebView extends WebView {
 	public SelectionWebView(Context context) {
 		this(context, null);
 	}
-	
+
 	/**
 	 * This overrides the default action bar on long press and substitutes our own.
 	 */
@@ -60,7 +60,7 @@ public class SelectionWebView extends WebView {
 		if (parent == null) {
 			return null;
 		}
-		
+
 		// For lower Android versions than KitKat
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
 			String name = callback.getClass().toString();
@@ -69,12 +69,12 @@ public class SelectionWebView extends WebView {
 				mDetector = new GestureDetector(context, new CustomOnGestureListener());
 			}
 		}
-		
+
 		// Start our custom ActionMode
 		CustomActionModeCallback mActionModeCallback = new CustomActionModeCallback();
 		return parent.startActionModeForChild(this, mActionModeCallback);
 	}
-	
+
 	/**
 	 * Activates JS code inside the WebView that will call WebAppInterface.receiveText method,
 	 * 	it will pass along the menuItemId that the user has pressed on the ActionMode bar
@@ -83,10 +83,10 @@ public class SelectionWebView extends WebView {
 	 */
 	@SuppressLint("NewApi") // The code checks the API version and uses the appropriate method.
 	private void getSelectedDataAndActOnIt(int menuItemId) {
-	
+
 		// JS function that extracts the selected text
 		// 	and sends it to our WebAppInterface.receiveText() method along with menuItemId.
-		String js = "" 
+		String js = ""
 				+ "(function getSelectedText() {"
 				+ 	"var txt;"
 				+ 	"if (window.getSelection) {"
@@ -96,10 +96,10 @@ public class SelectionWebView extends WebView {
 				+ 	"} else if (window.document.selection) {"
 				+ 		"txt = window.document.selection.createRange().text;"
 				+ 	"}"
-				
+
 				+ 	"JSInterface.receiveText(" + menuItemId + ", txt);"
 				+ "})()";
-		
+
 		// Now we call the JS function (the invocation is SDK version dependent)
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			evaluateJavascript("javascript:" + js, null);
@@ -107,7 +107,7 @@ public class SelectionWebView extends WebView {
 			loadUrl("javascript:" + js);
 		}
 	}
-	
+
 	/**
 	 * Overriding onTouchEvent to plug in our gesture detector.
 	 */
@@ -121,34 +121,34 @@ public class SelectionWebView extends WebView {
 		// If the detected gesture is unimplemented, send it to the superclass
 		return super.onTouchEvent(event);
 	}
-	
-	
-	
+
+
+
 	// ============================================================================================
 	//		Private inner classes for our custom ActionMode and custom GestureListener
 	// ============================================================================================
 
 	/**
-	 * 
+	 *
 	 * Inner class that handles our custom ActionMode.
 	 *
 	 */
 	private class CustomActionModeCallback implements ActionMode.Callback {
-	
+
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 			mActionMode = mode;
-			
+
 			// Inflate our menu items
 			mActionMode.getMenuInflater().inflate(R.menu.text_selection_menu, menu);
 			return true;
 		}
-	
+
 		@Override
 		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
 			return false; // Indicates menu was not updated
 		}
-	
+
 		/**
 		 * Handles clicks on our ActionMode buttons.
 		 */
@@ -157,12 +157,12 @@ public class SelectionWebView extends WebView {
 			// Send the id of the pressed menu item to the javascript that will pass it along
 			// 	to WebAppInterface.receiveText method along with the selected text.
 			getSelectedDataAndActOnIt(item.getItemId());
-			
+
 			// We want to leave the ActionMode open for the user to select multiple actions.
 			//mode.finish();
 			return true;
 		}
-		
+
 		@Override
 		public void onDestroyActionMode(ActionMode mode) {
 			// Checks the SDK version and uses the appropriate methods.
@@ -176,8 +176,8 @@ public class SelectionWebView extends WebView {
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Extending GestureDetector.SimpleOnGestureListener so we can inform ourselves that actionMode has ended.
 	 */
@@ -191,5 +191,5 @@ public class SelectionWebView extends WebView {
 			return false;
 		}
 	}
-	
+
 }

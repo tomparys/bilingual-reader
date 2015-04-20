@@ -43,7 +43,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 /**
- * 
+ *
  * Activity which offers a list of epubs the user can open.
  *
  */
@@ -78,7 +78,7 @@ public class FileChooserActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> listView, View itemView,
 					int position, long itemId) {
-				
+
 				// End this Activity by sending the Intent result with the epub absolute path.
 				selected = epubs.get(position);
 				Intent resultIntent = new Intent();
@@ -96,7 +96,7 @@ public class FileChooserActivity extends Activity {
 			new FindEpubsTask().execute(getEpubSearchDirectory());
 		}
 	}
-	
+
 	/**
 	 * @return Directory file where to search for epubs.
 	 */
@@ -139,7 +139,7 @@ public class FileChooserActivity extends Activity {
 	private void refreshList() {
 		names.clear();
 		epubs.clear();
-		
+
 		new FindEpubsTask().execute(getEpubSearchDirectory());
 	}
 
@@ -155,6 +155,7 @@ public class FileChooserActivity extends Activity {
 	/**
 	 * Menu item selected.
 	 */
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.update:
@@ -163,10 +164,10 @@ public class FileChooserActivity extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * AsyncTask instance for loading epubs in the background while progress dialog circles in foreground.
 	 *
 	 */
@@ -180,14 +181,14 @@ public class FileChooserActivity extends Activity {
 					FileChooserActivity.this.getText(R.string.searching_for_epubs), true, false);
 
 		};
-		
+
 		@Override
 	    protected Boolean doInBackground(File... directory) {
 			// Start computing the list in the background.
 	    	epubList(directory[0]);
 	    	return true;
 	    }
-	    
+
 		/**
 		 * Recursively returns a lsit of epub files in a given dir.
 		 * @param dir to search
@@ -198,7 +199,7 @@ public class FileChooserActivity extends Activity {
 			if (isCancelled()) {
 				return null;
 			}
-			
+
 			List<File> res = new ArrayList<File>();
 			if (dir.isDirectory()) {
 				File[] f = dir.listFiles();

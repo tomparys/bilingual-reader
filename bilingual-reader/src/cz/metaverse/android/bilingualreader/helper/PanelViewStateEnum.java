@@ -25,7 +25,7 @@ THE SOFTWARE.
 package cz.metaverse.android.bilingualreader.helper;
 
 /**
- * 
+ *
  * Enum that is used to describe the state of the book-viewing panels.
  *
  */

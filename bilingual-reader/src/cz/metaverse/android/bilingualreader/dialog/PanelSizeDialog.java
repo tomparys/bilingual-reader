@@ -14,7 +14,7 @@ import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.R;
 
 /**
- * 
+ *
  * Dialog to set the relative size of the upper and lower book panel.
  *  Accessible from the main menu.
  *
@@ -32,7 +32,7 @@ public class PanelSizeDialog extends DialogFragment {
 		// Get the dialog builder and layout inflater
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		LayoutInflater inflater = getActivity().getLayoutInflater();
-		
+
 		// Inflate and set the layout for the dialog
 		// 	Pass null as the parent view because its going in the dialog layout
 		View view = inflater.inflate(R.layout.set_panel_size, null);
@@ -40,7 +40,7 @@ public class PanelSizeDialog extends DialogFragment {
 		// Load the seek bar value
 		final SharedPreferences preferences = ((ReaderActivity) getActivity())
 				.getPreferences(Context.MODE_PRIVATE);
-		
+
 		seekBarValue = preferences.getInt("seekBarValue", 50);
 		seekbar = (SeekBar) view.findViewById(R.id.progressBar);
 		seekbar.setProgress(seekBarValue);
@@ -64,7 +64,7 @@ public class PanelSizeDialog extends DialogFragment {
 
 						// Set the value to view.
 						((ReaderActivity) getActivity()).changeViewsSize(value);
-						
+
 						// Save the value to shared preferences
 						SharedPreferences.Editor editor = preferences.edit();
 						editor.putInt("seekBarValue", seekBarValue);
@@ -74,10 +74,11 @@ public class PanelSizeDialog extends DialogFragment {
 						seekBarValue = seekbar.getProgress();
 					}
 				});
-		
+
 		// Add cancel button
 		builder.setNegativeButton(getString(R.string.Cancel),
 				new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int id) {
 					}
 				});

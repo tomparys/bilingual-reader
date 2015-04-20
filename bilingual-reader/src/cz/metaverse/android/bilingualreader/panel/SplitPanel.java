@@ -41,7 +41,7 @@ import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.manager.EpubsNavigator;
 
 /**
- * 
+ *
  * Abstract fragment that represents a general book-reading panel containing
  * 	only the closing button.
  *

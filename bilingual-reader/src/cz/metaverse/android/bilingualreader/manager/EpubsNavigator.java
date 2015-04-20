@@ -93,7 +93,7 @@ public class EpubsNavigator {
 
 		if (books[index] != null) {
 			books[index].goToPage(page);
-			
+
 			// Extract audio into the other panel if appropriate.
 			if (extractAudio[index]) {
 				if (splitViews[(index + 1) % nBooks] instanceof AudioPanel)
@@ -107,7 +107,7 @@ public class EpubsNavigator {
 		loadPageIntoView(page, index);
 	}
 
-	/** 
+	/**
 	 * Set note = Set the page in the next panel
 	 * @param page	To be set
 	 * @param index	The panel that will NOT be changed
@@ -167,7 +167,7 @@ public class EpubsNavigator {
 	/**
 	 * Go to previous chapter,
 	 * 	if synchronized reading is active, change chapter in each books.
-	 * @param index			the panel	
+	 * @param index			the panel
 	 * @throws Exception
 	 */
 	public void goToPrevChapter(int index) throws Exception {
@@ -236,10 +236,10 @@ public class EpubsNavigator {
 				if (splitViews[index] != null) {
 					// Update the panel key
 					splitViews[index].setKey(index);
-					
+
 					if (splitViews[index] instanceof BookPanel
 							&& ((BookPanel) splitViews[index]).enumState == PanelViewStateEnum.books) {
-						
+
 						// Reload the book page into the panel
 						((BookPanel) splitViews[index]).loadPage(books[index].getCurrentPageURL());
 					}
@@ -249,7 +249,7 @@ public class EpubsNavigator {
 			}
 
 			// Last book and last view don't exist anymore
-			books[nBooks - 1] = null; 
+			books[nBooks - 1] = null;
 			splitViews[nBooks - 1] = null;
 		}
 	}
@@ -312,7 +312,7 @@ public class EpubsNavigator {
 	}
 
 	/**
-	 * If panel *from* went to a new page, opens the same page in the other panel. 
+	 * If panel *from* went to a new page, opens the same page in the other panel.
 	 * @param from
 	 * @param to
 	 * @return
@@ -380,7 +380,7 @@ public class EpubsNavigator {
 	}
 
 	/**
-	 * Changes the screen area ratio between the two opened panels. 
+	 * Changes the screen area ratio between the two opened panels.
 	 * @param weight
 	 */
 	public void changeViewsSize(float weight) {
@@ -433,7 +433,7 @@ public class EpubsNavigator {
 	}
 
 	/**
-	 * Changes the panel in position *index* with the new panel *p* 
+	 * Changes the panel in position *index* with the new panel *p*
 	 * @param p			Instance of SplitPanel or one of its descendants (BookView, DataView, AudioView)
 	 * @param index		Index of the relevant panel
 	 */
@@ -461,7 +461,7 @@ public class EpubsNavigator {
 	}
 
 	/**
-	 * Returns a class extending SplitPanel based on className in a String 
+	 * Returns a class extending SplitPanel based on className in a String
 	 * @param className		String containing the className
 	 * @return				the SplitPanel instance
 	 */
@@ -498,7 +498,7 @@ public class EpubsNavigator {
 				editor.putString(getS(R.string.pathBook) + i,
 						books[i].getFileName());
 				editor.putBoolean(getS(R.string.exAudio) + i, extractAudio[i]);
-				
+
 				// Close the book
 				try {
 					books[i].closeFileInputStream();
@@ -521,9 +521,9 @@ public class EpubsNavigator {
 				editor.putString(getS(R.string.ViewType) + i, splitViews[i]
 						.getClass().getName());
 				splitViews[i].saveState(editor);
-				
+
 				// There is no need to remove panels upon losing focus.
-				// 	Leaving it here commented out from the original project in case it causes trouble. 
+				// 	Leaving it here commented out from the original project in case it causes trouble.
 				//activity.removePanelWithoutClosing(splitViews[i]);
 			}
 			else {
@@ -551,7 +551,7 @@ public class EpubsNavigator {
 			name = preferences.getString(getS(R.string.nameEpub) + i, null);
 			path = preferences.getString(getS(R.string.pathBook) + i, null);
 			extractAudio[i] = preferences.getBoolean(getS(R.string.exAudio) + i, false);
-			
+
 			// Try loading the already extracted book
 			if (path != null) {
 				try {

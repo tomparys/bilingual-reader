@@ -50,14 +50,14 @@ import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.R;
 
 /**
- * 
+ *
  * SplitPanel specialized to show a list of audio files and to play the desired one.
  * 		The audio files are stored in an array of array.
  * 		The first index indicates the different audio files,
  * 			the second one indicates the different extensions for the same audio file.
- * 
+ *
  * Not used in our application.
- * 
+ *
  */
 public class AudioPanel extends SplitPanel {
 	String[][] audio;

@@ -48,10 +48,10 @@ public class ReaderActivity extends Activity {
 	protected int bookSelector;
 	protected int panelCount;
 	protected String[] cssSettings;
-	
+
 	// Used exclusively for debugging purposes (e.g. Displaying toasts without context)
 	public static Context debugContext;	// TODO remove when no longer needed
-	
+
 
 	/**
 	 * Called when the application gets started.
@@ -67,7 +67,7 @@ public class ReaderActivity extends Activity {
 		panelCount = 0;
 		cssSettings = new String[8];
 
-		// Load state from previous runs of the application. 
+		// Load state from previous runs of the application.
 		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 		loadState(preferences);
 		navigator.loadViews(preferences);
@@ -84,6 +84,7 @@ public class ReaderActivity extends Activity {
 	 * Called when the app gets focus.
 	 *  Either for the first time (after onCreate), or after losing it first (after onPause).
 	 */
+	@Override
 	protected void onResume() {
 		super.onResume();
 
@@ -128,12 +129,12 @@ public class ReaderActivity extends Activity {
 		}
 	}
 
-	
-	
+
+
 	// ============================================================================================
 	//		Options Menu
 	// ============================================================================================
-	
+
 	/**
 	 * Called when menu is opened.
 	 */
@@ -145,13 +146,13 @@ public class ReaderActivity extends Activity {
 
 	/**
 	 * Called right before menu is displayed.
-	 * 
+	 *
 	 * Makes visible only the relevant menu options.
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		// If there are two books opened and parallel text isn't active.
-		if (navigator.exactlyOneBookOpen() == false && navigator.isParallelTextOn() == false) {			
+		if (navigator.exactlyOneBookOpen() == false && navigator.isParallelTextOn() == false) {
 			menu.findItem(R.id.meta1).setVisible(true);
 			menu.findItem(R.id.meta2).setVisible(true);
 			menu.findItem(R.id.toc1).setVisible(true);
@@ -207,7 +208,7 @@ public class ReaderActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		
+
 		// User wants to open a new book (possibly even a panel)
 		case R.id.FirstEPUB:
 			bookSelector = 0;
@@ -215,7 +216,7 @@ public class ReaderActivity extends Activity {
 			goToChooser1.putExtra(getString(R.string.second), getString(R.string.time));
 			startActivityForResult(goToChooser1, 0);
 			return true;
-			
+
 		case R.id.SecondEPUB:
 			bookSelector = 1;
 			Intent goToChooser2 = new Intent(this, FileChooserActivity.class);
@@ -233,7 +234,7 @@ public class ReaderActivity extends Activity {
 		case R.id.FirstParallel:
 			chooseLanguage(0);
 			return true;
-			
+
 		case R.id.SecondParallel:
 			if (navigator.exactlyOneBookOpen() == false)
 				chooseLanguage(1);
@@ -302,12 +303,12 @@ public class ReaderActivity extends Activity {
 			if (!navigator.displayTOC(0))
 				errorMessage(getString(R.string.error_tocNotFound));
 			return true;
-			
+
 		case R.id.toc2:
 			if (navigator.displayTOC(1))
 				errorMessage(getString(R.string.error_tocNotFound));
 			return true;
-			
+
 		// Change relative size of panels
 		case R.id.changeSize:
 			try {
@@ -318,7 +319,7 @@ public class ReaderActivity extends Activity {
 				errorMessage(getString(R.string.error_cannotChangeSizes));
 			}
 			return true;
-		
+
 		// Change style
 		case R.id.Style:
 			try {
@@ -369,24 +370,24 @@ public class ReaderActivity extends Activity {
 				}
 			}
 			return true;
-			
+
 		case R.id.firstAudio:
 			if (!navigator.extractAudio(0))
 				errorMessage(getString(R.string.no_audio));
 			return true;
-			
+
 		case R.id.secondAudio:
 			if (!navigator.extractAudio(1))
 				errorMessage(getString(R.string.no_audio));
 			return true;
-		
+
 		// And finally, the default option.
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
-	
+
+
 
 	// ============================================================================================
 	//		Panels Manager
@@ -449,19 +450,19 @@ public class ReaderActivity extends Activity {
 		fragmentTransaction.remove(p);
 		fragmentTransaction.commit();
 		panelCount--;
-		
+
 		// Close the app if there are no panels left
 		if (panelCount <= 0) {
 			finish();
 		}
 	}
 
-	
-	
+
+
 	// ============================================================================================
 	//		Misc
 	// ============================================================================================
-	
+
 	/**
 	 * Choose language.
 	 * @param book
@@ -474,7 +475,7 @@ public class ReaderActivity extends Activity {
 		// If there are just two languages, start parallel text mode with them.
 		if (languages.length == 2) {
 			startParallelText(book, 0, 1);
-		
+
 		// If there are more than 2 languages, show a dialog to pick the two languages
 		// 	with which to start parallel text mode.
 		} else if (languages.length > 0) {
@@ -500,9 +501,9 @@ public class ReaderActivity extends Activity {
 		navigator.parallelText(book, first, second);
 	}
 
-	
+
 	// ---- Change CSS Style section
-	
+
 	/**
 	 * Activate the CSS settings after they have been filled in.
 	 */
@@ -543,7 +544,7 @@ public class ReaderActivity extends Activity {
 		cssSettings[7] = mRight;
 	}
 
-	
+
 	/**
 	 * Change the relative weight of the two panels.
 	 * @param weight	weight of the first panel (0 to 1)
