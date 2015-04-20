@@ -12,9 +12,7 @@ import android.view.MotionEvent;
 import android.view.ViewParent;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.R;
-import cz.metaverse.android.bilingualreader.ReaderActivity;
 
 /**
  * 
@@ -41,7 +39,7 @@ public class SelectionWebView extends WebView {
 		this.context = context;
 		WebSettings webviewSettings = getSettings();
 		webviewSettings.setJavaScriptEnabled(true);
-		// add JavaScript interface for copy
+		// Add JavaScript interface for communication between JS and Java code. 
 		addJavascriptInterface(new WebAppInterface(context), "JSInterface");
 	}
 

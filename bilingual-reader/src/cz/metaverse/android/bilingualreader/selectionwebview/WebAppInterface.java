@@ -1,12 +1,13 @@
 package cz.metaverse.android.bilingualreader.selectionwebview;
 
-import cz.metaverse.android.bilingualreader.R;
-import cz.metaverse.android.bilingualreader.ReaderActivity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
+import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.ReaderActivity;
 
 /**
  * 
@@ -15,10 +16,10 @@ import android.widget.Toast;
  *
  */
 public class WebAppInterface {
-	Context mContext;
+	Context context;
 	
-	WebAppInterface(Context c) {
-		mContext = c;
+	WebAppInterface(Context context) {
+		this.context = context;
 	}
 	
 	/**
@@ -36,13 +37,17 @@ public class WebAppInterface {
 		
 		case R.id.copy_menu_item:
 			// Put the selected text into the clipboard
-			ClipboardManager clipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+			ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
 			ClipData clip = ClipData.newPlainText("simple text", selectedText);
 			clipboard.setPrimaryClip(clip);
 			break;
 			
 		case R.id.share_menu_item:
-			Toast.makeText(ReaderActivity.debugContext, "TODO share: " + selectedText, Toast.LENGTH_SHORT).show();
+			Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+			sharingIntent.setType("text/plain");
+			sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, selectedText);
+			context.startActivity(Intent.createChooser(sharingIntent,
+		    		context.getString(R.string.share_menu_headline)));
 			break;
 			
 		case R.id.dictionary_menu_item:

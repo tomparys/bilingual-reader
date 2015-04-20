@@ -175,5 +175,6 @@
     <string name="add_to_srs">Add to SRS</string>
     <string name="share">Share</string>
     <string name="copy">Copy</string>
+    <string name="share_menu_headline">Open in</string>
 
 </resources>
