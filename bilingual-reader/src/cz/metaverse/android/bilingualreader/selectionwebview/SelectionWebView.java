@@ -82,7 +82,7 @@ public class SelectionWebView extends WebView {
 	 * 	and tells it the text the user has selected.
 	 */
 	@SuppressLint("NewApi") // The code checks the API version and uses the appropriate method.
-	private void getSelectedData(){
+	private void getSelectedData() {
 	
 		// JS function that extracts the selected text
 		// 	and sends it to our WebAppInterface.receiveText() method.
@@ -102,9 +102,9 @@ public class SelectionWebView extends WebView {
 		
 		// Now we call the JS function (the invocation is SDK version dependent)
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			evaluateJavascript("javascript:"+js, null);
-		}else{
-			loadUrl("javascript:"+js);
+			evaluateJavascript("javascript:" + js, null);
+		} else {
+			loadUrl("javascript:" + js);
 		}
 	}
 	

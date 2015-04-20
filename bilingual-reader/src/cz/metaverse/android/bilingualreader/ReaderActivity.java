@@ -32,7 +32,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
@@ -49,8 +48,6 @@ public class ReaderActivity extends Activity {
 	protected int bookSelector;
 	protected int panelCount;
 	protected String[] cssSettings;
-	// ActionMode is a mode when a specific menu is displayed on top of the app when user selects text in one of the panels.
-	private ActionMode actionMode = null;
 	
 	// Used exclusively for debugging purposes (e.g. Displaying toasts without context)
 	public static Context debugContext;	// TODO remove when no longer needed
