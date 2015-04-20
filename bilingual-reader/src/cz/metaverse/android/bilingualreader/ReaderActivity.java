@@ -204,7 +204,30 @@ public class ReaderActivity extends Activity {
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
 		@Override
 		public void onItemClick(AdapterView parent, View view, int position, long id) {
-			// TODO Do shit.
+			// Handle the pressed menu item.
+			switch(position) {
+
+			// Open book 1
+			case 0:
+				bookSelector = 0;
+				Intent goToChooser1 = new Intent(ReaderActivity.this, FileChooserActivity.class);
+				goToChooser1.putExtra(getString(R.string.second), getString(R.string.time));
+				startActivityForResult(goToChooser1, 0);
+				break;
+
+			// Open book 2
+			case 1:
+				bookSelector = 1;
+				Intent goToChooser2 = new Intent(ReaderActivity.this, FileChooserActivity.class);
+				goToChooser2.putExtra(getString(R.string.second), getString(R.string.time));
+				startActivityForResult(goToChooser2, 0);
+				break;
+
+			// SRS Database
+			case 2:
+				// TODO Open SRS database activity
+				break;
+			}
 
 			// Highlight the selected item and close the drawer
 			navigationDrawerListView.setItemChecked(position, true);
@@ -331,21 +354,6 @@ public class ReaderActivity extends Activity {
 
 		// Now handle our menu items.
 		switch (item.getItemId()) {
-
-		// User wants to open a new book (possibly even a panel)
-		case R.id.FirstEPUB:
-			bookSelector = 0;
-			Intent goToChooser1 = new Intent(this, FileChooserActivity.class);
-			goToChooser1.putExtra(getString(R.string.second), getString(R.string.time));
-			startActivityForResult(goToChooser1, 0);
-			return true;
-
-		case R.id.SecondEPUB:
-			bookSelector = 1;
-			Intent goToChooser2 = new Intent(this, FileChooserActivity.class);
-			goToChooser2.putExtra(getString(R.string.second), getString(R.string.time));
-			startActivityForResult(goToChooser2, 0);
-			return true;
 
 		// Parallel text
 		case R.id.Parallel:

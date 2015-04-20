@@ -35,18 +35,6 @@
         </menu>
     </item>
     <item
-        android:id="@+id/Open"
-        android:title="@string/open">
-        <menu>
-            <item
-                android:id="@+id/FirstEPUB"
-                android:title="@string/Open_Book_1"/>
-            <item
-                android:id="@+id/SecondEPUB"
-                android:title="@string/Open_Book_2"/>
-        </menu>
-    </item>
-    <item
         android:id="@+id/Parallel"
         android:title="@string/Enable_Parallel_Texts">
         <menu>
