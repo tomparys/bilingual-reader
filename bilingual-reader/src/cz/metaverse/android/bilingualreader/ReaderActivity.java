@@ -32,9 +32,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.dialog.ChangeCSSDialog;
 import cz.metaverse.android.bilingualreader.dialog.LanguageChooserDialog;
@@ -49,6 +54,12 @@ public class ReaderActivity extends Activity {
 	protected int panelCount;
 	protected String[] cssSettings;
 
+	// Navigation Drawer
+	private String[] navigationDrawerItemNames;
+	private DrawerLayout mDrawerLayout;
+	private ListView mDrawerList;
+
+
 	// Used exclusively for debugging purposes (e.g. Displaying toasts without context)
 	public static Context debugContext;	// TODO remove when no longer needed
 
@@ -61,6 +72,18 @@ public class ReaderActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		debugContext = getBaseContext();
 		setContentView(R.layout.activity_main);
+
+		// Navigation Drawer
+		navigationDrawerItemNames = getResources().getStringArray(R.array.Navigation_Drawer_Items);
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		mDrawerList = (ListView) findViewById(R.id.left_drawer);
+		// Set the adapter for the list view
+		mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1, navigationDrawerItemNames));
+		// Set the list's click listener
+		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+
 
 		navigator = new EpubsNavigator(2, this);
 
@@ -127,6 +150,29 @@ public class ReaderActivity extends Activity {
 			String path = data.getStringExtra(getString(R.string.bpath));
 			navigator.openBook(path, bookSelector);
 		}
+	}
+
+
+
+	// ============================================================================================
+	//		Navigation Drawer
+	// ============================================================================================
+
+	private class DrawerItemClickListener implements ListView.OnItemClickListener {
+		@Override
+		public void onItemClick(AdapterView parent, View view, int position, long id) {
+			// TODO Do shit.
+
+			// Highlight the selected item, update the title, and close the drawer
+			mDrawerList.setItemChecked(position, true);
+			setTitle("Selected Hugo");
+			mDrawerLayout.closeDrawer(mDrawerList);
+		}
+	}
+
+	@Override
+	public void setTitle(CharSequence title) {
+		getActionBar().setTitle(title);
 	}
 
 

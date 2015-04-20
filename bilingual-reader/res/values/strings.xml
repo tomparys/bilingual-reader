@@ -178,5 +178,12 @@
     <string name="share_menu_headline">Open in</string>
     <string name="word_colon">Word:</string>
     <string name="translation_colon">Translation:</string>
+    
+    <string-array name="Navigation_Drawer_Items">
+        <item>Open Book 1</item>
+        <item>Open Book 2</item>
+        <item>SRS Database</item>>
+    </string-array>
+    
 
 </resources>
