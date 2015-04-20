@@ -17,7 +17,7 @@
         android:layout_height="match_parent"
         android:padding="1dp" >
 
-        <cz.metaverse.android.bilingualreader.customwebview.CustomWebView
+        <cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView
             android:id="@+id/Viewport"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

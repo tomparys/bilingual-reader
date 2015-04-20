@@ -41,8 +41,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
 import cz.metaverse.android.bilingualreader.R;
-import cz.metaverse.android.bilingualreader.customwebview.CustomWebView;
 import cz.metaverse.android.bilingualreader.helper.PanelViewStateEnum;
+import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 
 /**
  * 
@@ -52,7 +52,7 @@ import cz.metaverse.android.bilingualreader.helper.PanelViewStateEnum;
 public class BookPanel extends SplitPanel {
 	public PanelViewStateEnum enumState = PanelViewStateEnum.books;
 	protected String viewedPage;
-	protected CustomWebView webView;
+	protected SelectionWebView webView;
 	protected float swipeOriginX, swipeOriginY;
 	// Position within the page loaded from before
 	protected Integer loadPositionX, loadPositionY;
@@ -73,7 +73,7 @@ public class BookPanel extends SplitPanel {
 		super.onActivityCreated(saved);
 		
 		// Find our customized web view that will server as our viewport
-		webView = (CustomWebView) getView().findViewById(R.id.Viewport);
+		webView = (SelectionWebView) getView().findViewById(R.id.Viewport);
 		
 		// Enable JavaScript for cool things to happen!
 		webView.getSettings().setJavaScriptEnabled(true);

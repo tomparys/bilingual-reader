@@ -1,4 +1,4 @@
-package cz.metaverse.android.bilingualreader.customwebview;
+package cz.metaverse.android.bilingualreader.selectionwebview;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -17,7 +17,7 @@ import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 
-public class CustomWebView extends WebView {
+public class SelectionWebView extends WebView {
 	private Context context;
 	
 	/**
@@ -26,7 +26,7 @@ public class CustomWebView extends WebView {
 	 * @param attributeSet	Set of attributes from the XML declaration
 	 */
 	@SuppressLint("SetJavaScriptEnabled") // Our opensource application has literally nothing to hide.
-	public CustomWebView(Context context, AttributeSet attributeSet) {
+	public SelectionWebView(Context context, AttributeSet attributeSet) {
 		super(context, attributeSet);
 		this.context = context;
 		WebSettings webviewSettings = getSettings();
@@ -39,7 +39,7 @@ public class CustomWebView extends WebView {
 	 * Constructor in case of programmatical initialization.
 	 * @param context Activity context
 	 */
-	public CustomWebView(Context context) {
+	public SelectionWebView(Context context) {
 		this(context, null);
 	}
 	

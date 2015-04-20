@@ -1,4 +1,4 @@
-package cz.metaverse.android.bilingualreader.customwebview;
+package cz.metaverse.android.bilingualreader.selectionwebview;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
