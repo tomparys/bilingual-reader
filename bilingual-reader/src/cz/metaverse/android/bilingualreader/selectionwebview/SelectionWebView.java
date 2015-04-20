@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.ActionMode;
-import android.view.ActionMode.Callback;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,8 +16,19 @@ import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 
+/**
+ * 
+ * Custom extension of WebView that allows finding out what text has the user selected.
+ * 	It accomplishes this through the use of javascript injection. 
+ *
+ */
 public class SelectionWebView extends WebView {
 	private Context context;
+	// For setting custom action bar
+	private ActionMode mActionMode;
+	private ActionMode.Callback mSelectActionModeCallback;
+	private GestureDetector mDetector;
+	
 	
 	/**
 	 * Constructor in case of XML initialization.
@@ -43,30 +53,35 @@ public class SelectionWebView extends WebView {
 		this(context, null);
 	}
 	
-	// setting custom action bar
-	private ActionMode mActionMode;
-	private ActionMode.Callback mSelectActionModeCallback;
-	private GestureDetector mDetector;
-	
-	// this will over ride the default action bar on long press
+	/**
+	 * This overrides the default action bar on long press and substitutes our own.
+	 */
 	@Override
-	public ActionMode startActionMode(Callback callback) {
+	public ActionMode startActionMode(ActionMode.Callback callback) {
 		ViewParent parent = getParent();
 		if (parent == null) {
 			return null;
 		}
+		
+		// For lower Android versions than KitKat
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
 			String name = callback.getClass().toString();
 			if (name.contains("SelectActionModeCallback")) {
 				mSelectActionModeCallback = callback;
-				mDetector = new GestureDetector(context,
-						new CustomGestureListener());
+				mDetector = new GestureDetector(context, new CustomOnGestureListener());
 			}
 		}
+		
+		// Start our custom ActionMode
 		CustomActionModeCallback mActionModeCallback = new CustomActionModeCallback();
 		return parent.startActionModeForChild(this, mActionModeCallback);
 	}
 	
+	/**
+	 * 
+	 * Inner class that handles our custom ActionMode.
+	 *
+	 */
 	private class CustomActionModeCallback implements ActionMode.Callback {
 	
 		@Override
@@ -80,9 +95,12 @@ public class SelectionWebView extends WebView {
 	
 		@Override
 		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-			return false; 
+			return false; // Indicates menu was not updated
 		}
 	
+		/**
+		 * Handles clicks on our ActionMode buttons.
+		 */
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 			// TODO items need to be implemented
@@ -111,8 +129,10 @@ public class SelectionWebView extends WebView {
 			mode.finish();
 			return true;
 		}
+		
 		@Override
 		public void onDestroyActionMode(ActionMode mode) {
+			// Checks the SDK version and uses the appropriate methods.
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 				clearFocus();
 			}else{
@@ -123,21 +143,31 @@ public class SelectionWebView extends WebView {
 			}
 		}
 	}
+	
+	/**
+	 * Activates JS code inside the WebView that will call our WebAppInterface
+	 * 	and tells it the text the user has selected.
+	 */
 	@SuppressLint("NewApi") // The code checks the API version and uses the appropriate method.
 	private void getSelectedData(){
 	
-		String js= "(function getSelectedText() {"+
-				"var txt;"+
-				"if (window.getSelection) {"+
-					"txt = window.getSelection().toString();"+
-				"} else if (window.document.getSelection) {"+
-					"txt = window.document.getSelection().toString();"+
-				"} else if (window.document.selection) {"+
-					"txt = window.document.selection.createRange().text;"+
-				"}"+
-				"JSInterface.getText(txt);"+
-			  "})()";
-		// calling the js function
+		// JS function that extracts the selected text
+		// 	and sends it to our WebAppInterface.receiveText() method.
+		String js = "" 
+				+ "(function getSelectedText() {"
+				+ 	"var txt;"
+				+ 	"if (window.getSelection) {"
+				+ 		"txt = window.getSelection().toString();"
+				+ 	"} else if (window.document.getSelection) {"
+				+ 		"txt = window.document.getSelection().toString();"
+				+ 	"} else if (window.document.selection) {"
+				+ 		"txt = window.document.selection.createRange().text;"
+				+ 	"}"
+				
+				+ 	"JSInterface.receiveText(txt);"
+				+ "})()";
+		
+		// Now we call the JS function (the invocation is SDK version dependent)
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			evaluateJavascript("javascript:"+js, null);
 		}else{
@@ -145,7 +175,10 @@ public class SelectionWebView extends WebView {
 		}
 	}
 	
-	private class CustomGestureListener extends GestureDetector.SimpleOnGestureListener {
+	/**
+	 * Extending GestureDetector.SimpleOnGestureListener so we can inform ourselves that actionMode has ended.
+	 */
+	private class CustomOnGestureListener extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public boolean onSingleTapUp(MotionEvent e) {
 			if (mActionMode != null) {
@@ -156,12 +189,16 @@ public class SelectionWebView extends WebView {
 		}
 	}
 	
+	/**
+	 * Overriding onTouchEvent to plug in our gesture detector.
+	 */
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		// Send the event to our gesture detector
 		// If it is implemented, there will be a return value
-		if(mDetector !=null)
+		if (mDetector != null) {
 			mDetector.onTouchEvent(event);
+		}
 		// If the detected gesture is unimplemented, send it to the superclass
 		return super.onTouchEvent(event);
 	}
