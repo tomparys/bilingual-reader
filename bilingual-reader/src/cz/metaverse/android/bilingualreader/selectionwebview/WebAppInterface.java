@@ -5,10 +5,12 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
+import cz.metaverse.android.bilingualreader.db.SRSDatabaseTable;
 import cz.metaverse.android.bilingualreader.dialog.AddToSRSDialog;
 
 /**
@@ -54,6 +56,21 @@ public class WebAppInterface {
 
 		case R.id.dictionary_menu_item:
 			Toast.makeText(ReaderActivity.debugContext, "TODO Dictionary search: " + selectedText, Toast.LENGTH_SHORT).show();
+
+			// TEMP: Trying getting the contents of the database.
+			SRSDatabaseTable db = SRSDatabaseTable.getInstance(activity);
+			Cursor cursor = db.getAll();
+
+			if (cursor == null) {
+				Toast.makeText(ReaderActivity.debugContext, "No results", Toast.LENGTH_SHORT).show();
+			} else {
+				do {
+					Toast.makeText(ReaderActivity.debugContext,
+							"Found: " + cursor.getString(0) + " " + cursor.getString(1),
+							Toast.LENGTH_SHORT).show();
+				} while (cursor.moveToNext());
+			}
+
 			break;
 
 		case R.id.srs_menu_item:

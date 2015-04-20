@@ -1,5 +1,6 @@
 package cz.metaverse.android.bilingualreader.dialog;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -7,8 +8,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.db.SRSDatabaseTable;
 
 /**
  *
@@ -35,6 +36,7 @@ public class AddToSRSDialog extends DialogFragment implements DialogInterface.On
 	/**
 	 * Called when the dialog gets created.
 	 */
+	@SuppressLint("InflateParams") // Normal for DialogFragments
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		// Inflate the form with EditTexts for data
@@ -60,9 +62,8 @@ public class AddToSRSDialog extends DialogFragment implements DialogInterface.On
 	 */
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
-		// TODO Add the data to an SQLite database
-		String msg = "TODO add to database: " + word.getText() + " " + translation.getText();
-		Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+		SRSDatabaseTable db = SRSDatabaseTable.getInstance(getActivity());
+		db.addWord(word.getText().toString(), translation.getText().toString());
 	}
 
 	/**
