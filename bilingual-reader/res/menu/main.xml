@@ -1,6 +1,40 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/changeSize"
+        android:showAsAction="always"
+        android:icon="@android:drawable/ic_menu_crop"
+        android:title="@string/Change_Size"
+        android:visible="true">
+    </item>
+    <item
+        android:id="@+id/SyncScroll"
+        android:showAsAction="always"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="@string/syncScroll"
+        android:visible="true">
+    </item>
+    <item
+        android:id="@+id/Synchronize"
+        android:showAsAction="always"
+        android:icon="@android:drawable/ic_menu_set_as"
+        android:title="@string/Toggle_Sync_Views"
+        android:visible="false">
+    </item>
+    <item
+        android:id="@+id/Align"
+        android:title="@string/Reset_Sync_Views"
+        android:visible="false">
+        <menu>
+            <item
+                android:id="@+id/Align1with2"
+                android:title="@string/Sync_Book_1_with_Book_2"/>
+            <item
+                android:id="@+id/Align2with1"
+                android:title="@string/Sync_Book_2_with_Book_1"/>
+        </menu>
+    </item>
+    <item
         android:id="@+id/Open"
         android:title="@string/open">
         <menu>
@@ -24,24 +58,6 @@
                 android:id="@+id/SecondParallel"
                 android:title="@string/From_Book_2"
                 android:visible="false"/>
-        </menu>
-    </item>
-    <item
-        android:id="@+id/Synchronize"
-        android:title="@string/Toggle_Sync_Views"
-        android:visible="false">
-    </item>
-    <item
-        android:id="@+id/Align"
-        android:title="@string/Reset_Sync_Views"
-        android:visible="false">
-        <menu>
-            <item
-                android:id="@+id/Align1with2"
-                android:title="@string/Sync_Book_1_with_Book_2"/>
-            <item
-                android:id="@+id/Align2with1"
-                android:title="@string/Sync_Book_2_with_Book_1"/>
         </menu>
     </item>
     <item
@@ -73,12 +89,6 @@
         </menu>
     </item>
     <item
-        android:id="@+id/changeSize"
-        android:checkable="false"
-        android:title="@string/Change_Size"
-        android:visible="true">
-    </item>
-    <item
         android:id="@+id/Style"
         android:title="@string/changeStyle"
         android:visible="true">
@@ -92,11 +102,6 @@
                 android:title="@string/Book_2"
                 android:visible="false"/>
         </menu>
-    </item>
-    <item
-        android:id="@+id/SyncScroll"
-        android:title="@string/syncScroll"
-        android:visible="false">
     </item>
     <item
         android:id="@+id/audio"

@@ -178,7 +178,7 @@ public class ReaderActivity extends Activity {
 
 
 	// ============================================================================================
-	//		Options Menu
+	//		Action Bar / options menu
 	// ============================================================================================
 
 	/**
@@ -211,7 +211,7 @@ public class ReaderActivity extends Activity {
 		if (navigator.exactlyOneBookOpen() == false) {
 			menu.findItem(R.id.Synchronize).setVisible(true);
 			menu.findItem(R.id.Align).setVisible(true);
-			// menu.findItem(R.id.SyncScroll).setVisible(true);
+			menu.findItem(R.id.SyncScroll).setVisible(true);
 			menu.findItem(R.id.StyleBook1).setVisible(true);
 			menu.findItem(R.id.StyleBook2).setVisible(true);
 			menu.findItem(R.id.firstAudio).setVisible(true);
