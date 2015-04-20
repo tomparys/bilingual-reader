@@ -31,7 +31,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,9 +58,11 @@ public class ReaderActivity extends Activity {
 
 	// Navigation Drawer
 	private String[] navigationDrawerItemNames;
-	private DrawerLayout mDrawerLayout;
-	private ListView mDrawerList;
-
+	private DrawerLayout navigationDrawerLayout;
+	private ListView navigationDrawerListView;
+	private ActionBarDrawerToggle actionBarDrawerToggle;
+	private CharSequence navigationDrawerTitle;
+	private CharSequence actionBarTitle;
 
 	// Used exclusively for debugging purposes (e.g. Displaying toasts without context)
 	public static Context debugContext;	// TODO remove when no longer needed
@@ -73,20 +77,56 @@ public class ReaderActivity extends Activity {
 		debugContext = getBaseContext();
 		setContentView(R.layout.activity_main);
 
-		// Navigation Drawer
+		/*
+		 * Navigation Drawer setup
+		 */
 		navigationDrawerItemNames = getResources().getStringArray(R.array.Navigation_Drawer_Items);
-		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		mDrawerList = (ListView) findViewById(R.id.left_drawer);
-		// Set the adapter for the list view
-		mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+		navigationDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		navigationDrawerListView = (ListView) findViewById(R.id.left_drawer);
+
+		// Set the adapter for the navigation drawer's list view
+		navigationDrawerListView.setAdapter(new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, navigationDrawerItemNames));
-		// Set the list's click listener
-		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+		// Set the navigation drawer's list view's click listener
+		navigationDrawerListView.setOnItemClickListener(new DrawerItemClickListener());
+
+		actionBarTitle = navigationDrawerTitle = getTitle();
+
+		// Extend the ActionBarDrawerToggle class
+		actionBarDrawerToggle = new ActionBarDrawerToggle(
+				this,				  /* host Activity */
+				navigationDrawerLayout,		 /* DrawerLayout object */
+				R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
+				R.string.drawer_open,  /* "open drawer" description */
+				R.string.drawer_close  /* "close drawer" description */
+				) {
+
+			/** Called when a drawer has settled in a completely closed state. */
+			@Override
+			public void onDrawerClosed(View view) {
+				super.onDrawerClosed(view);
+				//getActionBar().setTitle(actionBarTitle);
+			}
+
+			/** Called when a drawer has settled in a completely open state. */
+			@Override
+			public void onDrawerOpened(View drawerView) {
+				super.onDrawerOpened(drawerView);
+				//getActionBar().setTitle(navigationDrawerTitle);
+			}
+		};
+
+		// Set the drawer toggle as the DrawerListener
+		navigationDrawerLayout.setDrawerListener(actionBarDrawerToggle);
+
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setHomeButtonEnabled(true);
+		/* end of Navigation Drawer setup */
 
 
-
+		// Setup logic variables
 		navigator = new EpubsNavigator(2, this);
-
 		panelCount = 0;
 		cssSettings = new String[8];
 
@@ -158,21 +198,37 @@ public class ReaderActivity extends Activity {
 	//		Navigation Drawer
 	// ============================================================================================
 
+	/**
+	 * OnClickListener for the ListView of our navigation drawer
+	 */
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
 		@Override
 		public void onItemClick(AdapterView parent, View view, int position, long id) {
 			// TODO Do shit.
 
-			// Highlight the selected item, update the title, and close the drawer
-			mDrawerList.setItemChecked(position, true);
-			setTitle("Selected Hugo");
-			mDrawerLayout.closeDrawer(mDrawerList);
+			// Highlight the selected item and close the drawer
+			navigationDrawerListView.setItemChecked(position, true);
+			navigationDrawerLayout.closeDrawer(navigationDrawerListView);
 		}
 	}
 
+	/**
+	 * Called when Activity start-up is complete
+	 */
 	@Override
-	public void setTitle(CharSequence title) {
-		getActionBar().setTitle(title);
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		// Sync the toggle state after onRestoreInstanceState has occurred.
+		actionBarDrawerToggle.syncState();
+	}
+
+	/**
+	 * Called when the device configuration changes.
+	 */
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		actionBarDrawerToggle.onConfigurationChanged(newConfig);
 	}
 
 
@@ -180,6 +236,16 @@ public class ReaderActivity extends Activity {
 	// ============================================================================================
 	//		Action Bar / options menu
 	// ============================================================================================
+
+	/**
+	 * Sets the text displayed in the Action bar on top of the activity.
+	 */
+	@Override
+	public void setTitle(CharSequence title) {
+		actionBarTitle = title;
+		getActionBar().setTitle(actionBarTitle);
+
+	}
 
 	/**
 	 * Called when menu is opened.
@@ -197,6 +263,10 @@ public class ReaderActivity extends Activity {
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
+		// TODO If the nav drawer is open, hide action items related to the content view
+		//boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+
+
 		// If there are two books opened and parallel text isn't active.
 		if (navigator.exactlyOneBookOpen() == false && navigator.isParallelTextOn() == false) {
 			menu.findItem(R.id.meta1).setVisible(true);
@@ -253,6 +323,13 @@ public class ReaderActivity extends Activity {
 	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		// Pass the event to ActionBarDrawerToggle, if it returns true, then it has handled
+		//  the app icon touch event that opens/closes the navigation drawer.
+		if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+		  return true;
+		}
+
+		// Now handle our menu items.
 		switch (item.getItemId()) {
 
 		// User wants to open a new book (possibly even a panel)

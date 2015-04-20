@@ -185,5 +185,8 @@
         <item>SRS Database</item>>
     </string-array>
     
+    <string name="drawer_open">Open drawer</string>
+    <string name="drawer_close">Close drawer</string>
+    
 
 </resources>
