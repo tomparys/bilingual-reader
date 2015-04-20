@@ -72,10 +72,8 @@ public class BookPanel extends SplitPanel {
     public void onActivityCreated(Bundle saved) {
 		super.onActivityCreated(saved);
 		
-		// TODO: Make so the button shows as well, ideally move the layout back into the XML file.
-		webView = new CustomWebView(getActivity());
-		RelativeLayout relativeLayout = (RelativeLayout) getView().findViewById(R.id.ViewportLayout);
-		relativeLayout.addView(webView);
+		// Find our customized web view that will server as our viewport
+		webView = (CustomWebView) getView().findViewById(R.id.Viewport);
 		
 		// Enable JavaScript for cool things to happen!
 		webView.getSettings().setJavaScriptEnabled(true);

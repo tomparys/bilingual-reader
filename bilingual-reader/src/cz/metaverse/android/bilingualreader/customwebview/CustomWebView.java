@@ -3,6 +3,7 @@ package cz.metaverse.android.bilingualreader.customwebview;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
+import android.util.AttributeSet;
 import android.view.ActionMode;
 import android.view.ActionMode.Callback;
 import android.view.GestureDetector;
@@ -19,15 +20,27 @@ import cz.metaverse.android.bilingualreader.ReaderActivity;
 public class CustomWebView extends WebView {
 	private Context context;
 	
-	// override all other constructor to avoid crash
+	/**
+	 * Constructor in case of XML initialization.
+	 * @param context		Activity context
+	 * @param attributeSet	Set of attributes from the XML declaration
+	 */
 	@SuppressLint("SetJavaScriptEnabled") // Our opensource application has literally nothing to hide.
-	public CustomWebView(Context context) {
-		super(context);
+	public CustomWebView(Context context, AttributeSet attributeSet) {
+		super(context, attributeSet);
 		this.context = context;
 		WebSettings webviewSettings = getSettings();
 		webviewSettings.setJavaScriptEnabled(true);
 		// add JavaScript interface for copy
 		addJavascriptInterface(new WebAppInterface(context), "JSInterface");
+	}
+
+	/**
+	 * Constructor in case of programmatical initialization.
+	 * @param context Activity context
+	 */
+	public CustomWebView(Context context) {
+		this(context, null);
 	}
 	
 	// setting custom action bar
