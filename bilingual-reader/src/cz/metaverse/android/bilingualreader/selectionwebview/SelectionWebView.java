@@ -78,6 +78,57 @@ public class SelectionWebView extends WebView {
 	}
 	
 	/**
+	 * Activates JS code inside the WebView that will call our WebAppInterface
+	 * 	and tells it the text the user has selected.
+	 */
+	@SuppressLint("NewApi") // The code checks the API version and uses the appropriate method.
+	private void getSelectedData(){
+	
+		// JS function that extracts the selected text
+		// 	and sends it to our WebAppInterface.receiveText() method.
+		String js = "" 
+				+ "(function getSelectedText() {"
+				+ 	"var txt;"
+				+ 	"if (window.getSelection) {"
+				+ 		"txt = window.getSelection().toString();"
+				+ 	"} else if (window.document.getSelection) {"
+				+ 		"txt = window.document.getSelection().toString();"
+				+ 	"} else if (window.document.selection) {"
+				+ 		"txt = window.document.selection.createRange().text;"
+				+ 	"}"
+				
+				+ 	"JSInterface.receiveText(txt);"
+				+ "})()";
+		
+		// Now we call the JS function (the invocation is SDK version dependent)
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			evaluateJavascript("javascript:"+js, null);
+		}else{
+			loadUrl("javascript:"+js);
+		}
+	}
+	
+	/**
+	 * Overriding onTouchEvent to plug in our gesture detector.
+	 */
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		// Send the event to our gesture detector
+		// If it is implemented, there will be a return value
+		if (mDetector != null) {
+			mDetector.onTouchEvent(event);
+		}
+		// If the detected gesture is unimplemented, send it to the superclass
+		return super.onTouchEvent(event);
+	}
+	
+	
+	
+	// ============================================================================================
+	//		Private inner classes for our custom ActionMode and custom GestureListener
+	// ============================================================================================
+
+	/**
 	 * 
 	 * Inner class that handles our custom ActionMode.
 	 *
@@ -144,36 +195,6 @@ public class SelectionWebView extends WebView {
 		}
 	}
 	
-	/**
-	 * Activates JS code inside the WebView that will call our WebAppInterface
-	 * 	and tells it the text the user has selected.
-	 */
-	@SuppressLint("NewApi") // The code checks the API version and uses the appropriate method.
-	private void getSelectedData(){
-	
-		// JS function that extracts the selected text
-		// 	and sends it to our WebAppInterface.receiveText() method.
-		String js = "" 
-				+ "(function getSelectedText() {"
-				+ 	"var txt;"
-				+ 	"if (window.getSelection) {"
-				+ 		"txt = window.getSelection().toString();"
-				+ 	"} else if (window.document.getSelection) {"
-				+ 		"txt = window.document.getSelection().toString();"
-				+ 	"} else if (window.document.selection) {"
-				+ 		"txt = window.document.selection.createRange().text;"
-				+ 	"}"
-				
-				+ 	"JSInterface.receiveText(txt);"
-				+ "})()";
-		
-		// Now we call the JS function (the invocation is SDK version dependent)
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			evaluateJavascript("javascript:"+js, null);
-		}else{
-			loadUrl("javascript:"+js);
-		}
-	}
 	
 	/**
 	 * Extending GestureDetector.SimpleOnGestureListener so we can inform ourselves that actionMode has ended.
@@ -189,17 +210,4 @@ public class SelectionWebView extends WebView {
 		}
 	}
 	
-	/**
-	 * Overriding onTouchEvent to plug in our gesture detector.
-	 */
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		// Send the event to our gesture detector
-		// If it is implemented, there will be a return value
-		if (mDetector != null) {
-			mDetector.onTouchEvent(event);
-		}
-		// If the detected gesture is unimplemented, send it to the superclass
-		return super.onTouchEvent(event);
-	}
 }
