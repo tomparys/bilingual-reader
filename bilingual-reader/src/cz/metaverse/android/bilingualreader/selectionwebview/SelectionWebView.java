@@ -78,14 +78,16 @@ public class SelectionWebView extends WebView {
 	}
 	
 	/**
-	 * Activates JS code inside the WebView that will call our WebAppInterface
-	 * 	and tells it the text the user has selected.
+	 * Activates JS code inside the WebView that will call WebAppInterface.receiveText method,
+	 * 	it will pass along the menuItemId that the user has pressed on the ActionMode bar
+	 * 	and it will send the text the user has selected.
+	 * @param menuItemId	Id of the menu item pressed on the ActionMode bar
 	 */
 	@SuppressLint("NewApi") // The code checks the API version and uses the appropriate method.
-	private void getSelectedData() {
+	private void getSelectedDataAndActOnIt(int menuItemId) {
 	
 		// JS function that extracts the selected text
-		// 	and sends it to our WebAppInterface.receiveText() method.
+		// 	and sends it to our WebAppInterface.receiveText() method along with menuItemId.
 		String js = "" 
 				+ "(function getSelectedText() {"
 				+ 	"var txt;"
@@ -97,7 +99,7 @@ public class SelectionWebView extends WebView {
 				+ 		"txt = window.document.selection.createRange().text;"
 				+ 	"}"
 				
-				+ 	"JSInterface.receiveText(txt);"
+				+ 	"JSInterface.receiveText(" + menuItemId + ", txt);"
 				+ "})()";
 		
 		// Now we call the JS function (the invocation is SDK version dependent)
@@ -154,30 +156,12 @@ public class SelectionWebView extends WebView {
 		 */
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-			// TODO items need to be implemented
-			switch (item.getItemId()) {
-			case R.id.copy_menu_item:
-				getSelectedData();
-				Toast.makeText(ReaderActivity.debugContext, "TODO copy", Toast.LENGTH_SHORT).show();
-				break;
-			case R.id.share_menu_item:
-				getSelectedData();
-				Toast.makeText(ReaderActivity.debugContext, "TODO share", Toast.LENGTH_SHORT).show();
-				break;
-			case R.id.dictionary_menu_item:
-				getSelectedData();
-				Toast.makeText(ReaderActivity.debugContext, "TODO Dictionary search", Toast.LENGTH_SHORT).show();
-				break;
-			case R.id.srs_menu_item:
-				getSelectedData();
-				Toast.makeText(ReaderActivity.debugContext, "TODO Add to SRS", Toast.LENGTH_SHORT).show();
-				break;
-			default:
-				mode.finish();
-				return false;
-			}
+			// Send the id of the pressed menu item to the javascript that will pass it along
+			// 	to WebAppInterface.receiveText method along with the selected text.
+			getSelectedDataAndActOnIt(item.getItemId());
 			
-			mode.finish();
+			// We want to leave the ActionMode open for the user to select multiple actions.
+			//mode.finish();
 			return true;
 		}
 		
