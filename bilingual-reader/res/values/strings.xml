@@ -176,5 +176,7 @@
     <string name="share">Share</string>
     <string name="copy">Copy</string>
     <string name="share_menu_headline">Open in</string>
+    <string name="word_colon">Word:</string>
+    <string name="translation_colon">Translation:</string>
 
 </resources>

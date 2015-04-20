@@ -1,5 +1,6 @@
 package cz.metaverse.android.bilingualreader.selectionwebview;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
+import cz.metaverse.android.bilingualreader.dialog.AddToSRSDialog;
 
 /**
  *
@@ -16,10 +18,10 @@ import cz.metaverse.android.bilingualreader.ReaderActivity;
  *
  */
 public class WebAppInterface {
-	Context context;
+	Activity activity;
 
-	WebAppInterface(Context context) {
-		this.context = context;
+	WebAppInterface(Activity activity) {
+		this.activity = activity;
 	}
 
 	/**
@@ -37,7 +39,7 @@ public class WebAppInterface {
 
 		case R.id.copy_menu_item:
 			// Put the selected text into the clipboard
-			ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+			ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
 			ClipData clip = ClipData.newPlainText("simple text", selectedText);
 			clipboard.setPrimaryClip(clip);
 			break;
@@ -46,8 +48,8 @@ public class WebAppInterface {
 			Intent sharingIntent = new Intent(Intent.ACTION_SEND);
 			sharingIntent.setType("text/plain");
 			sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, selectedText);
-			context.startActivity(Intent.createChooser(sharingIntent,
-		    		context.getString(R.string.share_menu_headline)));
+			activity.startActivity(Intent.createChooser(sharingIntent,
+		    		activity.getString(R.string.share_menu_headline)));
 			break;
 
 		case R.id.dictionary_menu_item:
@@ -55,7 +57,7 @@ public class WebAppInterface {
 			break;
 
 		case R.id.srs_menu_item:
-			Toast.makeText(ReaderActivity.debugContext, "TODO Add to SRS: " + selectedText, Toast.LENGTH_SHORT).show();
+			new AddToSRSDialog(selectedText).show(activity.getFragmentManager(), "add_to_srs_dialog");
 			break;
 		}
 	}

@@ -1,9 +1,11 @@
 package cz.metaverse.android.bilingualreader.selectionwebview;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.GestureDetector;
 import android.view.Menu;
@@ -39,8 +41,17 @@ public class SelectionWebView extends WebView {
 		this.context = context;
 		WebSettings webviewSettings = getSettings();
 		webviewSettings.setJavaScriptEnabled(true);
+
 		// Add JavaScript interface for communication between JS and Java code.
-		addJavascriptInterface(new WebAppInterface(context), "JSInterface");
+		//  Casting context into Activity, because it is needed there and the only thing
+		//  that should ever own our WebView is an Activity.
+		try {
+			addJavascriptInterface(new WebAppInterface((Activity) context), "JSInterface");
+		} catch (ClassCastException e) {
+			Log.e("SelectionWebView class constructor",
+					"SelectionWebView has been passed a Context that can't be cast " +
+					"into an Activity, which is needed.");
+		}
 	}
 
 	/**
