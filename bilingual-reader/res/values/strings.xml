@@ -173,5 +173,7 @@
     <string name="searching_for_epubs">Searching for EPUB files.</string>
     <string name="dictionary">Dictionary</string>
     <string name="add_to_srs">Add to SRS</string>
+    <string name="share">Share</string>
+    <string name="copy">Copy</string>
 
 </resources>
