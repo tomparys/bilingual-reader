@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.webkit.JavascriptInterface;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.dialog.AddToSRSDialog;
+import cz.metaverse.android.bilingualreader.helper.Dictionary;
 
 /**
  *
@@ -51,14 +52,7 @@ public class WebAppInterface {
 			break;
 
 		case R.id.dictionary_menu_item:
-			// Elementary dictionary integration - ColorDict/GoldenDict
-			Intent intent = new Intent("colordict.intent.action.SEARCH");
-			intent.putExtra("EXTRA_QUERY", selectedText);
-			//intent.putExtra("EXTRA_HEIGHT", 600 /*"fill_parent"*/);
-			//intent.putExtra("EXTRA_GRAVITY", Gravity.CENTER);
-			//intent.putExtra("EXTRA_MARGIN_LEFT", 50);
-			//intent.putExtra("EXTRA_MARGIN_RIGHT", 50);
-			activity.startActivity(intent);
+			activity.startActivity(Dictionary.open(selectedText, Dictionary.colordict));
 
 			break;
 
