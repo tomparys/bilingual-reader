@@ -62,7 +62,6 @@ public class ReaderActivity extends Activity {
 	private DrawerLayout navigationDrawerLayout;
 	private ListView navigationDrawerListView;
 	private ActionBarDrawerToggle actionBarDrawerToggle;
-	private CharSequence navigationDrawerTitle;
 	private CharSequence actionBarTitle;
 
 	// Used exclusively for debugging purposes (e.g. Displaying toasts without context)
@@ -92,7 +91,7 @@ public class ReaderActivity extends Activity {
 		// Set the navigation drawer's list view's click listener
 		navigationDrawerListView.setOnItemClickListener(new DrawerItemClickListener());
 
-		actionBarTitle = navigationDrawerTitle = getTitle();
+		actionBarTitle = getTitle();
 
 		// Extend the ActionBarDrawerToggle class
 		actionBarDrawerToggle = new ActionBarDrawerToggle(
@@ -207,7 +206,7 @@ public class ReaderActivity extends Activity {
 	 */
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
 		@Override
-		public void onItemClick(AdapterView parent, View view, int position, long id) {
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 			// Handle the pressed menu item.
 			switch(position) {
 
