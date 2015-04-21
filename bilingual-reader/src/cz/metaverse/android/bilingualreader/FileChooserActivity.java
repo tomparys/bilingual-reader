@@ -60,6 +60,9 @@ public class FileChooserActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.file_chooser_layout);
 
+		// Sets the app icon as clickable.
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+
 		// If either names or epubs isn't initialized, create empty lists for them.
 		boolean populateList = false;
 		if (names == null || epubs == null) {
@@ -158,10 +161,20 @@ public class FileChooserActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+
+		// The App icon in upper left corner
+		case android.R.id.home:
+			finish();
+			return true;
+
+		// The update icon/menu item
 		case R.id.update:
 			refreshList();
+			return true;
+
 		default:
 			return super.onOptionsItemSelected(item);
+
 		}
 	}
 
