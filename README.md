@@ -3,7 +3,7 @@
 ## Abstract 
 
 * Version: 1.0
-* License: The MIT License (MIT), see `COPYRIGHT` file
+* License: The MIT License (MIT), see `[COPYRIGHT](COPYRIGHT)` file
 * Forked from the [EPUB3reader](https://github.com/pettarin/epub3reader) project
 
 Bilingual Reader is an app for Android that allows the user to read a book in two languages at the same time.
@@ -12,7 +12,7 @@ The user provides two EPUB ebooks, each of which contains the same book but in a
 
 ### Screenshots
 
-[See SCREENSHOTS.md](SCREENSHOTS.md)
+See `[SCREENSHOTS.md](SCREENSHOTS.md)`
 
 
 ### Download, Installation, and Privacy/Security Notes
@@ -46,7 +46,7 @@ If you want to open a second book, open the navigation drawer (by tapping on the
 
 To turn chapter, just swipe left or right.
 
-If you have opened two eBooks containing the same book in different languages (or one ebook that contains parallel texts [see section below]), you can activate the parallel reading function by selecting `Enable parallel reading` resp. `Enable Parallel Texts` in the menu. The two book panels on the screen will be synchronized: when you turn chapter in one of the two panels, the other will be updated as well.
+If you have opened two eBooks containing the same book in different languages (or one ebook that contains parallel texts [see section below]), you can activate the parallel reading function by selecting `Enable parallel reading` resp. `Enable parallel texts` in the menu. The two book panels on the screen will be synchronized: when you turn chapter in one of the two panels, the other will be updated as well.
 
 To close one of the panels, just tap the small semi-transparent square in the upper right corner.
 
@@ -55,7 +55,7 @@ A single tap on a link will follow that link. A long tap will open its target in
 
 ### Compilation
 
-You are welcome to compile the app for yourself. Start by adding the project to your IDE (We use Eclipse) and then add the Android Support Library v7 appcompat which you can find at `third-party/android-support-v7-appcompat/` following the instructions in the `third-party/android-support-v7-appcompat/README/README` file.
+You are welcome to compile the app for yourself. Start by adding the project to your IDE (We use Eclipse) and then add the Android Support Library v7 appcompat which you can find at `third-party/android-support-v7-appcompat/` following the instructions in the [`third-party/android-support-v7-appcompat/README/README`](third-party/android-support-v7-appcompat/README/README) file.
 
 
 ### Naming Convention for Parallel Texts in a single eBook
