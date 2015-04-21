@@ -52,8 +52,7 @@ public class WebAppInterface {
 			break;
 
 		case R.id.dictionary_menu_item:
-			activity.startActivity(Dictionary.open(selectedText, Dictionary.colordict));
-
+			activity.startActivity(Dictionary.open(selectedText, Dictionary.fora));
 			break;
 
 		case R.id.srs_menu_item:
