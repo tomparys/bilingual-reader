@@ -44,7 +44,7 @@ public class EpubsNavigator {
 	private EpubManipulator[] books;
 	private SplitPanel[] splitViews;
 	private boolean[] extractAudio;
-	private boolean synchronizedReadingActive;
+	private boolean synchronizedChapters;
 	private boolean parallelText = false;
 	private ReaderActivity activity;
 	private static Context context;
@@ -147,14 +147,14 @@ public class EpubsNavigator {
 
 	/**
 	 * Go to next chapter,
-	 * 	if synchronized reading is active, change chapter in both books.
+	 * 	if synchronized chapters are active, change chapter in both books.
 	 * @param index			the panel wherein to primarily change chapter
 	 * @throws Exception
 	 */
 	public void goToNextChapter(int index) throws Exception {
 		setBookPage(books[index].goToNextChapter(), index);
 
-		if (synchronizedReadingActive) {
+		if (synchronizedChapters) {
 			for (int i = 1; i < nBooks; i++) {
 				if (books[(index + i) % nBooks] != null) {
 					setBookPage(books[(index + i) % nBooks].goToNextChapter(),
@@ -166,14 +166,14 @@ public class EpubsNavigator {
 
 	/**
 	 * Go to previous chapter,
-	 * 	if synchronized reading is active, change chapter in each books.
+	 * 	if synchronized chapters are active, change chapter in each books.
 	 * @param index			the panel
 	 * @throws Exception
 	 */
 	public void goToPrevChapter(int index) throws Exception {
 		setBookPage(books[index].goToPreviousChapter(), index);
 
-		if (synchronizedReadingActive) {
+		if (synchronizedChapters) {
 			for (int i = 1; i < nBooks; i++) {
 				if (books[(index + i) % nBooks] != null) {
 					setBookPage(
@@ -264,7 +264,7 @@ public class EpubsNavigator {
 	/**
 	 * If books[book] contains more than 1 language, it opens the same book in the other panel, opens the same page
 	 *  and sets the first language into the given panel (id book) and the second language into the other.
-	 * 	If all goes well it activates SynchronizedReading.
+	 * 	If all goes well it activates Synchronized Chapter.
 	 * @param book				id of the panel with the book that we want to open in parallel text mode
 	 * @param firstLanguage		id of the first language to open
 	 * @param secondLanguage	id of the second language to open
@@ -290,24 +290,24 @@ public class EpubsNavigator {
 			}
 
 			if (ok && firstLanguage != -1 && secondLanguage != -1)
-				setSynchronizedReadingActive(true);
+				setSyncChapters(true);
 
 			parallelText = true;
 		}
 		return ok;
 	}
 
-	public void setSynchronizedReadingActive(boolean value) {
-		synchronizedReadingActive = value;
+	public void setSyncChapters(boolean value) {
+		synchronizedChapters = value;
 	}
 
 	/**
-	 * Flips the state of SynchronizedReading (active -> inactive, inactive -> active).
+	 * Flips the state of SynchronizedChapters (active -> inactive, inactive -> active).
 	 */
-	public boolean flipSynchronizedReadingActive() {
+	public boolean flipSyncChapters() {
 		if (exactlyOneBookOpen())
 			return false;
-		synchronizedReadingActive = !synchronizedReadingActive;
+		synchronizedChapters = !synchronizedChapters;
 		return true;
 	}
 
@@ -394,8 +394,8 @@ public class EpubsNavigator {
 		return parallelText;
 	}
 
-	public boolean isSynchronized() {
-		return synchronizedReadingActive;
+	public boolean isSyncChapters() {
+		return synchronizedChapters;
 	}
 
 	/**
@@ -482,7 +482,7 @@ public class EpubsNavigator {
 	 */
 	public void saveState(Editor editor) {
 
-		editor.putBoolean(getS(R.string.sync), synchronizedReadingActive);
+		editor.putBoolean(getS(R.string.sync), synchronizedChapters);
 		editor.putBoolean(getS(R.string.parallelTextBool), parallelText);
 
 		// Save each book
@@ -538,7 +538,7 @@ public class EpubsNavigator {
 	 */
 	public boolean loadState(SharedPreferences preferences) {
 		boolean ok = true;
-		synchronizedReadingActive = preferences.getBoolean(getS(R.string.sync), false);
+		synchronizedChapters = preferences.getBoolean(getS(R.string.sync), false);
 		parallelText = preferences.getBoolean(getS(R.string.parallelTextBool), false);
 
 		// Load each panel and its book

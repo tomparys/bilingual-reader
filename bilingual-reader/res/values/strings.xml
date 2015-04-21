@@ -7,8 +7,8 @@
 
     <string name="Open_Book_1">Open Book 1</string>
     <string name="Open_Book_2">Open Book 2</string>
-    <string name="Enable_Parallel_Texts">Enable Parallel Texts</string>
-    <string name="Toggle_Sync_Views">Toggle Sync Views</string>
+    <string name="Activate_bilingual_ebook">Activate bilingual ebook</string>
+    <string name="Sync_Chapters">Sync Chapters</string>
     <string name="Reset_Sync_Views">Reset Sync Views</string>
     <string name="Show_Metadata">Show Metadata</string>
     <string name="Refresh">Refresh</string>
@@ -64,7 +64,7 @@
     <string name="tocReference">&lt;tr&gt;&lt;td&gt;Table of Contents:&lt;/td&gt;</string>
     <string name="change_Font">Change Font</string>
     <string name="change_Font_Color">Font Color:</string>
-    <string name="changeStyle">Change Style</string>
+    <string name="Change_Style">Change Style</string>
     <string name="blue_rgb">#0000ff</string>
     <string name="red_rgb">#ff0000</string>
     <string name="green_rgb">#00ff00</string>
@@ -95,7 +95,7 @@
         <item>Black</item>
     </string-array>
 
-    <string name="syncScroll">Sync. Scroll</string>
+    <string name="Sync_Scroll">Sync Scroll</string>
     <string name="ChangeFont">Font:</string>
 
     <string-array name="FontStyle">
@@ -163,7 +163,7 @@
     <string name="title_activity_data_view">DataView</string>
     <string name="ViewType">ViewType</string>
     <string name="title_activity_audio_view">AudioView</string>
-    <string name="audio">Extract Audio</string>
+    <string name="Extract_Audio">Extract Audio</string>
     <string name="error_openaudiofile">Cannot open audio file</string>
     <string name="play">&gt;</string>
     <string name="pause">| |</string>
@@ -187,6 +187,9 @@
     
     <string name="drawer_open">Open drawer</string>
     <string name="drawer_close">Close drawer</string>
+    
+    <string name="activated_sync_chapters">Activated synchronized chapters.</string>
+    <string name="deactivated_sync_chapters">Deactivated synchronized chapters.</string>
     
 
 </resources>

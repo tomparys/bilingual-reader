@@ -292,51 +292,49 @@ public class ReaderActivity extends Activity {
 
 		// If there are two books opened and parallel text isn't active.
 		if (navigator.exactlyOneBookOpen() == false && navigator.isParallelTextOn() == false) {
-			menu.findItem(R.id.meta1).setVisible(true);
-			menu.findItem(R.id.meta2).setVisible(true);
-			menu.findItem(R.id.toc1).setVisible(true);
-			menu.findItem(R.id.toc2).setVisible(true);
-			menu.findItem(R.id.FirstParallel).setVisible(true);
-			menu.findItem(R.id.SecondParallel).setVisible(true);
+			menu.findItem(R.id.metadata_1_menu_item).setVisible(true);
+			menu.findItem(R.id.metadata_2_menu_item).setVisible(true);
+			menu.findItem(R.id.table_of_contents_1_menu_item).setVisible(true);
+			menu.findItem(R.id.table_of_contents_2_menu_item).setVisible(true);
+			menu.findItem(R.id.bilingual_ebook_1_menu_item).setVisible(true);
+			menu.findItem(R.id.bilingual_book_2_menu_item).setVisible(true);
 		}
 
 		// If there are two books opened.
 		if (navigator.exactlyOneBookOpen() == false) {
-			menu.findItem(R.id.Synchronize).setVisible(true);
-			menu.findItem(R.id.Align).setVisible(true);
-			menu.findItem(R.id.SyncScroll).setVisible(true);
-			menu.findItem(R.id.StyleBook1).setVisible(true);
-			menu.findItem(R.id.StyleBook2).setVisible(true);
-			menu.findItem(R.id.firstAudio).setVisible(true);
-			menu.findItem(R.id.secondAudio).setVisible(true);
+			menu.findItem(R.id.sync_chapters_menu_item).setVisible(true);
+			menu.findItem(R.id.sync_scroll_menu_item).setVisible(true);
+			menu.findItem(R.id.style_1_menu_item).setVisible(true);
+			menu.findItem(R.id.style_2_menu_item).setVisible(true);
+			menu.findItem(R.id.audio_1_menu_item).setVisible(true);
+			menu.findItem(R.id.audio_2_menu_item).setVisible(true);
 		}
 
 		// If only one book is opened but it's in parallel text mode.
 		if (navigator.exactlyOneBookOpen() == true || navigator.isParallelTextOn() == true) {
-			menu.findItem(R.id.meta1).setVisible(false);
-			menu.findItem(R.id.meta2).setVisible(false);
-			menu.findItem(R.id.toc1).setVisible(false);
-			menu.findItem(R.id.toc2).setVisible(false);
-			menu.findItem(R.id.FirstParallel).setVisible(false);
-			menu.findItem(R.id.SecondParallel).setVisible(false);
+			menu.findItem(R.id.metadata_1_menu_item).setVisible(false);
+			menu.findItem(R.id.metadata_2_menu_item).setVisible(false);
+			menu.findItem(R.id.table_of_contents_1_menu_item).setVisible(false);
+			menu.findItem(R.id.table_of_contents_2_menu_item).setVisible(false);
+			menu.findItem(R.id.bilingual_ebook_1_menu_item).setVisible(false);
+			menu.findItem(R.id.bilingual_book_2_menu_item).setVisible(false);
 		}
 
 		// If only one book is opened.
 		if (navigator.exactlyOneBookOpen() == true) {
-			menu.findItem(R.id.Synchronize).setVisible(false);
-			menu.findItem(R.id.Align).setVisible(false);
-			menu.findItem(R.id.SyncScroll).setVisible(false);
-			menu.findItem(R.id.StyleBook1).setVisible(false);
-			menu.findItem(R.id.StyleBook2).setVisible(false);
-			menu.findItem(R.id.firstAudio).setVisible(false);
-			menu.findItem(R.id.secondAudio).setVisible(false);
+			menu.findItem(R.id.sync_chapters_menu_item).setVisible(false);
+			menu.findItem(R.id.sync_scroll_menu_item).setVisible(false);
+			menu.findItem(R.id.style_1_menu_item).setVisible(false);
+			menu.findItem(R.id.style_2_menu_item).setVisible(false);
+			menu.findItem(R.id.audio_1_menu_item).setVisible(false);
+			menu.findItem(R.id.audio_2_menu_item).setVisible(false);
 		}
 
 		// If there is only one view, option "changeSizes" is not displayed.
 		if (panelCount == 1)
-			menu.findItem(R.id.changeSize).setVisible(false);
+			menu.findItem(R.id.change_size_menu_item).setVisible(false);
 		else
-			menu.findItem(R.id.changeSize).setVisible(true);
+			menu.findItem(R.id.change_size_menu_item).setVisible(true);
 
 		return true;
 	}
@@ -355,93 +353,8 @@ public class ReaderActivity extends Activity {
 		// Now handle our menu items.
 		switch (item.getItemId()) {
 
-		// Parallel text
-		case R.id.Parallel:
-			if (navigator.exactlyOneBookOpen() == true
-					|| navigator.isParallelTextOn() == true)
-				chooseLanguage(0);
-			return true;
-
-		case R.id.FirstParallel:
-			chooseLanguage(0);
-			return true;
-
-		case R.id.SecondParallel:
-			if (navigator.exactlyOneBookOpen() == false)
-				chooseLanguage(1);
-			else
-				errorMessage(getString(R.string.error_onlyOneBookOpen));
-			return true;
-
-		// Align/sync book 1 with book 2
-		case R.id.Align1with2:
-			try {
-				boolean yes = navigator.synchronizeView(1, 0);
-				if (!yes) {
-					errorMessage(getString(R.string.error_onlyOneBookOpen));
-				}
-			} catch (Exception e) {
-				errorMessage(getString(R.string.error_cannotSynchronize));
-			}
-			return true;
-
-		// Align/sync book 2 with book 1
-		case R.id.Align2with1:
-			try {
-				boolean ok = navigator.synchronizeView(0, 1);
-				if (!ok) {
-					errorMessage(getString(R.string.error_onlyOneBookOpen));
-				}
-			} catch (Exception e) {
-				errorMessage(getString(R.string.error_cannotSynchronize));
-			}
-			return true;
-
-		// Toggle sync views
-		case R.id.Synchronize:
-			boolean sync = navigator.flipSynchronizedReadingActive();
-			if (!sync) {
-				errorMessage(getString(R.string.error_onlyOneBookOpen));
-			}
-			return true;
-
-		// Display metadata of the book
-		case R.id.Metadata:
-			if (navigator.exactlyOneBookOpen() == true || navigator.isParallelTextOn() == true) {
-				navigator.displayMetadata(0);
-			} else {
-			}
-			return true;
-
-		case R.id.meta1:
-			if (!navigator.displayMetadata(0))
-				errorMessage(getString(R.string.error_metadataNotFound));
-			return true;
-
-		case R.id.meta2:
-			if (!navigator.displayMetadata(1))
-				errorMessage(getString(R.string.error_metadataNotFound));
-			return true;
-
-		// Table of contents
-		case R.id.tableOfContents:
-			if (navigator.exactlyOneBookOpen() == true || navigator.isParallelTextOn() == true) {
-				navigator.displayTOC(0);
-			}
-			return true;
-
-		case R.id.toc1:
-			if (!navigator.displayTOC(0))
-				errorMessage(getString(R.string.error_tocNotFound));
-			return true;
-
-		case R.id.toc2:
-			if (navigator.displayTOC(1))
-				errorMessage(getString(R.string.error_tocNotFound));
-			return true;
-
 		// Change relative size of panels
-		case R.id.changeSize:
+		case R.id.change_size_menu_item:
 			try {
 				// Display dialog to pick new relative size of the panels.
 				DialogFragment newFragment = new PanelSizeDialog();
@@ -451,8 +364,80 @@ public class ReaderActivity extends Activity {
 			}
 			return true;
 
+		// Sync Scroll
+		case R.id.sync_scroll_menu_item:
+			Toast.makeText(this, "TODO De/activating synchronized scrolling.", Toast.LENGTH_SHORT).show();
+			return true;
+
+		// Sync Chapters
+		case R.id.sync_chapters_menu_item:
+			boolean sync = navigator.flipSyncChapters();
+			if (!sync) {
+				errorMessage(getString(R.string.error_onlyOneBookOpen));
+			}
+			if (navigator.isSyncChapters()) {
+				Toast.makeText(this, getString(R.string.activated_sync_chapters), Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(this, getString(R.string.deactivated_sync_chapters), Toast.LENGTH_SHORT).show();
+			}
+
+			return true;
+
+		// Bilingual ebook
+		case R.id.bilingual_ebook_menu_item:
+			if (navigator.exactlyOneBookOpen() == true
+					|| navigator.isParallelTextOn() == true)
+				chooseLanguage(0);
+			return true;
+
+		case R.id.bilingual_ebook_1_menu_item:
+			chooseLanguage(0);
+			return true;
+
+		case R.id.bilingual_book_2_menu_item:
+			if (navigator.exactlyOneBookOpen() == false)
+				chooseLanguage(1);
+			else
+				errorMessage(getString(R.string.error_onlyOneBookOpen));
+			return true;
+
+		// Display metadata of the book
+		case R.id.metadata_menu_item:
+			if (navigator.exactlyOneBookOpen() == true || navigator.isParallelTextOn() == true) {
+				navigator.displayMetadata(0);
+			} else {
+			}
+			return true;
+
+		case R.id.metadata_1_menu_item:
+			if (!navigator.displayMetadata(0))
+				errorMessage(getString(R.string.error_metadataNotFound));
+			return true;
+
+		case R.id.metadata_2_menu_item:
+			if (!navigator.displayMetadata(1))
+				errorMessage(getString(R.string.error_metadataNotFound));
+			return true;
+
+		// Table of contents
+		case R.id.table_of_contents_menu_item:
+			if (navigator.exactlyOneBookOpen() == true || navigator.isParallelTextOn() == true) {
+				navigator.displayTOC(0);
+			}
+			return true;
+
+		case R.id.table_of_contents_1_menu_item:
+			if (!navigator.displayTOC(0))
+				errorMessage(getString(R.string.error_tocNotFound));
+			return true;
+
+		case R.id.table_of_contents_2_menu_item:
+			if (navigator.displayTOC(1))
+				errorMessage(getString(R.string.error_tocNotFound));
+			return true;
+
 		// Change style
-		case R.id.Style:
+		case R.id.style_menu_item:
 			try {
 				// Display the style dialog.
 				if (navigator.exactlyOneBookOpen() == true) {
@@ -465,7 +450,7 @@ public class ReaderActivity extends Activity {
 			}
 			return true;
 
-		case R.id.StyleBook1:
+		case R.id.style_1_menu_item:
 			try {
 				// Display the style dialog.
 				DialogFragment newFragment = new ChangeCSSDialog();
@@ -476,7 +461,7 @@ public class ReaderActivity extends Activity {
 			}
 			return true;
 
-		case R.id.StyleBook2:
+		case R.id.style_2_menu_item:
 			try {
 				// Display the style dialog.
 				DialogFragment newFragment = new ChangeCSSDialog();
@@ -487,14 +472,8 @@ public class ReaderActivity extends Activity {
 			}
 			return true;
 
-		/*
-		 * TODO:
-		 * case R.id.SyncScroll: syncScrollActivated = !syncScrollActivated;
-		 * return true;
-		 */
-
 		// Audio shenanigans.
-		case R.id.audio:
+		case R.id.audio_menu_item:
 			if (navigator.exactlyOneBookOpen() == true) {
 				if (!navigator.extractAudio(0)) {
 					errorMessage(getString(R.string.no_audio));
@@ -502,12 +481,12 @@ public class ReaderActivity extends Activity {
 			}
 			return true;
 
-		case R.id.firstAudio:
+		case R.id.audio_1_menu_item:
 			if (!navigator.extractAudio(0))
 				errorMessage(getString(R.string.no_audio));
 			return true;
 
-		case R.id.secondAudio:
+		case R.id.audio_2_menu_item:
 			if (!navigator.extractAudio(1))
 				errorMessage(getString(R.string.no_audio));
 			return true;
