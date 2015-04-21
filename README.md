@@ -3,7 +3,7 @@
 ## Abstract 
 
 * Version: 1.0
-* License: The MIT License (MIT), see `[COPYRIGHT](COPYRIGHT)` file
+* License: The MIT License (MIT), see [`COPYRIGHT`](COPYRIGHT) file
 * Forked from the [EPUB3reader](https://github.com/pettarin/epub3reader) project
 
 Bilingual Reader is an app for Android that allows the user to read a book in two languages at the same time.
@@ -12,7 +12,7 @@ The user provides two EPUB ebooks, each of which contains the same book but in a
 
 ### Screenshots
 
-See `[SCREENSHOTS.md](SCREENSHOTS.md)`
+See [`SCREENSHOTS.md`](SCREENSHOTS.md)
 
 
 ### Download, Installation, and Privacy/Security Notes
