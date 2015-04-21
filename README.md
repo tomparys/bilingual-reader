@@ -46,7 +46,7 @@ If you want to open a second book, open the navigation drawer (by tapping on the
 
 To turn chapter, just swipe left or right.
 
-If you have opened two eBooks containing the same book in different languages (or one ebook that contains parallel texts [see section below]), you can activate the parallel reading function by selecting `Enable parallel reading` resp. `Enable parallel texts` in the menu. The two book panels on the screen will be synchronized: when you turn chapter in one of the two panels, the other will be updated as well.
+If you have opened two eBooks containing the same book in different languages (or one ebook that contains parallel texts [see section below]), you can activate parallel reading functions selecting `Sync Chapters` and `Sync Scroll` in the menu. The two book panels on the screen will be synchronized: when you turn chapter in one of the two panels, the other will be updated as well.
 
 To close one of the panels, just tap the small semi-transparent square in the upper right corner.
 
