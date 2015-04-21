@@ -5,7 +5,7 @@ import android.content.Intent;
 public enum Dictionary {
 
 	// Available dictionaries
-	colordict, fora;
+	colordict, fora, free_dictionary_org, aard, aard_lookup;
 
 
 	// Static method that opens the desired dictionary
@@ -25,6 +25,18 @@ public enum Dictionary {
 
 		case fora:
 			return DictionaryAPI.getIntent("Fora Dictionary", "com.ngc.fora", ".ForaDictionary",
+					"android.intent.action.SEARCH", "query", "%s", text);
+
+		case free_dictionary_org:
+			return DictionaryAPI.getIntent("Free Dictionary . org", "org.freedictionary", ".MainActivity",
+					"android.intent.action.VIEW", null, "%s", text);
+
+		case aard:
+			return DictionaryAPI.getIntent("Aard Dictionary", "aarddict.android", ".Article",
+					"android.intent.action.SEARCH", "query", "%s", text);
+
+		case aard_lookup:
+			return DictionaryAPI.getIntent("Aard Dictionary Lookup", "aarddict.android", ".Lookup",
 					"android.intent.action.SEARCH", "query", "%s", text);
 
 		// Sorry, we don't have that here.
