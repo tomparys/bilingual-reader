@@ -1,3 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/update" android:title="@string/Refresh"></item>
+
+    <item
+        android:id="@+id/update"
+        android:title="@string/Refresh"
+        android:icon="@drawable/ic_action_refresh"
+        android:showAsAction="always">
+    </item>
+
 </menu>
