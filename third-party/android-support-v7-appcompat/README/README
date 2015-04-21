@@ -1,0 +1,10 @@
+This is the Android Support Library v7 appcompat that we use in our project to provide
+functionality like the "navigation drawer".
+
+- Instructions on how to use it with the project can be found in the section
+        "Adding Support Libraries" -> "Adding libraries with resources"
+    which you can find:
+        a) in this repo - third-party/android-support-v7-appcompat/README/Support Library Setup.html
+        b) at - http://developer.android.com/tools/support-library/setup.html#libs-with-res
+- It is imperative that you use the "Adding libraries WITH resources" method,
+  because the resources are necessary for proper functionality.

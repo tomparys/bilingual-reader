@@ -1,0 +1,9 @@
+Welcome to Third-party libraries.
+
+psiegman-epublib-1b40382.zip
+    - Contains the source code of the Epublib library for manipulating EPUB files, version 3.1 used in our project.
+
+android-support-v7-appcompat
+    - Contains Android Support Library v7 appcompat that we use in our project to provide
+      functionality like the "navigation drawer"
+    - Further instructions in the file  third-party/android-support-v7-appcompat/README/README
