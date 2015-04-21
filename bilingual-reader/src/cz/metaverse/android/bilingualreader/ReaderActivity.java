@@ -158,6 +158,10 @@ public class ReaderActivity extends Activity {
 			SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 			navigator.loadViews(preferences);
 		}
+
+		// Invalidate options menu, because at the start the ebooks weren't loaded
+		// and we didn't know whether they had bilingual support.
+		invalidateOptionsMenu();
 	}
 
 	/**
@@ -241,6 +245,7 @@ public class ReaderActivity extends Activity {
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
+
 		// Sync the toggle state after onRestoreInstanceState has occurred.
 		actionBarDrawerToggle.syncState();
 	}
@@ -286,49 +291,58 @@ public class ReaderActivity extends Activity {
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		// TODO If the nav drawer is open, hide action items related to the content view
-		//boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+		if (navigator.exactlyOneBookOpen()) {
 
+			// Exactly one book open
+			menu.findItem(R.id.sync_scroll_menu_item).setVisible(false);
+			menu.findItem(R.id.sync_chapters_menu_item).setVisible(false);
 
-		// If there are two books opened and parallel text isn't active.
-		if (navigator.exactlyOneBookOpen() == false && navigator.isParallelTextOn() == false) {
-			menu.findItem(R.id.metadata_1_menu_item).setVisible(true);
-			menu.findItem(R.id.metadata_2_menu_item).setVisible(true);
-			menu.findItem(R.id.table_of_contents_1_menu_item).setVisible(true);
-			menu.findItem(R.id.table_of_contents_2_menu_item).setVisible(true);
-			menu.findItem(R.id.bilingual_ebook_1_menu_item).setVisible(true);
-			menu.findItem(R.id.bilingual_book_2_menu_item).setVisible(true);
-		}
-
-		// If there are two books opened.
-		if (navigator.exactlyOneBookOpen() == false) {
-			menu.findItem(R.id.sync_chapters_menu_item).setVisible(true);
-			menu.findItem(R.id.sync_scroll_menu_item).setVisible(true);
-			menu.findItem(R.id.style_1_menu_item).setVisible(true);
-			menu.findItem(R.id.style_2_menu_item).setVisible(true);
-			menu.findItem(R.id.audio_1_menu_item).setVisible(true);
-			menu.findItem(R.id.audio_2_menu_item).setVisible(true);
-		}
-
-		// If only one book is opened but it's in parallel text mode.
-		if (navigator.exactlyOneBookOpen() == true || navigator.isParallelTextOn() == true) {
+			// Submenus
+			menu.findItem(R.id.bilingual_ebook_1_menu_item).setVisible(false);
+			menu.findItem(R.id.bilingual_ebook_2_menu_item).setVisible(false);
 			menu.findItem(R.id.metadata_1_menu_item).setVisible(false);
 			menu.findItem(R.id.metadata_2_menu_item).setVisible(false);
 			menu.findItem(R.id.table_of_contents_1_menu_item).setVisible(false);
 			menu.findItem(R.id.table_of_contents_2_menu_item).setVisible(false);
-			menu.findItem(R.id.bilingual_ebook_1_menu_item).setVisible(false);
-			menu.findItem(R.id.bilingual_book_2_menu_item).setVisible(false);
-		}
-
-		// If only one book is opened.
-		if (navigator.exactlyOneBookOpen() == true) {
-			menu.findItem(R.id.sync_chapters_menu_item).setVisible(false);
-			menu.findItem(R.id.sync_scroll_menu_item).setVisible(false);
 			menu.findItem(R.id.style_1_menu_item).setVisible(false);
 			menu.findItem(R.id.style_2_menu_item).setVisible(false);
 			menu.findItem(R.id.audio_1_menu_item).setVisible(false);
 			menu.findItem(R.id.audio_2_menu_item).setVisible(false);
+
+		} else {
+
+			// Two books open
+			menu.findItem(R.id.sync_scroll_menu_item).setVisible(true);
+			menu.findItem(R.id.sync_chapters_menu_item).setVisible(true);
+
+			// Submenus
+			menu.findItem(R.id.bilingual_ebook_1_menu_item).setVisible(true);
+			menu.findItem(R.id.bilingual_ebook_2_menu_item).setVisible(true);
+			menu.findItem(R.id.style_1_menu_item).setVisible(true);
+			menu.findItem(R.id.style_2_menu_item).setVisible(true);
+			menu.findItem(R.id.audio_1_menu_item).setVisible(true);
+			menu.findItem(R.id.audio_2_menu_item).setVisible(true);
+
+			if (navigator.isReadingBilingualEbook()) {
+				// Bilingual ebook open in both panels has only 1 ToC and 1 metadata.
+				menu.findItem(R.id.metadata_1_menu_item).setVisible(false);
+				menu.findItem(R.id.metadata_2_menu_item).setVisible(false);
+				menu.findItem(R.id.table_of_contents_1_menu_item).setVisible(false);
+				menu.findItem(R.id.table_of_contents_2_menu_item).setVisible(false);
+			} else {
+				menu.findItem(R.id.metadata_1_menu_item).setVisible(true);
+				menu.findItem(R.id.metadata_2_menu_item).setVisible(true);
+				menu.findItem(R.id.table_of_contents_1_menu_item).setVisible(true);
+				menu.findItem(R.id.table_of_contents_2_menu_item).setVisible(true);
+			}
 		}
+
+		if (anyBilingualEbook()) {
+			menu.findItem(R.id.bilingual_ebook_menu_item).setVisible(true);
+		} else {
+			menu.findItem(R.id.bilingual_ebook_menu_item).setVisible(false);
+		}
+
 
 		// If there is only one view, option "changeSizes" is not displayed.
 		if (panelCount == 1)
@@ -386,7 +400,7 @@ public class ReaderActivity extends Activity {
 		// Bilingual ebook
 		case R.id.bilingual_ebook_menu_item:
 			if (navigator.exactlyOneBookOpen() == true
-					|| navigator.isParallelTextOn() == true)
+					|| navigator.isReadingBilingualEbook() == true)
 				chooseLanguage(0);
 			return true;
 
@@ -394,7 +408,7 @@ public class ReaderActivity extends Activity {
 			chooseLanguage(0);
 			return true;
 
-		case R.id.bilingual_book_2_menu_item:
+		case R.id.bilingual_ebook_2_menu_item:
 			if (navigator.exactlyOneBookOpen() == false)
 				chooseLanguage(1);
 			else
@@ -403,7 +417,7 @@ public class ReaderActivity extends Activity {
 
 		// Display metadata of the book
 		case R.id.metadata_menu_item:
-			if (navigator.exactlyOneBookOpen() == true || navigator.isParallelTextOn() == true) {
+			if (navigator.exactlyOneBookOpen() == true || navigator.isReadingBilingualEbook() == true) {
 				navigator.displayMetadata(0);
 			} else {
 			}
@@ -421,7 +435,7 @@ public class ReaderActivity extends Activity {
 
 		// Table of contents
 		case R.id.table_of_contents_menu_item:
-			if (navigator.exactlyOneBookOpen() == true || navigator.isParallelTextOn() == true) {
+			if (navigator.exactlyOneBookOpen() == true || navigator.isReadingBilingualEbook() == true) {
 				navigator.displayTOC(0);
 			}
 			return true;
@@ -525,6 +539,9 @@ public class ReaderActivity extends Activity {
 		fragmentTransaction.commit();
 
 		panelCount++;
+
+		// Rethinks what menu items to display
+		invalidateOptionsMenu();
 	}
 
 	/**
@@ -537,6 +554,9 @@ public class ReaderActivity extends Activity {
 		fragmentTransaction.commit();
 
 		panelCount--;
+
+		// Rethinks what menu items to display
+		invalidateOptionsMenu();
 	}
 
 	/**
@@ -549,6 +569,9 @@ public class ReaderActivity extends Activity {
 		fragmentTransaction.commit();
 
 		panelCount--;
+
+		// Rethinks what menu items to display
+		invalidateOptionsMenu();
 	}
 
 	/**
@@ -565,6 +588,9 @@ public class ReaderActivity extends Activity {
 		if (panelCount <= 0) {
 			finish();
 		}
+
+		// Rethinks what menu items to display
+		invalidateOptionsMenu();
 	}
 
 
@@ -572,6 +598,25 @@ public class ReaderActivity extends Activity {
 	// ============================================================================================
 	//		Misc
 	// ============================================================================================
+
+	/**
+	 * Finds out if any of the open books contains multiple languages or not.
+	 * @return		Truth
+	 */
+	public boolean anyBilingualEbook() {
+		String[] languages;
+		for (int i = 0; i < navigator.getNBooks(); i++) {
+			languages = navigator.getLanguagesInABook(i);
+
+			// If there are two or more languages, it is a multilingual ebook.
+			if (languages != null && languages.length >= 2) {
+				return true;
+			}
+		}
+		// No multilingual book found.
+		return false;
+	}
+
 
 	/**
 	 * Choose language.
@@ -608,7 +653,7 @@ public class ReaderActivity extends Activity {
 	 * @param second	second language to show
 	 */
 	public void startParallelText(int book, int first, int second) {
-		navigator.parallelText(book, first, second);
+		navigator.activateBilingualEbook(book, first, second);
 	}
 
 

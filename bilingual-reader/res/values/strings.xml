@@ -75,7 +75,7 @@
     <string name="Cancel">Cancel</string>
     <string name="SetSizeTitle">Upper Panel Size</string>
     <string name="LanguageChooserTitle">Choose two languages:</string>
-    <string name="parallelTextBool">parallelTextBool</string>
+    <string name="readingBilingualEbookBool">readingBilingualEbookBool</string>
 
     <string-array name="ColorFont">
         <item>Black</item>
