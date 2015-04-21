@@ -132,7 +132,11 @@ public class ReaderActivity extends Activity {
 		// Load state from previous runs of the application.
 		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 		loadState(preferences);
-		navigator.loadViews(preferences);
+		if (panelCount == 0) {
+			// Load panels only in case they aren't already.
+			// e.g. Change of orientation calls onCreate() again, but the panels are already there.
+			navigator.loadViews(preferences);
+		}
 
 		// If there are no panels, start FileChooser.
 		if (panelCount == 0) {
