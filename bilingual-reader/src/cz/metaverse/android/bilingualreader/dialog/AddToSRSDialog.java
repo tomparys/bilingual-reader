@@ -1,5 +1,7 @@
 package cz.metaverse.android.bilingualreader.dialog;
 
+import java.util.Locale;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -30,7 +32,7 @@ public class AddToSRSDialog extends DialogFragment implements DialogInterface.On
 	 */
 	public AddToSRSDialog(String word) {
 		super();
-		original_word = word;
+		original_word = word.toLowerCase(Locale.getDefault());
 	}
 
 	/**
