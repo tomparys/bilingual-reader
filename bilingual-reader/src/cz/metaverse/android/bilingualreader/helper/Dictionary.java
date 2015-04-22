@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 
 /**
@@ -26,7 +27,7 @@ public enum Dictionary {
 	aard_lookup ("Aard Dictionary Lookup", "aarddict.android", ".Lookup", "android.intent.action.SEARCH",
 							"query", "%s"),
 
-	colordict ("ColorDict"),
+	colordict ("ColorDict"), // Custom launch code in getIntent()
 
 	colordict_old ("ColorDict Old Style", "com.socialnmobile.colordict", ".activity.Main",
 							"android.intent.action.SEARCH", "query", "%s"),
@@ -192,7 +193,7 @@ public enum Dictionary {
 		SharedPreferences.Editor editor = activity.getPreferences(Context.MODE_PRIVATE).edit();
 		// Save the code of the dictionary into settings
 		// (e.g. for "Aard dictionary Lookup" saves "aard_lookup").
-		editor.putString("defaultDictionary", selectedDict.name());
+		editor.putString(activity.getString(R.string.putString_defaultDictionary), selectedDict.name());
 		editor.commit();
 
 		// Keep it saved here as well
@@ -206,8 +207,10 @@ public enum Dictionary {
 	 */
 	public static Dictionary getDefault(Activity activity) {
 		if (defaultDictionary == null) {
+			// Load default dictionary from preferences.
 			SharedPreferences preferences = ((ReaderActivity) activity).getPreferences(Context.MODE_PRIVATE);
-			String defaultDictString = preferences.getString("defaultDictionary", null);
+			String defaultDictString = preferences.getString(
+					activity.getString(R.string.putString_defaultDictionary), null);
 
 			if (defaultDictString != null) {
 				try {
@@ -216,13 +219,13 @@ public enum Dictionary {
 				// If said dictionary code doesn't exist, do nothing.
 				catch (IllegalArgumentException e) {}
 			}
-		}
 
-		// If no dictionary set as default, set the first one available as default if there are any.
-		if (defaultDictionary == null) {
-			List<Dictionary> available = getAvailableDictionaries(activity);
-			if (available != null && available.size() > 0) {
-				setDefault(activity, available.get(0));
+			// If no dictionary set as default, set the first one available as default if there are any.
+			if (defaultDictionary == null) {
+				List<Dictionary> available = getAvailableDictionaries(activity);
+				if (available != null && available.size() > 0) {
+					setDefault(activity, available.get(0));
+				}
 			}
 		}
 
