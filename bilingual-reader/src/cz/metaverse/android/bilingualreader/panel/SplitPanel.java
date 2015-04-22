@@ -61,7 +61,7 @@ public abstract class SplitPanel extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		navigator = ((ReaderActivity) getActivity()).navigator;
-		View v = inflater.inflate(R.layout.activity_split_panel, container,
+		View v = inflater.inflate(R.layout.panel_split, container,
 				false);
 		created = false;
 		return v;

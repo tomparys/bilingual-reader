@@ -60,7 +60,7 @@ public class BookPanel extends SplitPanel {
 	@Override
 	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)	{
 		super.onCreateView(inflater, container, savedInstanceState);
-		View v = inflater.inflate(R.layout.activity_book_view, container, false);
+		View v = inflater.inflate(R.layout.panel_book, container, false);
 		return v;
 	}
 

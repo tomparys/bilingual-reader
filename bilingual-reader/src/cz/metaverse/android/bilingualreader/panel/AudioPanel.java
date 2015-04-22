@@ -74,7 +74,7 @@ public class AudioPanel extends SplitPanel {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
-		View v = inflater.inflate(R.layout.activity_audio_view, container,
+		View v = inflater.inflate(R.layout.panel_audio, container,
 				false);
 		return v;
 	}

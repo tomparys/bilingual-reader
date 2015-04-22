@@ -58,7 +58,7 @@ public class FileChooserActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.file_chooser_layout);
+		setContentView(R.layout.activity_file_chooser);
 
 		// Sets the app icon as clickable.
 		getActionBar().setDisplayHomeAsUpEnabled(true);

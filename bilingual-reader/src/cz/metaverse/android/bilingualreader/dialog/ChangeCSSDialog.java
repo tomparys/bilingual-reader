@@ -47,7 +47,7 @@ public class ChangeCSSDialog extends DialogFragment {
 		// Inflate and set the layout for the dialog
 		// Pass null as the parent view because its going in the dialog layout
 		activity = (ReaderActivity) getActivity();
-		View view = inflater.inflate(R.layout.change_css, null);
+		View view = inflater.inflate(R.layout.dialog_change_css, null);
 
 		// Get saved preferences
 		final SharedPreferences preferences = activity.getPreferences(Context.MODE_PRIVATE);

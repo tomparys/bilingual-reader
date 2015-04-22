@@ -47,7 +47,7 @@ public class DataPanel extends SplitPanel {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
-		View v = inflater.inflate(R.layout.activity_data_view, container, false);
+		View v = inflater.inflate(R.layout.panel_data, container, false);
 		return v;
 	}
 

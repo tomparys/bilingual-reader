@@ -35,7 +35,7 @@ public class PanelSizeDialog extends DialogFragment {
 
 		// Inflate and set the layout for the dialog
 		// 	Pass null as the parent view because its going in the dialog layout
-		View view = inflater.inflate(R.layout.set_panel_size, null);
+		View view = inflater.inflate(R.layout.dialog_panel_size, null);
 
 		// Load the seek bar value
 		final SharedPreferences preferences = ((ReaderActivity) getActivity())

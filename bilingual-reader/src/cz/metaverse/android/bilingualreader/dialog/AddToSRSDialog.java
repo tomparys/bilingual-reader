@@ -42,7 +42,7 @@ public class AddToSRSDialog extends DialogFragment implements DialogInterface.On
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		// Inflate the form with EditTexts for data
-		form = getActivity().getLayoutInflater().inflate(R.layout.add_to_srs_dialog, null);
+		form = getActivity().getLayoutInflater().inflate(R.layout.dialog_add_to_srs, null);
 		word = (EditText) form.findViewById(R.id.word_edit_text);
 		translation = (EditText) form.findViewById(R.id.translation_edit_text);
 
