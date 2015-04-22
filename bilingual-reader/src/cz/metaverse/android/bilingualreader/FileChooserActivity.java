@@ -151,7 +151,7 @@ public class FileChooserActivity extends Activity {
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.file_chooser, menu);
+		getMenuInflater().inflate(R.menu.file_chooser_menu, menu);
 		return true;
 	}
 
