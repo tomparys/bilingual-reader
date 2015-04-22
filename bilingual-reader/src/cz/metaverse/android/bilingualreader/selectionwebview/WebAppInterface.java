@@ -6,6 +6,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.webkit.JavascriptInterface;
+import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.dialog.AddToSRSDialog;
 import cz.metaverse.android.bilingualreader.helper.Dictionary;
@@ -32,10 +33,9 @@ public class WebAppInterface {
 	 */
 	@JavascriptInterface
 	public void receiveText(int menuItemId, String selectedText) {
-
-		// TODO items need to be implemented
 		switch (menuItemId) {
 
+		// Copy
 		case R.id.copy_menu_item:
 			// Put the selected text into the clipboard
 			ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -43,6 +43,7 @@ public class WebAppInterface {
 			clipboard.setPrimaryClip(clip);
 			break;
 
+		// Share
 		case R.id.share_menu_item:
 			Intent sharingIntent = new Intent(Intent.ACTION_SEND);
 			sharingIntent.setType("text/plain");
@@ -51,10 +52,17 @@ public class WebAppInterface {
 		    		activity.getString(R.string.share_menu_headline)));
 			break;
 
+		// Open dictionary
 		case R.id.dictionary_menu_item:
-			activity.startActivity(Dictionary.aard_lookup.getIntent(selectedText));
+			Dictionary defaultDict = Dictionary.getDefault(activity);
+			if (defaultDict != null) {
+				activity.startActivity(defaultDict.getIntent(selectedText));
+			} else {
+				Toast.makeText(activity, R.string.Set_default_dictionary, Toast.LENGTH_SHORT).show();
+			}
 			break;
 
+		// Add to SRS
 		case R.id.srs_menu_item:
 			new AddToSRSDialog(selectedText).show(activity.getFragmentManager(), "add_to_srs_dialog");
 			break;

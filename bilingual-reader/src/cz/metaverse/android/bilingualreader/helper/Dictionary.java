@@ -1,8 +1,15 @@
 package cz.metaverse.android.bilingualreader.helper;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import cz.metaverse.android.bilingualreader.ReaderActivity;
 
 /**
  *
@@ -17,7 +24,7 @@ public enum Dictionary {
 	aard_lookup ("Aard Dictionary Lookup", "aarddict.android", ".Lookup", "android.intent.action.SEARCH",
 							"query", "%s"),
 
-	colordict ("ColorDict Old Style"),
+	colordict ("ColorDict"),
 
 	colordict_old ("ColorDict Old Style", "com.socialnmobile.colordict", ".activity.Main",
 							"android.intent.action.SEARCH", "query", "%s"),
@@ -56,6 +63,10 @@ public enum Dictionary {
 	private final String intentKey;
 	private final String intentDataPattern;
 	private boolean hasAttributes; // Indicates whether the following attributes are filled in or not.
+
+	// Static variables
+	private static Dictionary defaultDictionary;
+
 
 	/**
 	 * Constructor filling the attributes that will be automagically turned into an intent.
@@ -118,6 +129,20 @@ public enum Dictionary {
 		return dictionaryName;
 	}
 
+	/**
+	 * Returns list of dictionaries that respond to their respective Intents.
+	 */
+	public static List<Dictionary> getInstalledDictionaries() {
+		List<Dictionary> dicts = new ArrayList<Dictionary>();
+
+		for (Dictionary dict : Dictionary.values()) {
+			// TODO test intent
+			dicts.add(dict);
+		}
+
+		return dicts;
+	}
+
 
 	/**
 	 * This method produces an Intent from the given attributes.
@@ -144,5 +169,47 @@ public enum Dictionary {
 		} else {
 			return intent.setData(Uri.parse(text));
 		}
+	}
+
+
+	// ============================================================================================
+	//		Static functions for getting/setting the default dictionary
+	// ============================================================================================
+
+	/**
+	 * Sets the default dictionary in the settings.
+	 * @param activity	ReaderActivity instance to get its shared preferences
+	 */
+	public static void setDefault(Activity activity, Dictionary selectedDict) {
+		// Save the value to shared preferences
+		SharedPreferences.Editor editor = activity.getPreferences(Context.MODE_PRIVATE).edit();
+		// Save the code of the dictionary into settings
+		// (e.g. for "Aard dictionary Lookup" saves "aard_lookup").
+		editor.putString("defaultDictionary", selectedDict.name());
+		editor.commit();
+
+		// Keep it saved here as well
+		defaultDictionary = selectedDict;
+	}
+
+	/**
+	 * Returns the default dictionary from the settings.
+	 * @param activity	ReaderActivity instance to get its shared preferences
+	 * @return			If no default is set, returns null
+	 */
+	public static Dictionary getDefault(Activity activity) {
+		if (defaultDictionary == null) {
+			SharedPreferences preferences = ((ReaderActivity) activity).getPreferences(Context.MODE_PRIVATE);
+			String defaultDictString = preferences.getString("defaultDictionary", null);
+
+			if (defaultDictString != null) {
+				try {
+					defaultDictionary = Dictionary.valueOf(defaultDictString);
+				}
+				// If said dictionary code doesn't exist, do nothing.
+				catch (IllegalArgumentException e) {}
+			}
+		}
+		return defaultDictionary;
 	}
 }

@@ -45,6 +45,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.dialog.ChangeCSSDialog;
 import cz.metaverse.android.bilingualreader.dialog.LanguageChooserDialog;
+import cz.metaverse.android.bilingualreader.dialog.SettingsDialog;
 import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
 import cz.metaverse.android.bilingualreader.manager.EpubsNavigator;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
@@ -235,9 +236,9 @@ public class ReaderActivity extends Activity {
 				// TODO Open SRS database activity
 				break;
 
-			// Options
+			// Settings
 			case 3:
-
+				new SettingsDialog().show(getFragmentManager(), "settings_dialog");
 				break;
 			}
 

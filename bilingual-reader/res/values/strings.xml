@@ -191,6 +191,9 @@
     
     <string name="activated_sync_chapters">Activated synchronized chapters.</string>
     <string name="deactivated_sync_chapters">Deactivated synchronized chapters.</string>
+    <string name="default_dictionary_colon">Default dictionary:</string>
+    <string name="Settings">Settings</string>
+    <string name="Set_default_dictionary">Pick a default dictionary in the settings.</string>
     
 
 </resources>
