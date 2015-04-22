@@ -82,12 +82,12 @@ public class DictionaryAPI {
 		Intent intent = new Intent(intentAction);
 		if (packageName != null) {
 			if (className != null) {
-				String cls = className;
-				if (cls.startsWith(".")) {
-					cls = packageName + cls;
+				String classAddress = className;
+				if (classAddress.startsWith(".")) {
+					classAddress = packageName + classAddress;
 				}
 				intent.setComponent(new ComponentName(
-					packageName, cls
+					packageName, classAddress
 				));
 			}
 		}
