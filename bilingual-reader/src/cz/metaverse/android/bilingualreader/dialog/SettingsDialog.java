@@ -40,7 +40,7 @@ public class SettingsDialog extends DialogFragment implements DialogInterface.On
 		spinner = (Spinner) form.findViewById(R.id.default_dict_spinner);
 
 		// Initialize the spinner
-		dictionaries = Dictionary.getInstalledDictionaries();
+		dictionaries = Dictionary.getInstalledDictionaries(getActivity());
 		initializeDefaultDictSpinner(spinner, dictionaries);
 
 		// Use builder to create the rest of the Dialog

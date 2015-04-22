@@ -8,6 +8,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 
@@ -130,21 +132,6 @@ public enum Dictionary {
 	}
 
 	/**
-	 * Returns list of dictionaries that respond to their respective Intents.
-	 */
-	public static List<Dictionary> getInstalledDictionaries() {
-		List<Dictionary> dicts = new ArrayList<Dictionary>();
-
-		for (Dictionary dict : Dictionary.values()) {
-			// TODO test intent
-			dicts.add(dict);
-		}
-
-		return dicts;
-	}
-
-
-	/**
 	 * This method produces an Intent from the given attributes.
 	 * @param text	Text to be searched for.
 	 * @return		Intent that launches dictionary in search of a given text.
@@ -173,8 +160,28 @@ public enum Dictionary {
 
 
 	// ============================================================================================
-	//		Static functions for getting/setting the default dictionary
+	//		Static functions
 	// ============================================================================================
+
+	/**
+	 * Returns list of dictionaries that are available (respond to their respective Intents).
+	 * @param activity	Activity is needed to test if the Intents are available
+	 */
+	public static List<Dictionary> getInstalledDictionaries(Activity activity) {
+		List<Dictionary> dicts = new ArrayList<Dictionary>();
+
+		for (Dictionary dict : Dictionary.values()) {
+			// Check if intent is available ?
+			List<ResolveInfo> resolveInfo = activity.getPackageManager().
+					queryIntentActivities(dict.getIntent("test"), PackageManager.MATCH_DEFAULT_ONLY);
+
+			if (resolveInfo != null && resolveInfo.size() > 0) {
+				dicts.add(dict);
+			}
+		}
+
+		return dicts;
+	}
 
 	/**
 	 * Sets the default dictionary in the settings.
