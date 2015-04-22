@@ -182,8 +182,8 @@
     <string-array name="Navigation_Drawer_Items">
         <item>Open Book 1</item>
         <item>Open Book 2</item>
-        <item>SRS Database</item>>
-        <item>Settings</item>>
+        <item>SRS Database</item>
+        <item>Settings</item>
     </string-array>
     
     <string name="drawer_open">Open drawer</string>
@@ -195,5 +195,9 @@
     <string name="Settings">Settings</string>
     <string name="Set_default_dictionary">Pick a default dictionary in the settings.</string>
     
+    <string-array name="spinner_no_dictionaries">
+        <item>No available dictionaries,</item>
+        <item>please install some.</item>
+    </string-array>
 
 </resources>

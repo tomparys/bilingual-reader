@@ -53,24 +53,34 @@ public class SettingsDialog extends DialogFragment implements DialogInterface.On
 	}
 
 	private void initializeDefaultDictSpinner(Spinner spin, List<Dictionary> dicts) {
-		// Create an ArrayAdapter using the default spinner layout
-		// and list of Dictionaries (they implement toString() so it's not a problem that it's not String).
-		ArrayAdapter<Dictionary> adapter = new ArrayAdapter<Dictionary>(
-				getActivity(), android.R.layout.simple_spinner_item, dicts);
+		// If there are available dictionaries.
+		if (dicts.size() > 0) {
+			// Create an ArrayAdapter using the default spinner layout
+			// and list of Dictionaries (they implement toString() so it's not a problem).
+			ArrayAdapter<Dictionary> adapter = new ArrayAdapter<Dictionary>(
+					getActivity(), android.R.layout.simple_spinner_item, dicts);
 
-		// Specify the layout to use when the list of choices appears
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			// Specify the layout to use when the list of choices appears and set the adapter
+			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			spinner.setAdapter(adapter);
 
-		// Apply the adapter to the spinner
-		spinner.setAdapter(adapter);
-
-		// Set the selected item in the spinner
-		Dictionary defaultDict = Dictionary.getDefault(getActivity());
-		if (defaultDict != null) {
-			int defaultDictPosition = dicts.indexOf(defaultDict);
-			if (defaultDictPosition != -1) {
-				spinner.setSelection(defaultDictPosition);
+			// Set the selected item in the spinner
+			Dictionary defaultDict = Dictionary.getDefault(getActivity());
+			if (defaultDict != null) {
+				int defaultDictPosition = dicts.indexOf(defaultDict);
+				if (defaultDictPosition != -1) {
+					spinner.setSelection(defaultDictPosition);
+				}
 			}
+
+		} else {
+			// If there are no dictionaries, display info about that.
+			ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
+					R.array.spinner_no_dictionaries, android.R.layout.simple_spinner_dropdown_item);
+
+			// Specify the layout to use when the list of choices appears and set the adapter
+			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			spinner.setAdapter(adapter);
 		}
 	}
 
@@ -80,8 +90,10 @@ public class SettingsDialog extends DialogFragment implements DialogInterface.On
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
 		// Spinner
-		Dictionary selectedDict = (Dictionary) spinner.getSelectedItem();
-		Dictionary.setDefault(getActivity(), selectedDict);
+		if (dictionaries.size() > 0) {
+			Dictionary selectedDict = (Dictionary) spinner.getSelectedItem();
+			Dictionary.setDefault(getActivity(), selectedDict);
+		}
 	}
 
 	/**
