@@ -103,7 +103,7 @@ public enum Dictionary {
 	public Intent getIntent(String text) {
 		if (hasAttributes) {
 			// Automatic intent creation from attributes
-			return getIntentFromAttributes(text);
+			return createIntentFromAttributes(text);
 		} else {
 			// Manual intent creation from custom code
 			Intent intent;
@@ -137,7 +137,7 @@ public enum Dictionary {
 	 * @param text	Text to be searched for.
 	 * @return		Intent that launches dictionary in search of a given text.
 	 */
-	private Intent getIntentFromAttributes(String text) {
+	private Intent createIntentFromAttributes(String text) {
 		Intent intent = new Intent(intentAction);
 		if (packageName != null) {
 			if (className != null) {

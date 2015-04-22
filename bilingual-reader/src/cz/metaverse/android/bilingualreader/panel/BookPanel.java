@@ -39,7 +39,6 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.RelativeLayout;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.helper.PanelViewStateEnum;
 import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
@@ -150,6 +149,9 @@ public class BookPanel extends SplitPanel {
 	{
 		viewedPage = path;
 		if(created) {
+
+			// TODO Estimate scroll position of each paragraph for proper synchronized scrolling.
+
 			webView.loadUrl(path);
 
 			// Load position from before if this is a page opening from before.
