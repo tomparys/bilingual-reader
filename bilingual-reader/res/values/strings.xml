@@ -194,6 +194,8 @@
     <string name="default_dictionary_colon">Default dictionary:</string>
     <string name="Settings">Settings</string>
     <string name="Set_default_dictionary">Pick a default dictionary in the settings.</string>
+    <string name="See_dictionaries_that_work_with_this_app">See dictionaries that work with this app.</string>
+    <string name="Dictionaries_that_work_with_this_app">Dictionaries that work with this app</string>
     
     <string-array name="spinner_no_dictionaries">
         <item>No available dictionaries,</item>
