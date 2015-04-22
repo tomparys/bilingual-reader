@@ -2,6 +2,11 @@ package cz.metaverse.android.bilingualreader.helper;
 
 import android.content.Intent;
 
+/**
+ *
+ * Helper class that serves to open a dictionary in search of a given text.
+ *
+ */
 public enum Dictionary {
 
 	// Available dictionaries
