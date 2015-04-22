@@ -352,6 +352,11 @@ public class ReaderActivity extends Activity {
 			menu.findItem(R.id.bilingual_ebook_menu_item).setVisible(false);
 		}
 
+		if (navigator.canExtractAudio()) {
+			menu.findItem(R.id.audio_menu_item).setVisible(true);
+		} else {
+			menu.findItem(R.id.audio_menu_item).setVisible(false);
+		}
 
 		// If there is only one view, option "changeSizes" is not displayed.
 		if (panelCount == 1)

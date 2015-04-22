@@ -383,6 +383,19 @@ public class EpubsNavigator {
 	}
 
 	/**
+	 * @return Whether there is audio to be extracted in either of the opened books.
+	 */
+	public boolean canExtractAudio() {
+		boolean can = false;
+		for (int i = 0; i < nBooks; i++) {
+			if (books[i] != null && books[i].getAudio().length > 0) {
+				can = true;
+			}
+		}
+		return can;
+	}
+
+	/**
 	 * Changes the screen area ratio between the two opened panels.
 	 * @param weight
 	 */

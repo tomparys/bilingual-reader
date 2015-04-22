@@ -824,6 +824,10 @@ public class EpubManipulator {
 		return res;
 	}
 
+	/**
+	 * Gets called each time a new page is opened.
+	 * @param page	The newly opened page
+	 */
 	private void audioExtractor(String page) {
 		ArrayList<String> tags = getAudioTags(page.replace("file:///", ""));
 		ArrayList<String> srcs;
