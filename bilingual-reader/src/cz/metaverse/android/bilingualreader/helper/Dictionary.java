@@ -164,10 +164,10 @@ public enum Dictionary {
 	// ============================================================================================
 
 	/**
-	 * Returns list of dictionaries that are available (respond to their respective Intents).
+	 * Returns list of available dictionaries (that respond to their respective Intents).
 	 * @param activity	Activity is needed to test if the Intents are available
 	 */
-	public static List<Dictionary> getInstalledDictionaries(Activity activity) {
+	public static List<Dictionary> getAvailableDictionaries(Activity activity) {
 		List<Dictionary> dicts = new ArrayList<Dictionary>();
 
 		for (Dictionary dict : Dictionary.values()) {
@@ -202,7 +202,7 @@ public enum Dictionary {
 	/**
 	 * Returns the default dictionary from the settings.
 	 * @param activity	ReaderActivity instance to get its shared preferences
-	 * @return			If no default is set, returns null
+	 * @return			If no default is set, returns and sets first available, if no availeble, returns null.
 	 */
 	public static Dictionary getDefault(Activity activity) {
 		if (defaultDictionary == null) {
@@ -217,6 +217,15 @@ public enum Dictionary {
 				catch (IllegalArgumentException e) {}
 			}
 		}
+
+		// If no dictionary set as default, set the first one available as default if there are any.
+		if (defaultDictionary == null) {
+			List<Dictionary> available = getAvailableDictionaries(activity);
+			if (available != null && available.size() > 0) {
+				setDefault(activity, available.get(0));
+			}
+		}
+
 		return defaultDictionary;
 	}
 }
