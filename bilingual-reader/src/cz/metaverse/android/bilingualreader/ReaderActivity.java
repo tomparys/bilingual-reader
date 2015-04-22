@@ -234,6 +234,11 @@ public class ReaderActivity extends Activity {
 			case 2:
 				// TODO Open SRS database activity
 				break;
+
+			// Options
+			case 3:
+
+				break;
 			}
 
 			// Highlight the selected item and close the drawer

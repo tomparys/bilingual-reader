@@ -183,6 +183,7 @@
         <item>Open Book 1</item>
         <item>Open Book 2</item>
         <item>SRS Database</item>>
+        <item>Settings</item>>
     </string-array>
     
     <string name="drawer_open">Open drawer</string>
