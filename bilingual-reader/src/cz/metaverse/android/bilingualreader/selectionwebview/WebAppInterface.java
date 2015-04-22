@@ -52,7 +52,7 @@ public class WebAppInterface {
 			break;
 
 		case R.id.dictionary_menu_item:
-			activity.startActivity(Dictionary.open(selectedText, Dictionary.aard_lookup));
+			activity.startActivity(Dictionary.aard_lookup.getIntent(selectedText));
 			break;
 
 		case R.id.srs_menu_item:
