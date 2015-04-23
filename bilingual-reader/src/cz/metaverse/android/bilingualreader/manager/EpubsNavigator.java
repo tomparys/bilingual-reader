@@ -315,13 +315,10 @@ public class EpubsNavigator {
 	}
 
 	/**
-	 * If panel *from* went to a new page, opens the same page in the other panel.
-	 * @param from
-	 * @param to
-	 * @return
-	 * @throws Exception
+	 * Synchronize Chapter No. in both panels from panel *from* to panel *to*.
+	 * Currently unused (removed from the menu options for not being useful).
 	 */
-	public boolean synchronizeView(int from, int to) throws Exception {
+	public boolean synchronizeChapterNumbers(int from, int to) throws Exception {
 		if (!exactlyOneBookOpen()) {
 			setBookPage(books[to].goToPage(books[from]
 					.getCurrentSpineElementIndex()), to);
