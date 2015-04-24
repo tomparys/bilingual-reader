@@ -79,6 +79,10 @@ public class EpubsNavigator {
 			changePanel(new BookPanel(), index);
 			setBookPage(books[index].getSpineElementPath(0), index);
 
+			// If we opened a new book, we automatically cancelled the reading of a bilingual book,
+			// because at least one panel now does now contain a different book.
+			readingBilingualEbook = false;
+
 			// Save the state to shared preferences
 			SharedPreferences.Editor editor = activity.getPreferences(Context.MODE_PRIVATE).edit();
 			saveState(editor);
