@@ -10,8 +10,9 @@ The *Bilingual Reader* project © 2015 Tomáš Orsava is released under the **GN
 License for the Bilingual Reader
 --------------------------------
 
-Bilingual Reader for Android
-Copyright (c) 2015  Tomáš Orsava
+**Bilingual Reader for Android**
+
+*Copyright (c) 2015  Tomáš Orsava*
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the **GNU General Public License** as published by
