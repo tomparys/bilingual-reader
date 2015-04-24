@@ -229,12 +229,18 @@ public class BookPanel extends SplitPanel {
 	@Override
 	public void saveState(Editor editor) {
 		super.saveState(editor);
-		editor.putString("state"+index, enumState.name());
-		editor.putString("page"+index, viewedPage);
+		if (enumState != null) {
+			editor.putString("state"+index, enumState.name());
+		}
+		if (viewedPage != null) {
+			editor.putString("page"+index, viewedPage);
+		}
 
 		// Save the position within the page.
-		editor.putInt("positionX"+index, webView.getScrollX());
-		editor.putInt("positionY"+index, webView.getScrollY());
+		if (webView != null) {
+			editor.putInt("positionX"+index, webView.getScrollX());
+			editor.putInt("positionY"+index, webView.getScrollY());
+		}
 	}
 
 	/**

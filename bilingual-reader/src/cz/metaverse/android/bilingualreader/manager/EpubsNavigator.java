@@ -64,19 +64,25 @@ public class EpubsNavigator {
 	}
 
 	/**
-	 * Opens a book on its first page.
+	 * Opens a new book into one of the panels.
 	 * @param path	Path of the book
 	 * @param index	Index of the panel into which to open it
 	 * @return		Success
 	 */
 	public boolean openBook(String path, int index) {
 		try {
-			if (books[index] != null)
+			if (books[index] != null) {
 				books[index].destroy();
+			}
 
 			books[index] = new EpubManipulator(path, index + "", context);
 			changePanel(new BookPanel(), index);
 			setBookPage(books[index].getSpineElementPath(0), index);
+
+			// Save the state to shared preferences
+			SharedPreferences.Editor editor = activity.getPreferences(Context.MODE_PRIVATE).edit();
+			saveState(editor);
+			editor.commit();
 
 			return true;
 		} catch (Exception e) {
@@ -466,11 +472,12 @@ public class EpubsNavigator {
 		p.setKey(index);
 
 		// Detach and re-attach panels that are after the newly changed one.
-		for (int i = index + 1; i < splitViews.length; i++)
+		for (int i = index + 1; i < splitViews.length; i++) {
 			if (splitViews[i] != null) {
 				activity.detachPanel(splitViews[i]);
 				activity.attachPanel(splitViews[i]);
 			}
+		}
 	}
 
 	/**
@@ -542,10 +549,11 @@ public class EpubsNavigator {
 			}
 
 		// Save views
-		for (int i = 0; i < nBooks; i++)
+		for (int i = 0; i < nBooks; i++) {
 			if (splitViews[i] != null) {
 				editor.putString(getS(R.string.ViewType) + i, splitViews[i]
 						.getClass().getName());
+
 				splitViews[i].saveState(editor);
 
 				// There is no need to remove panels upon losing focus.
@@ -555,6 +563,7 @@ public class EpubsNavigator {
 			else {
 				editor.putString(getS(R.string.ViewType) + i, "");
 			}
+		}
 	}
 
 	/**
