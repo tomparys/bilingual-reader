@@ -142,6 +142,13 @@ public class BookPanel extends SplitPanel {
 	}
 
 	/**
+	 * Returns the URL of the currently displayed page.
+	 */
+	public String getViewedPage() {
+		return viewedPage;
+	}
+
+	/**
 	 * Load page through URL path.
 	 * @param path to load
 	 */

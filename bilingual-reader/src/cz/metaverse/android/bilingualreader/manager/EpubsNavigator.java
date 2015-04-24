@@ -30,8 +30,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Log;
-import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.helper.PanelViewStateEnum;
 import cz.metaverse.android.bilingualreader.panel.AudioPanel;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
@@ -471,6 +471,19 @@ public class EpubsNavigator {
 				activity.detachPanel(splitViews[i]);
 				activity.attachPanel(splitViews[i]);
 			}
+	}
+
+	/**
+	 * If there is a BookPanel in the specified *panel*, it returns it.
+	 */
+	public BookPanel getBookPanel(int panel) {
+		if (0 <= panel && panel < nBooks && splitViews[panel] != null
+				&& splitViews[panel] instanceof BookPanel) {
+
+			return (BookPanel) splitViews[panel];
+		} else {
+			return null;
+		}
 	}
 
 	/**

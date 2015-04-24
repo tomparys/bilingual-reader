@@ -23,6 +23,7 @@
     <string name="Change_Size">Change Panel Size</string>
     <string name="error_LoadPage">Can not load the page</string>
     <string name="error_LoadBook">Cannot load the book</string>
+    <string name="error_readingFile">Error while reading a file.</string>
     <string name="error_onlyOneBookOpen">Only one book open!</string>
     <string name="error_cannotSynchronize">Cannot synchronize!</string>
     <string name="error_metadataNotFound">Metadata not found!</string>

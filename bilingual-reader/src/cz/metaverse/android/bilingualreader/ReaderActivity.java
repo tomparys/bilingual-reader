@@ -49,6 +49,7 @@ import cz.metaverse.android.bilingualreader.dialog.SettingsDialog;
 import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
 import cz.metaverse.android.bilingualreader.manager.EpubsNavigator;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
+import cz.metaverse.android.bilingualreader.sync.ParagraphPositions;
 
 
 public class ReaderActivity extends Activity {
@@ -394,7 +395,17 @@ public class ReaderActivity extends Activity {
 
 		// Sync Scroll
 		case R.id.sync_scroll_menu_item:
-			Toast.makeText(this, "TODO De/activating synchronized scrolling.", Toast.LENGTH_SHORT).show();
+			// TODO Make use of the information, not just compute it.
+			Toast.makeText(this, "Computing paragraph positions.", Toast.LENGTH_SHORT).show();
+
+			// Get position of each paragraph for proper synchronized scrolling.
+			for (int panel = 0; panel < navigator.getNBooks(); panel++) {
+				ParagraphPositions ppInstance = ParagraphPositions.instance(panel);
+				if (!ppInstance.isActive()) {
+					ppInstance.start(navigator.getBookPanel(panel),
+							navigator.getBookPanel(panel).getViewedPage());
+				}
+			}
 			return true;
 
 		// Sync Chapters
