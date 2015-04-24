@@ -41,6 +41,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 /**
  *
@@ -96,7 +97,7 @@ public class FileChooserActivity extends Activity {
 
 		// Populate list of epubs if needed
 		if (epubs == null || epubs.size() == 0 || populateList) {
-			new FindEpubsTask().execute(getEpubSearchDirectory());
+			new FindEpubsTask(false).execute(getEpubSearchDirectory());
 		}
 	}
 
@@ -143,7 +144,7 @@ public class FileChooserActivity extends Activity {
 		names.clear();
 		epubs.clear();
 
-		new FindEpubsTask().execute(getEpubSearchDirectory());
+		new FindEpubsTask(true).execute(getEpubSearchDirectory());
 	}
 
 	/**
@@ -186,6 +187,12 @@ public class FileChooserActivity extends Activity {
 	 */
 	private class FindEpubsTask extends AsyncTask<File, File, Boolean> {
 		private ProgressDialog progressDialog;
+		private boolean displayToastAfterwards;
+
+		public FindEpubsTask(boolean displayToastAfterwards) {
+			super();
+			this.displayToastAfterwards = displayToastAfterwards;
+		}
 
 		@Override
 		protected void onPreExecute() {
@@ -247,6 +254,11 @@ public class FileChooserActivity extends Activity {
 	    protected void onPostExecute(Boolean result) {
 	        // Stop the ProgressDialog
 			progressDialog.dismiss();
+
+			if (displayToastAfterwards) {
+				Toast.makeText(getBaseContext(), getString(R.string.File_list_refreshed),
+						Toast.LENGTH_SHORT).show();
+			}
 	    }
 
 	}

@@ -202,5 +202,7 @@
         <item>No available dictionaries,</item>
         <item>please install some.</item>
     </string-array>
+    
+    <string name="File_list_refreshed">File list refreshed.</string>
 
 </resources>
