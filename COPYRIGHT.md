@@ -12,7 +12,7 @@ License for the Bilingual Reader
 
 **Bilingual Reader for Android**
 
-*Copyright (c) 2015  Tomáš Orsava*
+Copyright (c) 2015  Tomáš Orsava
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the **GNU General Public License** as published by
