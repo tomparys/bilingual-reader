@@ -427,21 +427,21 @@ public class ReaderActivity extends Activity {
 		// Bilingual ebook
 		case R.id.bilingual_ebook_menu_item:
 			if (navigator.exactlyOneBookOpen() || navigator.isReadingBilingualEbook()) {
-				if (chooseLanguage(0)) {
+				if (openBilingualBook(0)) {
 					invalidateOptionsMenu();
 				}
 			}
 			return true;
 
 		case R.id.bilingual_ebook_1_menu_item:
-			if (chooseLanguage(0)) {
+			if (openBilingualBook(0)) {
 				invalidateOptionsMenu();
 			}
 			return true;
 
 		case R.id.bilingual_ebook_2_menu_item:
 			if (!navigator.exactlyOneBookOpen()) {
-				if (chooseLanguage(1)) {
+				if (openBilingualBook(1)) {
 					invalidateOptionsMenu();
 				}
 			} else {
@@ -657,7 +657,7 @@ public class ReaderActivity extends Activity {
 	 * @return  True if bilingual book was just opened,
 	 * 			False if language chooser dialog was opened, or if this is not a bilingual book.
 	 */
-	public boolean chooseLanguage(int book) {
+	public boolean openBilingualBook(int book) {
 
 		String[] languages;
 		languages = navigator.getLanguagesInABook(book);
