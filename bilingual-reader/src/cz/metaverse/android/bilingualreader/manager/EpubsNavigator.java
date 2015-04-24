@@ -417,6 +417,10 @@ public class EpubsNavigator {
 		return readingBilingualEbook;
 	}
 
+	public void setReadingBilingualEbook(boolean readingBilingualEbook) {
+		this.readingBilingualEbook = readingBilingualEbook;
+	}
+
 	public boolean isSyncChapters() {
 		return synchronizedChapters;
 	}
