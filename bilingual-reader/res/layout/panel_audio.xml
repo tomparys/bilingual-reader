@@ -90,6 +90,7 @@
 
         <Button
             android:id="@+id/CloseButton"
+            android:background="@drawable/btn_close"
             android:layout_width="@dimen/close_button_dimen"
             android:layout_height="@dimen/close_button_dimen"
             android:layout_alignParentRight="true"
