@@ -13,14 +13,14 @@
 
     <RelativeLayout
         android:id="@+id/ViewportLayout"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="1dp" >
 
         <WebView
             android:id="@+id/Viewport"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"

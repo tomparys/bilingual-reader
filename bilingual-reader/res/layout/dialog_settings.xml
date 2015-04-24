@@ -19,7 +19,7 @@
 
         <Spinner
             android:id="@+id/default_dict_spinner"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
@@ -34,7 +34,7 @@
         <Button
             android:id="@+id/see_dictionaries_that_work_with_this_app"
             android:textSize="15sp"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/See_dictionaries_that_work_with_this_app"
             style="?android:attr/borderlessButtonStyle" />

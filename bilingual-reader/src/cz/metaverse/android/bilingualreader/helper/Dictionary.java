@@ -113,7 +113,7 @@ public enum Dictionary {
 			case colordict:
 				intent = new Intent("colordict.intent.action.SEARCH");
 				intent.putExtra("EXTRA_QUERY", text);
-				//intent.putExtra("EXTRA_HEIGHT", 600 /*"fill_parent"*/);
+				//intent.putExtra("EXTRA_HEIGHT", 600 /*"match_parent"*/);
 				//intent.putExtra("EXTRA_GRAVITY", Gravity.CENTER);
 				//intent.putExtra("EXTRA_MARGIN_LEFT", 50);
 				//intent.putExtra("EXTRA_MARGIN_RIGHT", 50);
