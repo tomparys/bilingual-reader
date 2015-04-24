@@ -26,6 +26,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program (see the [`LICENSE.html`](LICENSE.html) file).  If not, see <http://www.gnu.org/licenses/>.
 
+Contact: gpl at orsava.cz
+
 
 License of the EPUB3Reader project
 ----------------------------------
