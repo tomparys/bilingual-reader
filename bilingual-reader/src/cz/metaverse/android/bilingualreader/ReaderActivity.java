@@ -326,8 +326,6 @@ public class ReaderActivity extends Activity {
 			menu.findItem(R.id.sync_chapters_menu_item).setVisible(true);
 
 			// Submenus
-			menu.findItem(R.id.bilingual_ebook_1_menu_item).setVisible(true);
-			menu.findItem(R.id.bilingual_ebook_2_menu_item).setVisible(true);
 			menu.findItem(R.id.style_1_menu_item).setVisible(true);
 			menu.findItem(R.id.style_2_menu_item).setVisible(true);
 			menu.findItem(R.id.audio_1_menu_item).setVisible(true);
@@ -335,11 +333,15 @@ public class ReaderActivity extends Activity {
 
 			if (navigator.isReadingBilingualEbook()) {
 				// Bilingual ebook open in both panels has only 1 ToC and 1 metadata.
+				menu.findItem(R.id.bilingual_ebook_1_menu_item).setVisible(false);
+				menu.findItem(R.id.bilingual_ebook_2_menu_item).setVisible(false);
 				menu.findItem(R.id.metadata_1_menu_item).setVisible(false);
 				menu.findItem(R.id.metadata_2_menu_item).setVisible(false);
 				menu.findItem(R.id.table_of_contents_1_menu_item).setVisible(false);
 				menu.findItem(R.id.table_of_contents_2_menu_item).setVisible(false);
 			} else {
+				menu.findItem(R.id.bilingual_ebook_1_menu_item).setVisible(true);
+				menu.findItem(R.id.bilingual_ebook_2_menu_item).setVisible(true);
 				menu.findItem(R.id.metadata_1_menu_item).setVisible(true);
 				menu.findItem(R.id.metadata_2_menu_item).setVisible(true);
 				menu.findItem(R.id.table_of_contents_1_menu_item).setVisible(true);
@@ -424,20 +426,27 @@ public class ReaderActivity extends Activity {
 
 		// Bilingual ebook
 		case R.id.bilingual_ebook_menu_item:
-			if (navigator.exactlyOneBookOpen() == true
-					|| navigator.isReadingBilingualEbook() == true)
-				chooseLanguage(0);
+			if (navigator.exactlyOneBookOpen() || navigator.isReadingBilingualEbook()) {
+				if (chooseLanguage(0)) {
+					invalidateOptionsMenu();
+				}
+			}
 			return true;
 
 		case R.id.bilingual_ebook_1_menu_item:
-			chooseLanguage(0);
+			if (chooseLanguage(0)) {
+				invalidateOptionsMenu();
+			}
 			return true;
 
 		case R.id.bilingual_ebook_2_menu_item:
-			if (navigator.exactlyOneBookOpen() == false)
-				chooseLanguage(1);
-			else
+			if (!navigator.exactlyOneBookOpen()) {
+				if (chooseLanguage(1)) {
+					invalidateOptionsMenu();
+				}
+			} else {
 				errorMessage(getString(R.string.error_onlyOneBookOpen));
+			}
 			return true;
 
 		// Display metadata of the book
@@ -644,10 +653,11 @@ public class ReaderActivity extends Activity {
 
 
 	/**
-	 * Choose language.
-	 * @param book
+	 * Open a bilingual book - if it contains more than 2 languages, let the user pick which he wants.
+	 * @return  True if bilingual book was just opened,
+	 * 			False if language chooser dialog was opened, or if this is not a bilingual book.
 	 */
-	public void chooseLanguage(int book) {
+	public boolean chooseLanguage(int book) {
 
 		String[] languages;
 		languages = navigator.getLanguagesInABook(book);
@@ -655,6 +665,7 @@ public class ReaderActivity extends Activity {
 		// If there are just two languages, start parallel text mode with them.
 		if (languages.length == 2) {
 			startParallelText(book, 0, 1);
+			return true;
 
 		// If there are more than 2 languages, show a dialog to pick the two languages
 		// 	with which to start parallel text mode.
@@ -666,8 +677,10 @@ public class ReaderActivity extends Activity {
 			LanguageChooserDialog langChooser = new LanguageChooserDialog();
 			langChooser.setArguments(bundle);
 			langChooser.show(getFragmentManager(), "");
+			return false;
 		} else {
 			errorMessage(getString(R.string.error_noOtherLanguages));
+			return false;
 		}
 	}
 

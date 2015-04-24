@@ -96,14 +96,14 @@ public class LanguageChooserDialog extends DialogFragment {
 							}
 						}
 
-						if (number_selected_elements >= 2)
-							((ReaderActivity) getActivity()).startParallelText(
-									book, first, second);
-
-						else if (number_selected_elements == 1)
-							((ReaderActivity) getActivity()).startParallelText(
-									book, first, -1);
-
+						if (number_selected_elements >= 2) {
+							((ReaderActivity) getActivity()).startParallelText(book, first, second);
+							getActivity().invalidateOptionsMenu();
+						}
+						else if (number_selected_elements == 1) {
+							((ReaderActivity) getActivity()).startParallelText(book, first, -1);
+							getActivity().invalidateOptionsMenu();
+						}
 					}
 				});
 
