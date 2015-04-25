@@ -45,12 +45,11 @@ import android.widget.ListView;
 import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.dialog.ChangeCSSDialog;
 import cz.metaverse.android.bilingualreader.dialog.LanguageChooserDialog;
-import cz.metaverse.android.bilingualreader.dialog.SettingsDialog;
 import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
+import cz.metaverse.android.bilingualreader.dialog.SettingsDialog;
 import cz.metaverse.android.bilingualreader.manager.EpubsNavigator;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
 import cz.metaverse.android.bilingualreader.sync.ParagraphPositions;
-
 
 public class ReaderActivity extends Activity {
 
@@ -76,7 +75,6 @@ public class ReaderActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		debugContext = getBaseContext();
 		setContentView(R.layout.activity_main);
 
 		/*
@@ -123,20 +121,36 @@ public class ReaderActivity extends Activity {
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
+
 		/* end of Navigation Drawer setup */
 
 
 		// Setup logic variables
-		navigator = new EpubsNavigator(2, this);
-		panelCount = 0;
-		cssSettings = new String[8];
+		navigator = EpubsNavigator.getSingleton(this);
 
-		// Load state from previous runs of the application.
-		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-		loadState(preferences);
-		if (panelCount == 0) {
-			// Load panels only in case they aren't already.
-			// e.g. Change of orientation calls onCreate() again, but the panels are already there.
+		panelCount = 0;
+		if (savedInstanceState != null) {
+			// When trying to use "getString(R.string.nonPersistentState_panelCount)" as key, the value is
+			//  just NOT retrieved. The same if the key is too long, e.g. "nonPersistentState_panelCount".
+			cssSettings = savedInstanceState.getStringArray("nps_cssSettings");
+		}
+		if (cssSettings == null) {
+			cssSettings = new String[8];
+		}
+
+		debugContext = getBaseContext();
+
+
+		if (savedInstanceState != null) {
+			// Activity is just being recreated because of runtime configuration change.
+			// Readd panels to view.
+			navigator.reAddPanels();
+		} else {
+			// Load the persistent state from previous runs of the application.
+			// if this is the first time the application is starting.
+			SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+			loadStateOfNavigator(preferences);
+			// Load panels.
 			navigator.loadViews(preferences);
 		}
 
@@ -146,6 +160,34 @@ public class ReaderActivity extends Activity {
 			Intent goToChooser = new Intent(this, FileChooserActivity.class);
 			startActivityForResult(goToChooser, 0);
 		}
+	}
+
+	/**
+	 * Called before placing the activity in a background state, such as
+	 *   - when a new Activity opens up on top of it
+	 *   - when a Runtime Change occurs (e.g. screen orientation change).
+	 * The resulting Bundle is then passed to onCreate(Bundle) when the Activity gets back into focus.
+	 *
+	 * The bundle is used to save the _non-persistent_ application state, persistent state should be saved
+	 * in onPause().
+	 */
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		// Save non-persistent state:
+		//  When trying to use "getString(R.string.nonPersistentState_panelCount)" as key, the value is
+		//  just NOT retrieved. The same if the key is too long, e.g. "nonPersistentState_panelCount".
+		outState.putStringArray("nps_cssSettings", cssSettings);
+
+		// Remove current panels from view (they still exist, they just won't be attached
+		//  to the FragmentManager and therefore won't be displayed.
+		// They will be readded in in onResume() or they will be recreated and readded
+		//  in onCreate() after a runtime configuration change.
+		// This is *not* possible to move to onDestroy, because FragmentManager refuses to do
+		//  anything after onSaveInstanceState, because it might cause potential problems when recreating
+		//  the Activity from the saved state.
+		navigator.removePanels();
+
+		super.onSaveInstanceState(outState);
 	}
 
 	/**
@@ -159,7 +201,8 @@ public class ReaderActivity extends Activity {
 		// If panelCount is zero, we can be sure we're getting focus back,
 		// 	because otherwise FileChooser intent would have been launched in onCreate.
 		if (panelCount == 0) {
-			// Load panels and books into them from before.
+			// Load panels and books into them from before if necessary,
+			// if not, just re-adds the panels to view.
 			SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 			navigator.loadViews(preferences);
 		}
@@ -179,7 +222,7 @@ public class ReaderActivity extends Activity {
 		// Save state in case the app gets killed.
 		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 		Editor editor = preferences.edit();
-		saveState(editor);
+		saveStateOfNavigator(editor);
 		editor.commit();
 	}
 
@@ -765,14 +808,14 @@ public class ReaderActivity extends Activity {
 	/**
 	 * Save state of the application.
 	 */
-	protected void saveState(Editor editor) {
+	protected void saveStateOfNavigator(Editor editor) {
 		navigator.saveState(editor);
 	}
 
 	/**
 	 * Load state of the application from before.
 	 */
-	protected void loadState(SharedPreferences preferences) {
+	protected void loadStateOfNavigator(SharedPreferences preferences) {
 		if (!navigator.loadState(preferences))
 			errorMessage(getString(R.string.error_cannotLoadState));
 	}

@@ -40,6 +40,12 @@ import cz.metaverse.android.bilingualreader.panel.SplitPanel;
 
 public class EpubsNavigator {
 
+	// The magic number - the number of panels of our application.
+	public static final int NUMBER_OF_PANELS = 2;
+
+	// A static instance of this class for the Singleton pattern herein employed.
+	private static EpubsNavigator epubsNavigatorInstance;
+
 	private int nBooks;
 	private EpubManipulator[] books;
 	private SplitPanel[] splitViews;
@@ -47,21 +53,37 @@ public class EpubsNavigator {
 	private boolean synchronizedChapters;
 	private boolean readingBilingualEbook = false;
 	private ReaderActivity activity;
-	private static Context context;
+	private Context context;
 
 	/**
-	 * Initialize EpubNavigator.
-	 * @param numberOfBooks	number of book-viewing panels open
-	 * @param a				the MainActivity from which this is launched
+	 * Singleton-pattern getter static method.
+	 * @param activity	The ReaderActivity instance that's asking for an instance.
 	 */
-	public EpubsNavigator(int numberOfBooks, ReaderActivity a) {
-		nBooks = numberOfBooks;
-		books = new EpubManipulator[nBooks];
-		splitViews = new SplitPanel[nBooks];
-		extractAudio = new boolean[nBooks];
-		activity = a;
-		context = a.getBaseContext();
+	public static EpubsNavigator getSingleton(ReaderActivity activity) {
+		if (epubsNavigatorInstance == null) {
+			epubsNavigatorInstance = new EpubsNavigator(activity);
+		}
+		epubsNavigatorInstance.setActivity(activity);
+		return epubsNavigatorInstance;
 	}
+
+	/**
+	 * Private constructor for the singleton pattern.
+	 * @param a  The ReaderActivity from which this is launched
+	 */
+	private EpubsNavigator(ReaderActivity activity) {
+		this.nBooks = NUMBER_OF_PANELS;
+		this.books = new EpubManipulator[nBooks];
+		this.splitViews = new SplitPanel[nBooks];
+		this.extractAudio = new boolean[nBooks];
+		this.activity = activity;
+		this.context = activity.getBaseContext();
+	}
+
+	private void setActivity(ReaderActivity activity) {
+		this.activity = activity;
+	}
+
 
 	/**
 	 * Opens a new book into one of the panels.
@@ -630,20 +652,52 @@ public class EpubsNavigator {
 	}
 
 	/**
-	 * Recreates the panels from last time based on saved preferences
+	 * If necessary, recreates the panels from last time based on saved preferences,
+	 *  and displays them.
 	 * @param preferences
 	 */
 	public void loadViews(SharedPreferences preferences) {
 		for (int i = 0; i < nBooks; i++) {
-			splitViews[i] = newPanelByClassName(preferences.getString(
-					getS(R.string.ViewType) + i, ""));
+			// Only load the panel if it isn't already up and ready.
+			if (splitViews[i] == null) {
+				splitViews[i] = newPanelByClassName(preferences.getString(
+						getS(R.string.ViewType) + i, ""));
+				if (splitViews[i] != null) {
+					splitViews[i].setKey(i);
+					if (splitViews[i] instanceof AudioPanel) {
+						((AudioPanel) splitViews[i]).setAudioList(books[i > 0 ? i - 1 : nBooks - 1].getAudio());
+					}
+					splitViews[i].loadState(preferences);
+				}
+			}
+
+			// If panel is properly setup, display it.
 			if (splitViews[i] != null) {
 				activity.addPanel(splitViews[i]);
-				splitViews[i].setKey(i);
-				if (splitViews[i] instanceof AudioPanel) {
-					((AudioPanel) splitViews[i]).setAudioList(books[i > 0 ? i - 1 : nBooks - 1].getAudio());
-				}
-				splitViews[i].loadState(preferences);
+			}
+		}
+	}
+
+	/**
+	 * Removes the panels from the FragmentManager of the Activity. The panels will still exist,
+	 * but won't be displayed.
+	 */
+	public void removePanels() {
+		for (int i = 0; i < nBooks; i++) {
+			if (splitViews[i] != null) {
+				activity.removePanelWithoutClosing(splitViews[i]);
+			}
+		}
+	}
+
+	/**
+	 * Removes the panels from the FragmentManager of the Activity. The panels will still exist,
+	 * but won't be displayed.
+	 */
+	public void reAddPanels() {
+		for (int i = 0; i < nBooks; i++) {
+			if (splitViews[i] != null) {
+				activity.addPanel(splitViews[i]);
 			}
 		}
 	}
