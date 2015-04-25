@@ -505,9 +505,9 @@ public class PanelNavigator {
 			activity.removePanelWithoutClosing(p);
 		}
 
+		p.setKey(index);
 		splitViews[index] = p;
 		activity.addPanel(p);
-		p.setKey(index);
 
 		// Detach and re-attach panels that are after the newly changed one.
 		for (int i = index + 1; i < splitViews.length; i++) {

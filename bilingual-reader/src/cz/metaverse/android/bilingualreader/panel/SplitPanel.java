@@ -69,8 +69,12 @@ public abstract class SplitPanel extends Fragment {
 
 	@Override
 	public void onActivityCreated(Bundle saved) {
-		created = true;
 		super.onActivityCreated(saved);
+		created = true;
+
+		// Set to retain this Fragment even if the underlying Activity gets re-created.
+		setRetainInstance(true);
+
 		splitPanelLayout = (RelativeLayout) getView().findViewById(R.id.GeneralLayout);
 		contentBoxLayout = (RelativeLayout) getView().findViewById(R.id.Content);
 		closeButton = (Button) getView().findViewById(R.id.CloseButton);

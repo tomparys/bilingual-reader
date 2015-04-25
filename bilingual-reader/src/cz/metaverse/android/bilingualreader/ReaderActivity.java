@@ -134,28 +134,28 @@ public class ReaderActivity extends Activity {
 		// Setup logic variables
 		navigator = PanelNavigator.getSingleton(this);
 
-		panelCount = 0;
 		if (savedInstanceState != null) {
 			// When trying to use "getString(R.string.nonPersistentState_panelCount)" as key, the value is
 			//  just NOT retrieved. The same if the key is too long, e.g. "nonPersistentState_panelCount".
+			panelCount = savedInstanceState.getInt("nps_panelCount", 0);
 			cssSettings = savedInstanceState.getStringArray("nps_cssSettings");
 		}
 		if (cssSettings == null) {
+			panelCount = 0;
 			cssSettings = new String[8];
 		}
 
 		debugContext = getBaseContext();
 
 
-		if (savedInstanceState != null) {
-			// Activity is just being recreated because of runtime configuration change.
-			// Readd panels to view.
-			navigator.reAddPanels();
-		} else {
-			// Load the persistent state from previous runs of the application.
-			// if this is the first time the application is starting.
+		// Load persistent state and create panels from before if needed. If the Activity is just being
+		// recreated because of runtime configuration change, no need to do anything.
+		if (savedInstanceState == null) {
+			// Load the persistent state from previous runs of the application,
+			// because this is the application is just starting.
 			SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 			loadStateOfNavigator(preferences);
+
 			// Load panels.
 			navigator.loadViews(preferences);
 		}
@@ -182,8 +182,11 @@ public class ReaderActivity extends Activity {
 		// Save non-persistent state:
 		//  When trying to use "getString(R.string.nonPersistentState_panelCount)" as key, the value is
 		//  just NOT retrieved. The same if the key is too long, e.g. "nonPersistentState_panelCount".
+		outState.putInt("nps_panelCount", panelCount);
 		outState.putStringArray("nps_cssSettings", cssSettings);
 
+		// --- Removing panels is no longer necessary, because they are being retained through
+		//       the recreation of the Activity. Leaving just in case.
 		// Remove current panels from view (they still exist, they just won't be attached
 		//  to the FragmentManager and therefore won't be displayed.
 		// They will be readded in in onResume() or they will be recreated and readded
@@ -191,7 +194,7 @@ public class ReaderActivity extends Activity {
 		// This is *not* possible to move to onDestroy, because FragmentManager refuses to do
 		//  anything after onSaveInstanceState, because it might cause potential problems when recreating
 		//  the Activity from the saved state.
-		navigator.removePanels();
+		//navigator.removePanels();
 
 		super.onSaveInstanceState(outState);
 	}
