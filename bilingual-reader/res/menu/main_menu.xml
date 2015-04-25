@@ -23,6 +23,7 @@
     </item>
     <item
         android:id="@+id/bilingual_ebook_menu_item"
+        android:showAsAction="ifRoom"
         android:title="@string/Activate_bilingual_ebook"
         android:visible="false">
         <menu>
@@ -38,6 +39,7 @@
     </item>
     <item
         android:id="@+id/metadata_menu_item"
+        android:showAsAction="ifRoom"
         android:title="@string/Show_Metadata">
         <menu>
             <item
@@ -52,6 +54,7 @@
     </item>
     <item
         android:id="@+id/table_of_contents_menu_item"
+        android:showAsAction="ifRoom"
         android:title="@string/Table_of_Contents">
         <menu>
             <item
@@ -66,6 +69,7 @@
     </item>
     <item
         android:id="@+id/style_menu_item"
+        android:showAsAction="ifRoom"
         android:title="@string/Change_Style"
         android:visible="true">
         <menu>
@@ -81,6 +85,7 @@
     </item>
     <item
         android:id="@+id/audio_menu_item"
+        android:showAsAction="ifRoom"
         android:title="@string/Extract_Audio"
         android:visible="false">
         <menu>
