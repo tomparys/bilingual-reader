@@ -10,8 +10,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.SeekBar;
-import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.ReaderActivity;
 
 /**
  *
@@ -42,6 +42,7 @@ public class PanelSizeDialog extends DialogFragment {
 				.getPreferences(Context.MODE_PRIVATE);
 
 		seekBarValue = preferences.getInt("seekBarValue", 50);
+
 		seekbar = (SeekBar) view.findViewById(R.id.progressBar);
 		seekbar.setProgress(seekBarValue);
 
@@ -65,13 +66,12 @@ public class PanelSizeDialog extends DialogFragment {
 						// Set the value to view.
 						((ReaderActivity) getActivity()).changeViewsSize(value);
 
-						// Save the value to shared preferences
+						// Save the value on the seek bar to preferences
+						seekBarValue = seekbar.getProgress();
+
 						SharedPreferences.Editor editor = preferences.edit();
 						editor.putInt("seekBarValue", seekBarValue);
 						editor.commit();
-
-						// Save the actual value for future showing of the seekbar
-						seekBarValue = seekbar.getProgress();
 					}
 				});
 
