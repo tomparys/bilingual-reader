@@ -22,8 +22,8 @@ import cz.metaverse.android.bilingualreader.ReaderActivity;
 public class PanelSizeDialog extends DialogFragment {
 
 	protected SeekBar seekbar;
-	protected float value = (float) 0.2;
-	protected int seekBarValue = 50;
+	protected float panelWeight;
+	protected int seekBarValue;
 	protected Context context;
 
 	@Override
@@ -40,31 +40,29 @@ public class PanelSizeDialog extends DialogFragment {
 		// Load the seek bar value
 		final SharedPreferences preferences = ((ReaderActivity) getActivity())
 				.getPreferences(Context.MODE_PRIVATE);
-
 		seekBarValue = preferences.getInt("seekBarValue", 50);
 
+		// Set the value to the seekbar
 		seekbar = (SeekBar) view.findViewById(R.id.progressBar);
 		seekbar.setProgress(seekBarValue);
 
 		// Set title
 		builder.setTitle(getString(R.string.SetSizeTitle));
-		builder.setView(view);
 
 		// Add ok button
 		builder.setPositiveButton(getString(R.string.OK),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int id) {
-						// Get the resulting value from the seekbar
-						float actual = (float) seekbar.getProgress();
-						value = actual / (float) seekbar.getMax();
-						if (value <= 0.1)
-							value = (float) 0.1;
-						if (value >= 0.9)
-							value = (float) 0.9;
-
-						// Set the value to view.
-						((ReaderActivity) getActivity()).changeViewsSize(value);
+						// Compute and set the weight of the panels from the seekbar value
+						panelWeight = (float) seekbar.getProgress() / (float) seekbar.getMax();
+						if (panelWeight <= 0.1) {
+							panelWeight = 0.1f;
+						}
+						if (panelWeight >= 0.9) {
+							panelWeight = 0.9f;
+						}
+						((ReaderActivity) getActivity()).changePanelsWeight(panelWeight);
 
 						// Save the value on the seek bar to preferences
 						seekBarValue = seekbar.getProgress();
@@ -76,14 +74,10 @@ public class PanelSizeDialog extends DialogFragment {
 				});
 
 		// Add cancel button
-		builder.setNegativeButton(getString(R.string.Cancel),
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int id) {
-					}
-				});
+		builder.setNegativeButton(getString(R.string.Cancel), null);
 
 		// Create the dialog
+		builder.setView(view);
 		return builder.create();
 	}
 

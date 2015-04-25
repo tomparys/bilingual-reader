@@ -235,7 +235,7 @@ public class AudioPanel extends SplitPanel {
 						/ ((ReaderActivity) getActivity()).getHeight();
 				if (weight > 0.5f)
 					weight = 0.5f;
-				navigator.changeViewsSize(1 - weight);
+				navigator.changePanelsWeight(1 - weight);
 
 				// 1 file: show the player only and able it
 				if (songs.length == 1) {
@@ -244,7 +244,7 @@ public class AudioPanel extends SplitPanel {
 				}
 			} else {
 				// Landscape case: fifty-fifty
-				navigator.changeViewsSize(0.5f);
+				navigator.changePanelsWeight(0.5f);
 			}
 
 			updateButtons();

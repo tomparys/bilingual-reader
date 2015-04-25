@@ -790,11 +790,11 @@ public class ReaderActivity extends Activity {
 
 
 	/**
-	 * Change the relative weight of the two panels.
+	 * Change the relative weight of the two panels, this change their relative size.
 	 * @param weight	weight of the first panel (0 to 1)
 	 */
-	public void changeViewsSize(float weight) {
-		navigator.changeViewsSize(weight);
+	public void changePanelsWeight(float weight) {
+		navigator.changePanelsWeight(weight);
 	}
 
 	/**

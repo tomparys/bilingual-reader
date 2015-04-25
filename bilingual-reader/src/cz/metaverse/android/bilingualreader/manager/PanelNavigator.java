@@ -436,7 +436,7 @@ public class PanelNavigator {
 	 * Changes the screen area ratio between the two opened panels.
 	 * @param weight
 	 */
-	public void changeViewsSize(float weight) {
+	public void changePanelsWeight(float weight) {
 		if (splitViews[0] != null && splitViews[1] != null) {
 			splitViews[0].changeWeight(1 - weight);
 			splitViews[1].changeWeight(weight);
