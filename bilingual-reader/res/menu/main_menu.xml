@@ -22,18 +22,17 @@
         android:visible="true">
     </item>
     <item
-        android:id="@+id/bilingual_ebook_menu_item"
+        android:id="@+id/table_of_contents_menu_item"
         android:showAsAction="ifRoom"
-        android:title="@string/Activate_bilingual_ebook"
-        android:visible="false">
+        android:title="@string/Table_of_Contents">
         <menu>
             <item
-                android:id="@+id/bilingual_ebook_1_menu_item"
-                android:title="@string/From_Book_1"
+                android:id="@+id/table_of_contents_1_menu_item"
+                android:title="@string/Book_1"
                 android:visible="false"/>
             <item
-                android:id="@+id/bilingual_ebook_2_menu_item"
-                android:title="@string/From_Book_2"
+                android:id="@+id/table_of_contents_2_menu_item"
+                android:title="@string/Book_2"
                 android:visible="false"/>
         </menu>
     </item>
@@ -53,21 +52,6 @@
         </menu>
     </item>
     <item
-        android:id="@+id/table_of_contents_menu_item"
-        android:showAsAction="ifRoom"
-        android:title="@string/Table_of_Contents">
-        <menu>
-            <item
-                android:id="@+id/table_of_contents_1_menu_item"
-                android:title="@string/Book_1"
-                android:visible="false"/>
-            <item
-                android:id="@+id/table_of_contents_2_menu_item"
-                android:title="@string/Book_2"
-                android:visible="false"/>
-        </menu>
-    </item>
-    <item
         android:id="@+id/style_menu_item"
         android:showAsAction="ifRoom"
         android:title="@string/Change_Style"
@@ -80,6 +64,22 @@
             <item
                 android:id="@+id/style_2_menu_item"
                 android:title="@string/Book_2"
+                android:visible="false"/>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/bilingual_ebook_menu_item"
+        android:showAsAction="ifRoom"
+        android:title="@string/Activate_bilingual_ebook"
+        android:visible="false">
+        <menu>
+            <item
+                android:id="@+id/bilingual_ebook_1_menu_item"
+                android:title="@string/From_Book_1"
+                android:visible="false"/>
+            <item
+                android:id="@+id/bilingual_ebook_2_menu_item"
+                android:title="@string/From_Book_2"
                 android:visible="false"/>
         </menu>
     </item>
