@@ -204,5 +204,5 @@
     </string-array>
     
     <string name="File_list_refreshed">File list refreshed.</string>
-
+    <string name="action_bar_title">BR</string>
 </resources>

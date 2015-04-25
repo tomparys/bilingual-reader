@@ -69,7 +69,6 @@ public class ReaderActivity extends Activity {
 	private DrawerLayout navigationDrawerLayout;
 	private ListView navigationDrawerListView;
 	private ActionBarDrawerToggle actionBarDrawerToggle;
-	private CharSequence actionBarTitle;
 
 	// Used exclusively for debugging purposes (e.g. Displaying toasts without context)
 	public static Context debugContext;	// TODO remove when no longer needed
@@ -90,14 +89,15 @@ public class ReaderActivity extends Activity {
 		navigationDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		navigationDrawerListView = (ListView) findViewById(R.id.left_drawer);
 
+		// Set ActionBar title.
+		setTitle(R.string.action_bar_title);
+
 		// Set the adapter for the navigation drawer's list view
 		navigationDrawerListView.setAdapter(new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, navigationDrawerItemNames));
 
 		// Set the navigation drawer's list view's click listener
 		navigationDrawerListView.setOnItemClickListener(new DrawerItemClickListener());
-
-		actionBarTitle = getTitle();
 
 		// Extend the ActionBarDrawerToggle class
 		actionBarDrawerToggle = new ActionBarDrawerToggle(
@@ -329,8 +329,7 @@ public class ReaderActivity extends Activity {
 	 */
 	@Override
 	public void setTitle(CharSequence title) {
-		actionBarTitle = title;
-		getActionBar().setTitle(actionBarTitle);
+		getActionBar().setTitle(title);
 
 	}
 
