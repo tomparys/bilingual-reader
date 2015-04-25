@@ -47,13 +47,19 @@ import cz.metaverse.android.bilingualreader.dialog.ChangeCSSDialog;
 import cz.metaverse.android.bilingualreader.dialog.LanguageChooserDialog;
 import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
 import cz.metaverse.android.bilingualreader.dialog.SettingsDialog;
-import cz.metaverse.android.bilingualreader.manager.EpubsNavigator;
+import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
 import cz.metaverse.android.bilingualreader.sync.ParagraphPositions;
 
+/**
+ *
+ * The main Activity of our application.
+ * Here it all begins, here it all ends.
+ *
+ */
 public class ReaderActivity extends Activity {
 
-	public EpubsNavigator navigator;
+	public PanelNavigator navigator;
 	protected int bookSelector;
 	protected int panelCount;
 	protected String[] cssSettings;
@@ -126,7 +132,7 @@ public class ReaderActivity extends Activity {
 
 
 		// Setup logic variables
-		navigator = EpubsNavigator.getSingleton(this);
+		navigator = PanelNavigator.getSingleton(this);
 
 		panelCount = 0;
 		if (savedInstanceState != null) {

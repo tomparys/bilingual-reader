@@ -38,7 +38,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.R;
-import cz.metaverse.android.bilingualreader.manager.EpubsNavigator;
+import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
 
 /**
  *
@@ -52,7 +52,7 @@ public abstract class SplitPanel extends Fragment {
 	protected int index;
 	protected RelativeLayout contentBoxLayout;
 	protected Button closeButton;
-	protected EpubsNavigator navigator;
+	protected PanelNavigator navigator;
 	protected int screenWidth;
 	protected int screenHeight;
 	protected float weight = 0.5f; // weight of the generalLayout

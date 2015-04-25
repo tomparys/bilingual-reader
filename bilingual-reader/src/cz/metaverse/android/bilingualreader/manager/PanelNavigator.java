@@ -38,13 +38,21 @@ import cz.metaverse.android.bilingualreader.panel.BookPanel;
 import cz.metaverse.android.bilingualreader.panel.DataPanel;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
 
-public class EpubsNavigator {
+/**
+ *
+ * The main logical and data class of our application.
+ * Manages the panels that display books or other content in our application.
+ * Manages ebooks that are displayed in the panels.
+ * Manages synchronized reading.
+ *
+ */
+public class PanelNavigator {
 
 	// The magic number - the number of panels of our application.
 	public static final int NUMBER_OF_PANELS = 2;
 
 	// A static instance of this class for the Singleton pattern herein employed.
-	private static EpubsNavigator epubsNavigatorInstance;
+	private static PanelNavigator panelNavigatorInstance;
 
 	private int nBooks;
 	private EpubManipulator[] books;
@@ -59,19 +67,19 @@ public class EpubsNavigator {
 	 * Singleton-pattern getter static method.
 	 * @param activity	The ReaderActivity instance that's asking for an instance.
 	 */
-	public static EpubsNavigator getSingleton(ReaderActivity activity) {
-		if (epubsNavigatorInstance == null) {
-			epubsNavigatorInstance = new EpubsNavigator(activity);
+	public static PanelNavigator getSingleton(ReaderActivity activity) {
+		if (panelNavigatorInstance == null) {
+			panelNavigatorInstance = new PanelNavigator(activity);
 		}
-		epubsNavigatorInstance.setActivity(activity);
-		return epubsNavigatorInstance;
+		panelNavigatorInstance.setActivity(activity);
+		return panelNavigatorInstance;
 	}
 
 	/**
 	 * Private constructor for the singleton pattern.
 	 * @param a  The ReaderActivity from which this is launched
 	 */
-	private EpubsNavigator(ReaderActivity activity) {
+	private PanelNavigator(ReaderActivity activity) {
 		this.nBooks = NUMBER_OF_PANELS;
 		this.books = new EpubManipulator[nBooks];
 		this.splitViews = new SplitPanel[nBooks];
