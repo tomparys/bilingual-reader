@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.SeekBar;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
@@ -25,6 +27,7 @@ public class PanelSizeDialog extends DialogFragment {
 	protected float panelWeight;
 	protected int seekBarValue;
 	protected Context context;
+	protected SharedPreferences preferences;
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -38,8 +41,7 @@ public class PanelSizeDialog extends DialogFragment {
 		View view = inflater.inflate(R.layout.dialog_panel_size, null);
 
 		// Load the seek bar value
-		final SharedPreferences preferences = ((ReaderActivity) getActivity())
-				.getPreferences(Context.MODE_PRIVATE);
+		preferences = ((ReaderActivity) getActivity()).getPreferences(Context.MODE_PRIVATE);
 		seekBarValue = preferences.getInt("seekBarValue", 50);
 
 		// Set the value to the seekbar
@@ -49,27 +51,22 @@ public class PanelSizeDialog extends DialogFragment {
 		// Set title
 		builder.setTitle(getString(R.string.SetSizeTitle));
 
+		// Reset to 50/50 button
+		((Button) view.findViewById(R.id.reset_panel_size_to_50_50_button)).setOnClickListener(
+				new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						applyAndSave(50);
+						dismiss();
+					}
+				});
+
 		// Add ok button
 		builder.setPositiveButton(getString(R.string.OK),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int id) {
-						// Compute and set the weight of the panels from the seekbar value
-						panelWeight = (float) seekbar.getProgress() / (float) seekbar.getMax();
-						if (panelWeight <= 0.1) {
-							panelWeight = 0.1f;
-						}
-						if (panelWeight >= 0.9) {
-							panelWeight = 0.9f;
-						}
-						((ReaderActivity) getActivity()).changePanelsWeight(panelWeight);
-
-						// Save the value on the seek bar to preferences
-						seekBarValue = seekbar.getProgress();
-
-						SharedPreferences.Editor editor = preferences.edit();
-						editor.putInt("seekBarValue", seekBarValue);
-						editor.commit();
+						applyAndSave(seekbar.getProgress());
 					}
 				});
 
@@ -79,6 +76,29 @@ public class PanelSizeDialog extends DialogFragment {
 		// Create the dialog
 		builder.setView(view);
 		return builder.create();
+	}
+
+	/**
+	 * Applies the desired panel size and saves it into preferences.
+	 * @param seekBarProgress
+	 */
+	protected void applyAndSave(int seekBarProgress) {
+		// Compute and set the weight of the panels from the seekbar value
+		panelWeight = (float) seekBarProgress / (float) seekbar.getMax();
+		if (panelWeight <= 0.1) {
+			panelWeight = 0.1f;
+		}
+		if (panelWeight >= 0.9) {
+			panelWeight = 0.9f;
+		}
+		((ReaderActivity) getActivity()).changePanelsWeight(panelWeight);
+
+		// Save the value on the seek bar to preferences
+		seekBarValue = seekBarProgress;
+
+		SharedPreferences.Editor editor = preferences.edit();
+		editor.putInt("seekBarValue", seekBarValue);
+		editor.commit();
 	}
 
 }
