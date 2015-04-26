@@ -35,13 +35,12 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.dialog.ChangeCSSDialog;
 import cz.metaverse.android.bilingualreader.dialog.LanguageChooserDialog;
@@ -65,10 +64,10 @@ public class ReaderActivity extends Activity {
 	protected String[] cssSettings;
 
 	// Navigation Drawer
-	private String[] navigationDrawerItemNames;
 	private DrawerLayout navigationDrawerLayout;
-	private ListView navigationDrawerListView;
 	private ActionBarDrawerToggle actionBarDrawerToggle;
+	private Button[] drawerBookButton;
+	private String[] drawerBookButtonText;
 
 	// Used exclusively for debugging purposes (e.g. Displaying toasts without context)
 	public static Context debugContext;	// TODO remove when no longer needed
@@ -82,22 +81,13 @@ public class ReaderActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		// Set the Activity title that will be displayed on the ActionBar (among other places).
+		setTitle(R.string.action_bar_title);
+
 		/*
 		 * Navigation Drawer setup
 		 */
-		navigationDrawerItemNames = getResources().getStringArray(R.array.Navigation_Drawer_Items);
 		navigationDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		navigationDrawerListView = (ListView) findViewById(R.id.left_drawer);
-
-		// Set ActionBar title.
-		setTitle(R.string.action_bar_title);
-
-		// Set the adapter for the navigation drawer's list view
-		navigationDrawerListView.setAdapter(new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, navigationDrawerItemNames));
-
-		// Set the navigation drawer's list view's click listener
-		navigationDrawerListView.setOnItemClickListener(new DrawerItemClickListener());
 
 		// Extend the ActionBarDrawerToggle class
 		actionBarDrawerToggle = new ActionBarDrawerToggle(
@@ -121,12 +111,24 @@ public class ReaderActivity extends Activity {
 				//getActionBar().setTitle(navigationDrawerTitle);
 			}
 		};
-
-		// Set the drawer toggle as the DrawerListener
 		navigationDrawerLayout.setDrawerListener(actionBarDrawerToggle);
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
+
+		// Find the Book buttons that we will be updating with the names of the displayed books
+		drawerBookButton = new Button[PanelNavigator.NUMBER_OF_PANELS];
+		drawerBookButton[0] = (Button) findViewById(R.id.drawer_book_title_1_button);
+		drawerBookButton[1] = (Button) findViewById(R.id.drawer_book_title_2_button);
+
+		// Restore the buttons text after runtime change
+		if (savedInstanceState != null) {
+			drawerBookButtonText = savedInstanceState.getStringArray("nps_drawerBookButtonText");
+			restoreBookNamesInDrawer(drawerBookButtonText);
+		}
+		if (drawerBookButtonText == null) {
+			drawerBookButtonText = new String[PanelNavigator.NUMBER_OF_PANELS];
+		}
 
 		/* end of Navigation Drawer setup */
 
@@ -134,6 +136,7 @@ public class ReaderActivity extends Activity {
 		// Setup logic variables
 		navigator = PanelNavigator.getSingleton(this);
 
+		panelCount = 0;
 		if (savedInstanceState != null) {
 			// When trying to use "getString(R.string.nonPersistentState_panelCount)" as key, the value is
 			//  just NOT retrieved. The same if the key is too long, e.g. "nonPersistentState_panelCount".
@@ -141,7 +144,6 @@ public class ReaderActivity extends Activity {
 			cssSettings = savedInstanceState.getStringArray("nps_cssSettings");
 		}
 		if (cssSettings == null) {
-			panelCount = 0;
 			cssSettings = new String[8];
 		}
 
@@ -184,6 +186,7 @@ public class ReaderActivity extends Activity {
 		//  just NOT retrieved. The same if the key is too long, e.g. "nonPersistentState_panelCount".
 		outState.putInt("nps_panelCount", panelCount);
 		outState.putStringArray("nps_cssSettings", cssSettings);
+		outState.putStringArray("nps_drawerBookButtonText", drawerBookButtonText);
 
 		// --- Removing panels is no longer necessary, because they are being retained through
 		//       the recreation of the Activity. Leaving just in case.
@@ -260,44 +263,86 @@ public class ReaderActivity extends Activity {
 	// ============================================================================================
 
 	/**
-	 * OnClickListener for the ListView of our navigation drawer
+	 * Called when user presses any button inside the navigation drawer.
 	 */
-	private class DrawerItemClickListener implements ListView.OnItemClickListener {
-		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			// Handle the pressed menu item.
-			switch(position) {
+	public void onDrawerButtonClicked(View view) {
+		// Handle the pressed navigation drawer button.
+		switch(view.getId()) {
 
-			// Open book 1
-			case 0:
-				bookSelector = 0;
-				Intent goToChooser1 = new Intent(ReaderActivity.this, FileChooserActivity.class);
-				goToChooser1.putExtra(getString(R.string.second), getString(R.string.time));
-				startActivityForResult(goToChooser1, 0);
-				break;
-
-			// Open book 2
-			case 1:
-				bookSelector = 1;
-				Intent goToChooser2 = new Intent(ReaderActivity.this, FileChooserActivity.class);
-				goToChooser2.putExtra(getString(R.string.second), getString(R.string.time));
-				startActivityForResult(goToChooser2, 0);
-				break;
-
-			// SRS Database
-			case 2:
-				// TODO Open SRS database activity
-				break;
-
-			// Settings
-			case 3:
-				new SettingsDialog().show(getFragmentManager(), "settings_dialog");
-				break;
+		// Book title 1 - open Table of Contents
+		case R.id.drawer_book_title_1_button:
+			if (!navigator.displayTOC(0)) {
+				errorMessage(getString(R.string.error_tocNotFound));
 			}
+			break;
 
-			// Highlight the selected item and close the drawer
-			navigationDrawerListView.setItemChecked(position, true);
-			navigationDrawerLayout.closeDrawer(navigationDrawerListView);
+		// Open book 1
+		case R.id.drawer_open_book_1_button:
+			bookSelector = 0;
+			Intent goToChooser1 = new Intent(ReaderActivity.this, FileChooserActivity.class);
+			goToChooser1.putExtra(getString(R.string.second), getString(R.string.time));
+			startActivityForResult(goToChooser1, 0);
+			break;
+
+		// Book title 2 - open Table of Contents
+		case R.id.drawer_book_title_2_button:
+			// If two books are open or if we're reading a bilingual book
+			if (!navigator.exactlyOneBookOpen() || navigator.isReadingBilingualEbook()) {
+				// Open ToC of the second book
+				if (!navigator.displayTOC(1)) {
+					errorMessage(getString(R.string.error_tocNotFound));
+				}
+			}
+			// If only one non-bilingual book is opened, we do nothing.
+			break;
+
+		// Open book 2
+		case R.id.drawer_open_book_2_button:
+			bookSelector = 1;
+			Intent goToChooser2 = new Intent(ReaderActivity.this, FileChooserActivity.class);
+			goToChooser2.putExtra(getString(R.string.second), getString(R.string.time));
+			startActivityForResult(goToChooser2, 0);
+			break;
+
+		// SRS Database
+		case R.id.drawer_SRS_database_button:
+			// TODO Open SRS database activity
+			break;
+
+		// Settings
+		case R.id.drawer_settings_button:
+			new SettingsDialog().show(getFragmentManager(), "settings_dialog");
+			break;
+
+		// Exit
+		case R.id.drawer_exit_button:
+			finish();
+			break;
+		}
+
+		navigationDrawerLayout.closeDrawer(Gravity.START);
+	}
+
+	/**
+	 * Changes the name of the book displayed in the navigation drawer.
+	 * @param panel	Panel of which the book name has changed.
+	 * @param name	The new name to display for that panel.
+	 */
+	public void setBookNameInDrawer(int panel, String name) {
+		if (drawerBookButton[panel] != null) {
+			drawerBookButton[panel].setText(name);
+		}
+		drawerBookButtonText[panel] = name;
+	}
+
+	/**
+	 * Restores the names of the books after a runtime change re-creates the Activity
+	 */
+	private void restoreBookNamesInDrawer(String[] drawerBookButtonText) {
+		for (int i = 0; i < PanelNavigator.NUMBER_OF_PANELS; i++) {
+			if (drawerBookButtonText[i] != null) {
+				setBookNameInDrawer(i, drawerBookButtonText[i]);
+			}
 		}
 	}
 
@@ -326,15 +371,6 @@ public class ReaderActivity extends Activity {
 	// ============================================================================================
 	//		Action Bar / options menu
 	// ============================================================================================
-
-	/**
-	 * Sets the text displayed in the Action bar on top of the activity.
-	 */
-	@Override
-	public void setTitle(CharSequence title) {
-		getActionBar().setTitle(title);
-
-	}
 
 	/**
 	 * Called when menu is opened.
@@ -526,7 +562,7 @@ public class ReaderActivity extends Activity {
 			return true;
 
 		case R.id.table_of_contents_1_menu_item:
-			if (!navigator.displayTOC(0))
+			if (navigator.displayTOC(0))
 				errorMessage(getString(R.string.error_tocNotFound));
 			return true;
 

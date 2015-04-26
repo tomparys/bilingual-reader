@@ -180,13 +180,6 @@
     <string name="word_colon">Word:</string>
     <string name="translation_colon">Translation:</string>
     
-    <string-array name="Navigation_Drawer_Items">
-        <item>Open Book 1</item>
-        <item>Open Book 2</item>
-        <item>SRS Database</item>
-        <item>Settings</item>
-    </string-array>
-    
     <string name="drawer_open">Open drawer</string>
     <string name="drawer_close">Close drawer</string>
     
@@ -206,4 +199,11 @@
     <string name="File_list_refreshed">File list refreshed.</string>
     <string name="action_bar_title">BR</string>
     <string name="button_reset_panel_size_to_50_50">Reset to 50/50</string>
+    <string name="Exit">Exit</string>
+    <string name="First_book">First book</string>
+    <string name="Second_book">Second book</string>
+    <string name="Open_book_1_dots">Open book 1...</string>
+    <string name="Open_book_2_dots">Open book 2...</string>
+    <string name="SRS_Database">SRS Database</string>
+    
 </resources>

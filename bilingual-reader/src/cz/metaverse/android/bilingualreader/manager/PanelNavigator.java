@@ -118,6 +118,9 @@ public class PanelNavigator {
 			saveState(editor);
 			editor.commit();
 
+			// Display the name of the book in the navigation drawer of our main activity.
+			activity.setBookNameInDrawer(index, books[index].getTitle());
+
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -651,6 +654,10 @@ public class PanelNavigator {
 					} catch (Error e3) {
 						ok = false;
 					}
+				}
+
+				if (books[i] != null) {
+					activity.setBookNameInDrawer(i, books[i].getTitle());
 				}
 			} else
 				books[i] = null;

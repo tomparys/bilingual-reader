@@ -63,6 +63,7 @@ import cz.metaverse.android.bilingualreader.R;
  */
 public class EpubManipulator {
 	private Book book;
+	private String title;
 	private int currentSpineElementIndex;
 	private String currentPage;
 	private String[] spineElementPaths;
@@ -102,6 +103,7 @@ public class EpubManipulator {
 
 		this.fileInputStream = new FileInputStream(fileName);
 		this.book = (new EpubReader()).readEpub(fileInputStream);
+		this.title = book.getTitle();
 
 		this.fileName = fileName;
 		this.decompressedFolder = destFolder;
@@ -157,6 +159,7 @@ public class EpubManipulator {
 
 		this.fileInputStream = new FileInputStream(fileName);
 		this.book = (new EpubReader()).readEpub(fileInputStream);
+		this.title = book.getTitle();
 		this.fileName = fileName;
 		this.decompressedFolder = folder;
 
@@ -893,6 +896,10 @@ public class EpubManipulator {
 		} catch (IOException e) {
 			return false;
 		}
+	}
+
+	public String getTitle() {
+		return title;
 	}
 
 	public int getCurrentSpineElementIndex() {
