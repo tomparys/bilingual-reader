@@ -41,6 +41,7 @@ public class WebAppInterface {
 			ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
 			ClipData clip = ClipData.newPlainText("simple text", selectedText);
 			clipboard.setPrimaryClip(clip);
+			Toast.makeText(activity, R.string.Copied, Toast.LENGTH_SHORT).show();
 			break;
 
 		// Share
