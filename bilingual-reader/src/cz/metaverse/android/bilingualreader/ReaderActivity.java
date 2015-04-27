@@ -311,7 +311,7 @@ public class ReaderActivity extends Activity {
 
 		// Settings
 		case R.id.drawer_settings_button:
-			new SettingsDialog().show(getFragmentManager(), "settings_dialog");
+			openSettings();
 			break;
 
 		// Exit
@@ -719,6 +719,13 @@ public class ReaderActivity extends Activity {
 	// ============================================================================================
 	//		Misc
 	// ============================================================================================
+
+	/**
+	 * Opens the Settings dialog.
+	 */
+	public void openSettings() {
+		new SettingsDialog().show(getFragmentManager(), "settings_dialog");
+	}
 
 	/**
 	 * Finds out if any of the open books contains multiple languages or not.

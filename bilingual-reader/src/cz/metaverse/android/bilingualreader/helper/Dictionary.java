@@ -1,16 +1,17 @@
 package cz.metaverse.android.bilingualreader.helper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.net.Uri;
+import android.graphics.drawable.Drawable;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 
@@ -19,216 +20,195 @@ import cz.metaverse.android.bilingualreader.ReaderActivity;
  * Helper class that serves to open a dictionary in search of a given text.
  *
  */
-public enum Dictionary {
+public class Dictionary implements Comparable<Dictionary> {
 
-	// Available dictionaries
-	aard ("Aard Dictionary", "aarddict.android", ".Article", "android.intent.action.SEARCH", "query", "%s"),
-
-	aard_lookup ("Aard Dictionary Lookup", "aarddict.android", ".Lookup", "android.intent.action.SEARCH",
-							"query", "%s"),
-
-	colordict ("ColorDict"), // Custom launch code in getIntent()
-
-	colordict_old ("ColorDict Old Style", "com.socialnmobile.colordict", ".activity.Main",
-							"android.intent.action.SEARCH", "query", "%s"),
-
-	fora ("Fora Dictionary", "com.ngc.fora", ".ForaDictionary", "android.intent.action.SEARCH",
-							"query", "%s"),
-
-	free_dictionary_org ("Free Dictionary . org", "org.freedictionary", ".MainActivity",
-							"android.intent.action.VIEW", null, "%s"),
-
-	lingo_quiz_lite ("Lingo Quiz Lite", "mnm.lite.lingoquiz", ".ExchangeActivity",
-							"lingoquiz.intent.action.ADD_WORD", "EXTRA_WORD", "%s"),
-
-	lingo_quiz ("Lingo Quiz", "mnm.lingoquiz", ".ExchangeActivity", "lingoquiz.intent.action.ADD_WORD",
-							"EXTRA_WORD", "%s"),
-
-	leo ("LEO Dictionary", "org.leo.android.dict", ".LeoDict", "android.intent.action.SEARCH", "query", "%s"),
-
-	abbyy ("ABBYY Lingvo", "com.abbyy.mobile.lingvo.market", null,
-							"com.abbyy.mobile.lingvo.intent.action.TRANSLATE",
-							"com.abbyy.mobile.lingvo.intent.extra.TEXT", "%s"),
-
-	popup ("Popup Dictionary", "com.barisatamer.popupdictionary",
-							".MainActivity", "android.intent.action.VIEW", null, "%s"),
-
-	merriam_webster_unabridged ("Merriam-Webster's Unabridged",
-							"com.slovoed.noreg.merriam_webster.english_english_unabridged", ".Start",
-							"android.intent.action.VIEW", null, "%s/808595524");
-
-
-	// Dictionary API attributes
-	private final String dictionaryName;
-	private final String packageName;
-	private final String className;
-	private final String intentAction;
-	private final String intentKey;
-	private final String intentDataPattern;
-	private boolean hasAttributes; // Indicates whether the following attributes are filled in or not.
-
-	// Static variables
+	// Statically stored the default dictionary.
 	private static Dictionary defaultDictionary;
 
+	// Fields of the dictionary.
+	public String packageName;
+	public String name;
+	public Drawable icon;
 
-	/**
-	 * Constructor filling the attributes that will be automagically turned into an intent.
-	 */
-	private Dictionary(String dictionaryName, String packageName, String className, String intentAction,
-							String intentKey, String intentDataPattern) {
 
-		this.dictionaryName = dictionaryName;
+	public Dictionary(String packageName) {
 		this.packageName = packageName;
-		this.className = className;
-		this.intentAction = intentAction;
-		this.intentKey = intentKey;
-		this.intentDataPattern = intentDataPattern;
-		this.hasAttributes = true;
 	}
 
-	/**
-	 * Constructor for dictionaries with custom intent creation code.
-	 */
-	private Dictionary(String dictionaryName) {
-		this(dictionaryName, null, null, null, null, null);
-		hasAttributes = false;
+	public Dictionary(String name, String packageName, Drawable icon) {
+		this.packageName = packageName;
+		this.name = name;
+		this.icon = icon;
 	}
 
 
 	/**
-	 * Produces an intent to open a dictionary in search of a given text
-	 * @param text	Text to search
-	 * @return		Android Intent that opens a dictionary
+	 * Opens the dictionary by making starting its Intent.
+	 * @param activity	Activity instance for launching other Activities
+	 * @param text		Text to search for
 	 */
-	public Intent getIntent(String text) {
-		if (hasAttributes) {
-			// Automatic intent creation from attributes
-			return createIntentFromAttributes(text);
-		} else {
-			// Manual intent creation from custom code
-			Intent intent;
-			switch (this) {
-
-			// ColorDict / GoldenDict
-			case colordict:
-				intent = new Intent("colordict.intent.action.SEARCH");
-				intent.putExtra("EXTRA_QUERY", text);
-				//intent.putExtra("EXTRA_HEIGHT", 600 /*"match_parent"*/);
-				//intent.putExtra("EXTRA_GRAVITY", Gravity.CENTER);
-				//intent.putExtra("EXTRA_MARGIN_LEFT", 50);
-				//intent.putExtra("EXTRA_MARGIN_RIGHT", 50);
-				return intent;
-
-			// Sorry, we don't have that here.
-			default:
-				return null;
-
-			}
+	public void open(Activity activity, String text) {
+		if (packageName != null) {
+			activity.startActivity(makeIntent(packageName, text));
 		}
 	}
 
 	@Override
 	public String toString() {
-		return dictionaryName;
+		return name;
 	}
 
 	/**
-	 * This method produces an Intent from the given attributes.
-	 * @param text	Text to be searched for.
-	 * @return		Intent that launches dictionary in search of a given text.
+	 * Dictionaries are equal if their packageNames are equal.
 	 */
-	private Intent createIntentFromAttributes(String text) {
-		Intent intent = new Intent(intentAction);
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof Dictionary) {
+			if (packageName != null) {
+				return packageName.equals(((Dictionary) o).packageName);
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Hash code returns the hash code of the packageName String.
+	 */
+	@Override
+	public int hashCode() {
 		if (packageName != null) {
-			if (className != null) {
-				String classAddress = className;
-				if (classAddress.startsWith(".")) {
-					classAddress = packageName + classAddress;
-				}
-				intent.setComponent(new ComponentName(
-					packageName, classAddress
-				));
-			}
+			return packageName.hashCode();
 		}
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		text = intentDataPattern.replace("%s", text);
-		if (intentKey != null) {
-			return intent.putExtra(intentKey, text);
-		} else {
-			return intent.setData(Uri.parse(text));
-		}
-	}
-
-
-	// ============================================================================================
-	//		Static functions
-	// ============================================================================================
+		return 0;
+	};
 
 	/**
-	 * Returns list of available dictionaries (that respond to their respective Intents).
-	 * @param activity	Activity is needed to test if the Intents are available
+	 * For sorting Dictionaries based on their name.
 	 */
-	public static List<Dictionary> getAvailableDictionaries(Activity activity) {
-		List<Dictionary> dicts = new ArrayList<Dictionary>();
+	@Override
+	public int compareTo(Dictionary another) {
+		if (name != null) {
+			return name.compareTo(another.name);
+		}
+		return 0;
+	}
 
-		for (Dictionary dict : Dictionary.values()) {
-			// Check if intent is available ?
-			List<ResolveInfo> resolveInfo = activity.getPackageManager().
-					queryIntentActivities(dict.getIntent("test"), PackageManager.MATCH_DEFAULT_ONLY);
 
-			if (resolveInfo != null && resolveInfo.size() > 0) {
-				dicts.add(dict);
-			}
+
+	// ============================================================================================
+	//		Static methods
+	// ============================================================================================
+
+	/**
+	 * Returns apps that repond to text-based Intent.
+	 * @param activity	Needed to test the activities
+	 * @return			List of available apps that could be dictionaries
+	 */
+	public static List<Dictionary> getAvailable(Activity activity) {
+		// Text-based Intent
+		Intent testIntent = new Intent(Intent.ACTION_SEND);
+		testIntent.setType("text/plain");
+		testIntent.putExtra(android.content.Intent.EXTRA_TEXT, "test");
+
+		// Ask the PackageManager to give us apps that would respond to such a text-based Intent.
+		PackageManager pm = activity.getPackageManager();
+		List<ResolveInfo> resolveInfo = pm.queryIntentActivities(testIntent, PackageManager.MATCH_DEFAULT_ONLY);
+
+		List<Dictionary> dictionaries = new ArrayList<Dictionary>();
+
+		for (ResolveInfo ri : resolveInfo) {
+			ApplicationInfo ai = ri.activityInfo.applicationInfo;
+			dictionaries.add(new Dictionary(ai.loadLabel(pm).toString(), ai.packageName.toString(),
+					pm.getApplicationIcon(ai)));
 		}
 
-		return dicts;
+		// Sort based on app name
+		Collections.sort(dictionaries);
+		return dictionaries;
 	}
 
 	/**
-	 * Sets the default dictionary in the settings.
+	 * Opens the default dictionary (if one is set and available) and searches for given text.
+	 * @return	Whether a dictionary was launched or not.
+	 */
+	public static boolean openDefault(Activity activity, String text) {
+		if (getDefault(activity) != null) {
+			getDefault(activity).open(activity, text);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Sets the default dictionary into preferences.
 	 * @param activity	ReaderActivity instance to get its shared preferences
 	 */
-	public static void setDefault(Activity activity, Dictionary selectedDict) {
+	public static void setDefault(Activity activity, Dictionary dictionary) {
 		// Save the value to shared preferences
 		SharedPreferences.Editor editor = activity.getPreferences(Context.MODE_PRIVATE).edit();
-		// Save the code of the dictionary into settings
-		// (e.g. for "Aard dictionary Lookup" saves "aard_lookup").
-		editor.putString(activity.getString(R.string.putString_defaultDictionary), selectedDict.name());
+		// Save the packageName of the given dictionary into preferences
+		editor.putString(activity.getString(R.string.putString_defaultDictionary), dictionary.packageName);
 		editor.commit();
 
 		// Keep it saved here as well
-		defaultDictionary = selectedDict;
+		defaultDictionary = dictionary;
 	}
 
 	/**
-	 * Returns the default dictionary from the settings.
+	 * Returns the default dictionary from preferences.
 	 * @param activity	ReaderActivity instance to get its shared preferences
-	 * @return			If no default is set, returns and sets first available, if no availeble, returns null.
+	 * @return			If no default is set, or the default one is no longer available, returns null.
 	 */
 	public static Dictionary getDefault(Activity activity) {
 		if (defaultDictionary == null) {
 			// Load default dictionary from preferences.
 			SharedPreferences preferences = ((ReaderActivity) activity).getPreferences(Context.MODE_PRIVATE);
-			String defaultDictString = preferences.getString(
+			String defaultDictionaryString = preferences.getString(
 					activity.getString(R.string.putString_defaultDictionary), null);
 
-			if (defaultDictString != null) {
-				try {
-					defaultDictionary = Dictionary.valueOf(defaultDictString);
-				}
-				// If said dictionary code doesn't exist, do nothing.
-				catch (IllegalArgumentException e) {}
-			}
-
-			// If no dictionary set as default, set the first one available as default if there are any.
-			if (defaultDictionary == null) {
-				List<Dictionary> available = getAvailableDictionaries(activity);
-				if (available != null && available.size() > 0) {
-					setDefault(activity, available.get(0));
-				}
+			if (respondsPackageToIntent(activity, defaultDictionaryString)) {
+				defaultDictionary = new Dictionary(defaultDictionaryString);
 			}
 		}
 
 		return defaultDictionary;
 	}
+
+	/**
+	 * Checks if a given package responds to text-based intent.
+	 * @param activity	Activity is needed to test if the Intents are available
+	 * @return
+	 */
+	private static boolean respondsPackageToIntent(Activity activity, String packageName) {
+		List<ResolveInfo> resolveInfo = activity.getPackageManager().
+				queryIntentActivities(makeIntent(packageName, "test"), PackageManager.MATCH_DEFAULT_ONLY);
+
+		return resolveInfo != null && resolveInfo.size() > 0;
+	}
+
+	/**
+	 * Creates a text-based Intent with a given text.
+	 */
+	private static Intent makeIntent(String packageName, String text) {
+		Intent intent = new Intent(Intent.ACTION_SEND);
+		intent.setType("text/plain");
+		intent.putExtra(android.content.Intent.EXTRA_TEXT, text);
+		intent.setPackage(packageName);
+		return intent;
+	}
+
+
+
+	/* Code that launches ColorDict in an overlay transparent window instead of as a full-screen Activity.
+	 * It is the only thing this new method of picking dictionaries can not do.
+	 * Leaving it here to possibly re-incorporate it later.
+
+			intent = new Intent("colordict.intent.action.SEARCH");
+			intent.putExtra("EXTRA_QUERY", text);
+			//intent.putExtra("EXTRA_HEIGHT", 600 ); //"match_parent"
+			//intent.putExtra("EXTRA_GRAVITY", Gravity.CENTER);
+			//intent.putExtra("EXTRA_MARGIN_LEFT", 50);
+			//intent.putExtra("EXTRA_MARGIN_RIGHT", 50);
+			return intent;
+	 */
 }

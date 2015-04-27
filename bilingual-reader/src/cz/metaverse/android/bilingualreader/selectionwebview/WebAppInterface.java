@@ -1,6 +1,5 @@
 package cz.metaverse.android.bilingualreader.selectionwebview;
 
-import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -8,6 +7,7 @@ import android.content.Intent;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.dialog.AddToSRSDialog;
 import cz.metaverse.android.bilingualreader.helper.Dictionary;
 
@@ -18,9 +18,9 @@ import cz.metaverse.android.bilingualreader.helper.Dictionary;
  *
  */
 public class WebAppInterface {
-	Activity activity;
+	ReaderActivity activity;
 
-	WebAppInterface(Activity activity) {
+	WebAppInterface(ReaderActivity activity) {
 		this.activity = activity;
 	}
 
@@ -55,17 +55,20 @@ public class WebAppInterface {
 
 		// Open dictionary
 		case R.id.dictionary_menu_item:
-			Dictionary defaultDict = Dictionary.getDefault(activity);
-			if (defaultDict != null) {
-				activity.startActivity(defaultDict.getIntent(selectedText));
-			} else {
+			if (!Dictionary.openDefault(activity, selectedText)) {
 				Toast.makeText(activity, R.string.Set_default_dictionary, Toast.LENGTH_SHORT).show();
+				activity.openSettings();
 			}
 			break;
 
 		// Add to SRS
 		case R.id.srs_menu_item:
 			new AddToSRSDialog(selectedText).show(activity.getFragmentManager(), "add_to_srs_dialog");
+			break;
+
+		// Settings
+		case R.id.settings_menu_item:
+			activity.openSettings();
 			break;
 		}
 	}

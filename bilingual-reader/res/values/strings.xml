@@ -206,5 +206,7 @@
     <string name="Open_book_2_dots">Open book 2...</string>
     <string name="SRS_Database">SRS Database</string>
     <string name="Copied">Copied.</string>
+    <string name="test_dictionary_string">test</string>
+    
     
 </resources>

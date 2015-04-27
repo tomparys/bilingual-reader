@@ -11,14 +11,17 @@
         android:showAsAction="always"
         android:icon="@drawable/ic_action_share"
         android:title="@string/share"/>
-        />
     <item
         android:id="@+id/dictionary_menu_item"
         android:showAsAction="always"
         android:title="@string/dictionary"/>
     <item
         android:id="@+id/srs_menu_item"
-        android:showAsAction="always"
+        android:showAsAction="ifRoom"
         android:title="@string/add_to_srs"/>
+    <item
+        android:id="@+id/settings_menu_item"
+        android:showAsAction="ifRoom"
+        android:title="@string/Settings"/>
 
 </menu>

@@ -1,6 +1,5 @@
 package cz.metaverse.android.bilingualreader.dialog;
 
-import java.util.Arrays;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -10,11 +9,10 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.TextView;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.helper.Dictionary;
 
@@ -32,6 +30,7 @@ public class SettingsDialog extends DialogFragment implements DialogInterface.On
 
 	// Data
 	private List<Dictionary> dictionaries;
+	private boolean ignoreFirstSpinnerSelection = false;
 
 	/**
 	 * Called when the dialog gets created.
@@ -42,33 +41,31 @@ public class SettingsDialog extends DialogFragment implements DialogInterface.On
 		// Inflate the form with EditTexts for data
 		form = getActivity().getLayoutInflater().inflate(R.layout.dialog_settings, null);
 		spinner = (Spinner) form.findViewById(R.id.default_dict_spinner);
-		Button button = (Button) form.findViewById(R.id.see_dictionaries_that_work_with_this_app);
 
-		// Initialize the button that will open a Dialog that shows all the possibly available dictionaries.
-		button.setOnClickListener(new OnClickListener() {
+		// After user selects item in the spinner, open the dictionary as a test.
+		spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
-			public void onClick(View v) {
-				// Create TextView that will list the dictionaries
-				TextView textView = (TextView) getActivity().getLayoutInflater().inflate(
-						R.layout.dialog_see_available_dictionaries, null);
-
-				// Get all possible dictionaries into a list and convert them to a String
-				String text = Arrays.asList(Dictionary.values()).toString();
-				// Display only a subsequence because List.toString() puts [] brackets around the text.
-				textView.setText(text.subSequence(1, text.length() - 1));
-
-				// Create a Dialog that shows all the possibly available dictionaries.
-				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-				builder.setTitle(R.string.Dictionaries_that_work_with_this_app)
-						.setView(textView)
-						.setPositiveButton(android.R.string.ok, null);
-				builder.create().show();
+			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				// Ignore the first time, if we ourselves are setting the default into the spinner.
+				if (ignoreFirstSpinnerSelection) {
+					ignoreFirstSpinnerSelection = false;
+				} else {
+					// Try the dictionary
+					if (dictionaries.size() > 0) {
+						Dictionary selectedDict = (Dictionary) spinner.getSelectedItem();
+						selectedDict.open(getActivity(),
+								getActivity().getString(R.string.test_dictionary_string));
+					}
+				}
 			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {}
 		});
 
 		// Initialize the spinner
-		dictionaries = Dictionary.getAvailableDictionaries(getActivity());
-		initializeDefaultDictSpinner(spinner, dictionaries);
+		dictionaries = Dictionary.getAvailable(getActivity());
+		initializeDictSpinner(spinner);
 
 		// Use builder to create the rest of the Dialog
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -79,13 +76,13 @@ public class SettingsDialog extends DialogFragment implements DialogInterface.On
 		return builder.create();
 	}
 
-	private void initializeDefaultDictSpinner(Spinner spin, List<Dictionary> dicts) {
-		// If there are available dictionaries.
-		if (dicts.size() > 0) {
+	private void initializeDictSpinner(Spinner spin) {
+		// If there are available apps.
+		if (dictionaries.size() > 0) {
 			// Create an ArrayAdapter using the default spinner layout
 			// and list of Dictionaries (they implement toString() so it's not a problem).
 			ArrayAdapter<Dictionary> adapter = new ArrayAdapter<Dictionary>(
-					getActivity(), android.R.layout.simple_spinner_item, dicts);
+					getActivity(), android.R.layout.simple_spinner_item, dictionaries);
 
 			// Specify the layout to use when the list of choices appears and set the adapter
 			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -94,12 +91,12 @@ public class SettingsDialog extends DialogFragment implements DialogInterface.On
 			// Set the selected item in the spinner
 			Dictionary defaultDict = Dictionary.getDefault(getActivity());
 			if (defaultDict != null) {
-				int defaultDictPosition = dicts.indexOf(defaultDict);
+				int defaultDictPosition = dictionaries.indexOf(defaultDict);
 				if (defaultDictPosition != -1) {
+					ignoreFirstSpinnerSelection = true;
 					spinner.setSelection(defaultDictPosition);
 				}
 			}
-
 		} else {
 			// If there are no dictionaries, display info about that.
 			ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
