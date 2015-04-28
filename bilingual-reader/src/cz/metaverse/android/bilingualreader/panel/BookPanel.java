@@ -43,7 +43,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
-import cz.metaverse.android.bilingualreader.helper.PanelViewStateEnum;
+import cz.metaverse.android.bilingualreader.helper.PanelViewState;
 import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 
 /**
@@ -57,7 +57,7 @@ public class BookPanel extends SplitPanel
 	private ReaderActivity activity;
 
 	// Information about the content
-	public PanelViewStateEnum enumState = PanelViewStateEnum.books;
+	public PanelViewState enumState = PanelViewState.books;
 	protected String viewedPage;
 
 	// Position within the page loaded from before
@@ -178,7 +178,7 @@ public class BookPanel extends SplitPanel
 		switch (action) {
 		// Finger was just laid on the screen - save the original coordinates.
 		case (MotionEvent.ACTION_DOWN):
-			if (enumState == PanelViewStateEnum.books) {
+			if (enumState == PanelViewState.books) {
 				swipeOriginX = event.getX();
 				swipeOriginY = event.getY();
 			}
@@ -186,7 +186,7 @@ public class BookPanel extends SplitPanel
 
 		// Finger was just lifted - calculate what kind of swipe has it been.
 		case (MotionEvent.ACTION_UP):
-			if (enumState == PanelViewStateEnum.books) {
+			if (enumState == PanelViewState.books) {
 				int quarterWidth = (int) (screenWidth * 0.25); // A quarter of the screen's width
 				float diffX = swipeOriginX - event.getX();
 				float diffY = swipeOriginY - event.getY();
@@ -274,7 +274,7 @@ public class BookPanel extends SplitPanel
 	public void loadState(SharedPreferences preferences)
 	{
 		super.loadState(preferences);
-		enumState = PanelViewStateEnum.valueOf(preferences.getString("state"+index, PanelViewStateEnum.books.name()));
+		enumState = PanelViewState.valueOf(preferences.getString("state"+index, PanelViewState.books.name()));
 		loadPage(preferences.getString("page"+index, ""));
 
 		// Load the position within the page from before to be used when webView is instantiated.

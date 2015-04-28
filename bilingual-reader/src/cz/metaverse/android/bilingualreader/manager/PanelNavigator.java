@@ -32,7 +32,7 @@ import android.content.SharedPreferences.Editor;
 import android.util.Log;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
-import cz.metaverse.android.bilingualreader.helper.PanelViewStateEnum;
+import cz.metaverse.android.bilingualreader.helper.PanelViewState;
 import cz.metaverse.android.bilingualreader.panel.AudioPanel;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
 import cz.metaverse.android.bilingualreader.panel.DataPanel;
@@ -166,20 +166,20 @@ public class PanelNavigator {
 	 */
 	public void loadPageIntoView(String pathOfPage, int index) {
 		// Default - set panel state to *notes*.
-		PanelViewStateEnum enumState = PanelViewStateEnum.notes;
+		PanelViewState enumState = PanelViewState.notes;
 
 		// Only if the page is contained in the opened book in this panel,
 		// set enumState to *books*
 		if (books[index] != null) {
 			if ((pathOfPage.equals(books[index].getCurrentPageURL()))
 					|| (books[index].getPageIndex(pathOfPage) >= 0)) {
-				enumState = PanelViewStateEnum.books;
+				enumState = PanelViewState.books;
 			}
 		}
 
 		// If this panel has no opened book, set enumState to *empty*
 		if (books[index] == null) {
-			enumState = PanelViewStateEnum.empty;
+			enumState = PanelViewState.empty;
 		}
 
 		// If this panel isn't yet open or isn't instance of BookView, open it and make it BookView.
@@ -251,7 +251,7 @@ public class PanelNavigator {
 		if (books[index] != null &&
 				(
 						!(splitViews[index] instanceof BookPanel)
-						|| (((BookPanel) splitViews[index]).enumState != PanelViewStateEnum.books)
+						|| (((BookPanel) splitViews[index]).enumState != PanelViewState.books)
 				)
 			) {
 			// Make this panel into a BookView with the opened book instead of closing it.
@@ -284,7 +284,7 @@ public class PanelNavigator {
 					splitViews[index].setKey(index);
 
 					if (splitViews[index] instanceof BookPanel
-							&& ((BookPanel) splitViews[index]).enumState == PanelViewStateEnum.books) {
+							&& ((BookPanel) splitViews[index]).enumState == PanelViewState.books) {
 
 						// Reload the book page into the panel
 						((BookPanel) splitViews[index]).loadPage(books[index].getCurrentPageURL());
