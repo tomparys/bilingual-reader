@@ -6,15 +6,15 @@
         android:showAsAction="always|collapseActionView"
         android:title="@string/Search"/>
     <item
-        android:id="@+id/refresh_menu_item"
-        android:icon="@drawable/ic_action_refresh"
-        android:showAsAction="ifRoom"
-        android:title="@string/Refresh"/>
-    <item
         android:id="@+id/add_SRS_card_menu_item"
         android:icon="@drawable/ic_menu_add"
         android:showAsAction="ifRoom"
         android:title="@string/Add_SRS_Card"/>
+    <item
+        android:id="@+id/refresh_menu_item"
+        android:icon="@drawable/ic_action_refresh"
+        android:showAsAction="ifRoom"
+        android:title="@string/Refresh"/>
     <item
         android:id="@+id/sort_alphabetically_menu_item"
         android:showAsAction="ifRoom"
