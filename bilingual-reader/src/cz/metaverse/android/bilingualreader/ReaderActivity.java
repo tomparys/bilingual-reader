@@ -475,6 +475,12 @@ public class ReaderActivity extends Activity {
 		  return true;
 		}
 
+		// If a classic options-menu item was selected, close the navigation drawer if it was open.
+		if (navigationDrawerLayout.isDrawerOpen(Gravity.START)) {
+			navigationDrawerLayout.closeDrawer(Gravity.START);
+		}
+
+
 		// Now handle our menu items.
 		switch (item.getItemId()) {
 
