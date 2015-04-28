@@ -306,7 +306,7 @@ public class ReaderActivity extends Activity {
 
 		// SRS Database
 		case R.id.drawer_SRS_database_button:
-			// TODO Open SRS database activity
+			startActivity(new Intent(this, SRSDatabaseActivity.class));
 			break;
 
 		// Settings

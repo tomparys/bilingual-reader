@@ -207,6 +207,14 @@
     <string name="SRS_Database">SRS Database</string>
     <string name="Copied">Copied.</string>
     <string name="test_dictionary_string">test</string>
+    <string name="Loading_SRS_cards">Loading SRS cards from the database.</string>
+    <string name="There_are_no_SRS_cards_yet">There are no SRS cards yet.</string>
+    <string name="No_SRS_cards_match_search">No SRS cards match the search criteria.</string>
+    <string name="Search">Search</string>
+    <string name="Add_SRS_Card">Add SRS Card</string>
+    <string name="Delete">Delete</string>
+    <string name="Sort_alphabetically">Sort alphabetically</string>
+    <string name="Sort_by_last_added">Sort by last added</string>
     
     
 </resources>

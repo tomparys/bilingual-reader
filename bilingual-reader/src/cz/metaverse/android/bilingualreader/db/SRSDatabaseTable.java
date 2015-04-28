@@ -6,12 +6,16 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.text.TextUtils;
 import android.util.Log;
 
 /**
  *
  * Class that abstracts our SRS database table.
  * Uses the singleton pattern - use static method getInstance().
+ *
+ * This SQLite database table uses the FTS3 Extension to facilitate faster Full-Text Search.
+ * 	More info at: www.sqlite.org/fts3.html
  *
  */
 public class SRSDatabaseTable {
@@ -24,14 +28,26 @@ public class SRSDatabaseTable {
 
 	// The columns of the SRS table
 	public static final String COL_WORD = "WORD";
-	public static final String COL_TRANSLATION = "TRANSLATION";
+	public static final String COL_DEFINITION = "DEFINITION";
+
+	// The implicit rowid column that gets automatically created for the FTS table
+	public static final String COL_ROWID = "rowid";
+	// Column that returns the automatically generated row _id necessary for CursorLoader to operate.
+	public static final String COL_HELP_ID = COL_ROWID + " AS _id";
+
+	// Array of all available columns to be used for results.
+	private static final String [] allColumns = new String[] {COL_HELP_ID, COL_WORD, COL_DEFINITION};
 
 	// Database info
 	private static final String DATABASE_NAME = "BILINGUAL-READER";
-	private static final String VIRTUAL_TABLE_NAME = "SRS"; // Full-Text Search table
+	private static final String VIRTUAL_TABLE_NAME = "SRS"; // We're creating a virtual SQLite FTS3 table
 	private static final int DATABASE_VERSION = 1;
 
+	// The class does most of the interaction with the database.
 	private final DatabaseOpenHelper databaseOpenHelper;
+
+	// The active sort order that will be applied to returned results.
+	private String chosenSortOrder;
 
 	/**
 	 * Creates, if necessary, an instance of this class and returns it.
@@ -39,6 +55,8 @@ public class SRSDatabaseTable {
 	public static SRSDatabaseTable getInstance(Context context) {
 		if (srsDatabaseTableInstance == null) {
 			srsDatabaseTableInstance = new SRSDatabaseTable(context);
+
+			srsDatabaseTableInstance.sortAlphabetically(false);
 		}
 		return srsDatabaseTableInstance;
 	}
@@ -51,25 +69,79 @@ public class SRSDatabaseTable {
 	}
 
 	/**
+	 * Sets whether this db class will return results sorted alphabetically or by last added.
+	 */
+	public void sortAlphabetically(boolean alphabetically) {
+		if (alphabetically) {
+			chosenSortOrder = COL_WORD + " ASC";  // Alphabetical sorting.
+		} else {
+			chosenSortOrder = COL_ROWID + " DESC"; // Last added item will be first.
+		}
+	}
+
+
+	/**
 	 * Adds one "SRS card" into the database table.
 	 * @param word			The front of the card - the word or a phrase to be remembered
 	 * @param definition	The back of the card - the word's translation or definition
 	 */
-	public void addWord(String word, String definition) {
-		databaseOpenHelper.addWord(word, definition);
+	public void addCard(String word, String definition) {
+		databaseOpenHelper.addCard(word, definition);
 	}
 
 	/**
-	 * Searches the db table for matches with data in given columns.
-	 * @param query		The beginning of the word user searches
-	 * @param columns	Columns to be searched
+	 * Edits an existing SRS card.
+	 */
+	public void editCard(long id, String word, String definition) {
+		databaseOpenHelper.editCard(id, word, definition);
+	}
+
+	/**
+	 * Deletes an SRS card.
+	 */
+	public void deleteCard(long id) {
+		databaseOpenHelper.deleteCard(id);
+	}
+
+	/**
+	 * Deletes several SRS cards at once.
+	 */
+	public void deleteCards(long[] ids) {
+		for (long id : ids) {
+			deleteCard(id);
+		}
+	}
+
+	/**
+	 * Searches the db table for words that contain the *query* prefix in the column COL_WORD.
+	 * @param query		Word prefix to search for
 	 * @return			Cursor to the results
 	 */
-	public Cursor getWordMatches(String query, String[] columns) {
-	    String selection = COL_WORD + " MATCH ?";
-	    String[] selectionArgs = new String[] {query + "*"};
+	public Cursor getWordMatches(String query) {
+		String selection = COL_WORD + " MATCH ?";
+		String[] selectionArgs = new String[] {query + "*"};
 
-	    return query(selection, selectionArgs, columns);
+		return query(selection, selectionArgs, allColumns);
+	}
+
+	/**
+	 * 1. Splits the query into *words* separated by whitespace.
+	 * 2. Searches the database for any row that contains words that contain *words* as prefixes.
+	 *
+	 * E.g. query = "alb hu" will match a row that has
+	 *  "Mighty Albrecht" in one column and "Happy Hugo" in another.
+	 *
+	 * @param query		List of word-prefixes to be searched for.
+	 * @return			Cursor to the results
+	 */
+	public Cursor getMatches(String query) {
+		String[] words = query.split("\\s+");
+		String match = TextUtils.join("* ", words) + "*";
+
+		String selection = VIRTUAL_TABLE_NAME + " MATCH ?";
+		String[] selectionArgs = new String[] {match};
+
+		return query(selection, selectionArgs, allColumns);
 	}
 
 	/**
@@ -77,26 +149,26 @@ public class SRSDatabaseTable {
 	 * @return			Cursor to the results
 	 */
 	public Cursor getAll() {
-		return query(null, null, null);
+		return query(null, null, allColumns);
 	}
 
 	/**
 	 * General database query interface.
 	 */
 	private Cursor query(String selection, String[] selectionArgs, String[] columns) {
-	    SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-	    builder.setTables(VIRTUAL_TABLE_NAME);
+		SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+		builder.setTables(VIRTUAL_TABLE_NAME);
 
-	    Cursor cursor = builder.query(databaseOpenHelper.getReadableDatabase(),
-	            columns, selection, selectionArgs, null, null, null);
+		Cursor cursor = builder.query(databaseOpenHelper.getReadableDatabase(),
+				columns, selection, selectionArgs, null, null, chosenSortOrder);
 
-	    if (cursor == null) {
-	        return null;
-	    } else if (!cursor.moveToFirst()) {
-	        cursor.close();
-	        return null;
-	    }
-	    return cursor;
+		if (cursor == null) {
+			return null;
+		} else if (!cursor.moveToFirst()) {
+			cursor.close();
+			return null;
+		}
+		return cursor;
 	}
 
 
@@ -114,7 +186,7 @@ public class SRSDatabaseTable {
 		// SQL command that creates the database.
 		private static final String FTS_TABLE_CREATE =
 					"CREATE VIRTUAL TABLE " + VIRTUAL_TABLE_NAME +
-					" USING fts3 (" + COL_WORD + ", " + COL_TRANSLATION + ")";
+					" USING fts3 (" + COL_WORD + ", " + COL_DEFINITION + ")";
 
 
 		DatabaseOpenHelper(Context context) {
@@ -142,12 +214,38 @@ public class SRSDatabaseTable {
 		 * @param definition	The back of the card - the word's translation or definition
 		 * @return				Id of the newly entered row in the table
 		 */
-		public long addWord(String word, String definition) {
-		    ContentValues initialValues = new ContentValues();
-		    initialValues.put(COL_WORD, word);
-		    initialValues.put(COL_TRANSLATION, definition);
+		public long addCard(String word, String definition) {
+			ContentValues initialValues = new ContentValues();
+			initialValues.put(COL_WORD, word);
+			initialValues.put(COL_DEFINITION, definition);
 
-		    return getWritableDatabase().insert(VIRTUAL_TABLE_NAME, null, initialValues);
+			return getWritableDatabase().insert(VIRTUAL_TABLE_NAME, null, initialValues);
+		}
+
+		/**
+		 * Updates a card in the database with new data on the card.
+		 * @param id  Rowid of the card we're updating
+		 */
+		public long editCard(long id, String word, String definition) {
+			ContentValues newValues = new ContentValues();
+			newValues.put(COL_WORD, word);
+			newValues.put(COL_DEFINITION, definition);
+
+			String where = "rowid = ?";
+			String[] whereArgs = new String[] {"" + id};
+
+			return getWritableDatabase().update(VIRTUAL_TABLE_NAME, newValues, where, whereArgs);
+		}
+
+		/**
+		 * Wipes a given card from the database.
+		 * @param id  Rowid of the banished card
+		 */
+		public long deleteCard(long id) {
+			String where = "rowid = ?";
+			String[] whereArgs = new String[] {"" + id};
+
+			return getWritableDatabase().delete(VIRTUAL_TABLE_NAME, where, whereArgs);
 		}
 	}
 }

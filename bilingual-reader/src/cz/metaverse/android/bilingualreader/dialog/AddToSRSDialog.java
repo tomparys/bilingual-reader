@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.SRSDatabaseActivity;
 import cz.metaverse.android.bilingualreader.db.SRSDatabaseTable;
 
 /**
@@ -23,16 +24,44 @@ public class AddToSRSDialog extends DialogFragment implements DialogInterface.On
 
 	// The XML form containing EditTexts that user fills with data
 	private View form = null;
-	private EditText word, translation;
+	private EditText word;
+	private EditText description;
+
+	// Text to be filled into the EditTexts
 	private String original_word;
+	private String original_description;
+
+	// Data to allow working with SRSDatabaseActivity, e.g. editing existing SRS cards.
+	private SRSDatabaseActivity SRSDatabaseActivity;
+	private Long rowid;
 
 	/**
 	 * Constructor to set the data to be displayed in the EditTexts.
 	 * @param word	The word to set to the "word" EditText
 	 */
 	public AddToSRSDialog(String word) {
-		super();
-		original_word = word.toLowerCase(Locale.getDefault());
+		original_word = word;
+		if (original_word != null) {
+			original_word = original_word.toLowerCase(Locale.getDefault());
+		}
+	}
+
+	/**
+	 * Constructor to allow working with SRSDatabaseActivity on editing existing SRS cards.
+	 * @param rowid	Id of the DB row that we're going to update with new data.
+	 */
+	public AddToSRSDialog(SRSDatabaseActivity SRSDActivity, Long rowid, String word, String description) {
+		this.SRSDatabaseActivity = SRSDActivity;
+		this.rowid = rowid;
+		this.original_word = word;
+		this.original_description = description;
+	}
+
+	/**
+	 * Constructor to allow refreshing of data in the SRSDialogActivity afterwards.
+	 */
+	public AddToSRSDialog(SRSDatabaseActivity SRSDActivity) {
+		this(SRSDActivity, null, null, null);
 	}
 
 	/**
@@ -44,11 +73,21 @@ public class AddToSRSDialog extends DialogFragment implements DialogInterface.On
 		// Inflate the form with EditTexts for data
 		form = getActivity().getLayoutInflater().inflate(R.layout.dialog_add_to_srs, null);
 		word = (EditText) form.findViewById(R.id.word_edit_text);
-		translation = (EditText) form.findViewById(R.id.translation_edit_text);
+		description = (EditText) form.findViewById(R.id.translation_edit_text);
 
-		// Fill the form with data and set focus to the translation EditText
-		word.setText(original_word);
-		translation.requestFocus();
+		// Pre-fill in the words if available
+		if (original_word != null) {
+			word.setText(original_word);
+
+			if (original_description == null) {
+				// If the description is missing, put the cursor there.
+				description.requestFocus();
+			}
+		}
+
+		if (original_description != null) {
+			description.setText(original_description);
+		}
 
 		// Use builder to create the rest of the Dialog
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -60,12 +99,24 @@ public class AddToSRSDialog extends DialogFragment implements DialogInterface.On
 	}
 
 	/**
-	 * Called when user clicks the OK or the Cancel button.
+	 * Called when user clicks the OK button.
 	 */
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
 		SRSDatabaseTable db = SRSDatabaseTable.getInstance(getActivity());
-		db.addWord(word.getText().toString(), translation.getText().toString());
+
+		if (rowid != null) {
+			// Edit the already existing card in the database
+			db.editCard(rowid, word.getText().toString(), description.getText().toString());
+		} else {
+			// Add a new card to the database
+			db.addCard(word.getText().toString(), description.getText().toString());
+		}
+
+		// Reload the data in the SRSDatabaseActivity so that the new/edited card is immediately visible.
+		if (SRSDatabaseActivity != null) {
+			SRSDatabaseActivity.reloadData();
+		}
 	}
 
 	/**
