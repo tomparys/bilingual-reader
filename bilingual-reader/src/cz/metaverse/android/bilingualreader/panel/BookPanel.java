@@ -164,60 +164,6 @@ public class BookPanel extends SplitPanel
 	}
 
 	/**
-	 * Evaluates the touch/swipe event and changes page if appropriate.
-	 * @param view The WebView where the swipe took place
-	 * @param event The MotionEvent of the swipe
-	 */
-	protected void handleWebViewTouch(View view, MotionEvent event) {
-		// Provide data to the GestureDetector.
-		gestureDetector.onTouchEvent(event);
-
-		// Analyze the motion event.
-		int action = MotionEventCompat.getActionMasked(event);
-
-		switch (action) {
-		// Finger was just laid on the screen - save the original coordinates.
-		case (MotionEvent.ACTION_DOWN):
-			if (enumState == PanelViewState.books) {
-				swipeOriginX = event.getX();
-				swipeOriginY = event.getY();
-			}
-			break;
-
-		// Finger was just lifted - calculate what kind of swipe has it been.
-		case (MotionEvent.ACTION_UP):
-			if (enumState == PanelViewState.books) {
-				int quarterWidth = (int) (screenWidth * 0.25); // A quarter of the screen's width
-				float diffX = swipeOriginX - event.getX();
-				float diffY = swipeOriginY - event.getY();
-				float absDiffX = Math.abs(diffX);
-				float absDiffY = Math.abs(diffY);
-
-				if ((diffX > quarterWidth) && (absDiffX > absDiffY)) {
-					// If swipe was to the left and over 1/4 of the screen wide,
-					// 		and swipe was more broad than high
-					try {
-						navigator.goToNextChapter(index);
-					} catch (Exception e) {
-						errorMessage(getString(R.string.error_cannotTurnPage));
-					}
-				} else if ((diffX < -quarterWidth) && (absDiffX > absDiffY)) {
-					// If swipe was to the right and over 1/4 of the screen wide,
-					// 		and swipe was more broad than high
-					try {
-						navigator.goToPrevChapter(index);
-					} catch (Exception e) {
-						errorMessage(getString(R.string.error_cannotTurnPage));
-					}
-				}
-			}
-			break;
-		}
-
-		view.performClick(); // Android system mandates we pass the baton to the onClick listener now.
-	}
-
-	/**
 	 * Returns the URL of the currently displayed page.
 	 */
 	public String getViewedPage() {
@@ -285,8 +231,62 @@ public class BookPanel extends SplitPanel
 
 
 	// ============================================================================================
-	//		Gesture Detector
+	//		Touches and Gesture Detector
 	// ============================================================================================
+
+	/**
+	 * Evaluates the touch/swipe event and changes page if appropriate.
+	 * @param view The WebView where the swipe took place
+	 * @param event The MotionEvent of the swipe
+	 */
+	protected void handleWebViewTouch(View view, MotionEvent event) {
+		// Provide data to the GestureDetector.
+		gestureDetector.onTouchEvent(event);
+
+		// Analyze the motion event.
+		int action = MotionEventCompat.getActionMasked(event);
+
+		switch (action) {
+		// Finger was just laid on the screen - save the original coordinates.
+		case (MotionEvent.ACTION_DOWN):
+			if (enumState == PanelViewState.books) {
+				swipeOriginX = event.getX();
+				swipeOriginY = event.getY();
+			}
+			break;
+
+		// Finger was just lifted - calculate what kind of swipe has it been.
+		case (MotionEvent.ACTION_UP):
+			if (enumState == PanelViewState.books) {
+				int quarterWidth = (int) (screenWidth * 0.25); // A quarter of the screen's width
+				float diffX = swipeOriginX - event.getX();
+				float diffY = swipeOriginY - event.getY();
+				float absDiffX = Math.abs(diffX);
+				float absDiffY = Math.abs(diffY);
+
+				if ((diffX > quarterWidth) && (absDiffX > absDiffY)) {
+					// If swipe was to the left and over 1/4 of the screen wide,
+					// 		and swipe was more broad than high
+					try {
+						navigator.goToNextChapter(index);
+					} catch (Exception e) {
+						errorMessage(getString(R.string.error_cannotTurnPage));
+					}
+				} else if ((diffX < -quarterWidth) && (absDiffX > absDiffY)) {
+					// If swipe was to the right and over 1/4 of the screen wide,
+					// 		and swipe was more broad than high
+					try {
+						navigator.goToPrevChapter(index);
+					} catch (Exception e) {
+						errorMessage(getString(R.string.error_cannotTurnPage));
+					}
+				}
+			}
+			break;
+		}
+
+		view.performClick(); // Android system mandates we pass the baton to the onClick listener now.
+	}
 
 	/**
 	 * SingleTapUp - Activate/deactivate immersive fullscreen mode.
