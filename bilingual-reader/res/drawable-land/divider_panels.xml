@@ -3,6 +3,6 @@
 
     <size
         android:height="0dp"
-        android:width="2dp" />
+        android:width="@dimen/panels_divider_thickness" />
 
 </shape>

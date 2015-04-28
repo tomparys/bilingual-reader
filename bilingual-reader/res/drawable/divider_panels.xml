@@ -2,7 +2,7 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <size
-        android:height="2dp"
+        android:height="@dimen/panels_divider_thickness"
         android:width="0dp" />
 
 </shape>
