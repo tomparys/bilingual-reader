@@ -58,7 +58,7 @@ public class BookPanel extends SplitPanel
 
 	// Information about the content
 	public PanelViewState enumState = PanelViewState.books;
-	protected String viewedPage;
+	protected String displayedPage;
 
 	// Position within the page loaded from before
 	protected Integer loadPositionX, loadPositionY;
@@ -160,14 +160,14 @@ public class BookPanel extends SplitPanel
 		});
 
 		// Load the page.
-		loadPage(viewedPage);
+		loadPage(displayedPage);
 	}
 
 	/**
 	 * Returns the URL of the currently displayed page.
 	 */
 	public String getViewedPage() {
-		return viewedPage;
+		return displayedPage;
 	}
 
 	/**
@@ -176,7 +176,7 @@ public class BookPanel extends SplitPanel
 	 */
 	public void loadPage(String path)
 	{
-		viewedPage = path;
+		displayedPage = path;
 		if(created) {
 
 			// TODO Estimate scroll position of each paragraph for proper synchronized scrolling.
@@ -202,8 +202,8 @@ public class BookPanel extends SplitPanel
 		if (enumState != null) {
 			editor.putString("state"+index, enumState.name());
 		}
-		if (viewedPage != null) {
-			editor.putString("page"+index, viewedPage);
+		if (displayedPage != null) {
+			editor.putString("page"+index, displayedPage);
 		}
 
 		// Save the position within the page.
