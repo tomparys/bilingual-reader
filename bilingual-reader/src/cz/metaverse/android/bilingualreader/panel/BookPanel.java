@@ -49,12 +49,21 @@ import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
  *
  */
 public class BookPanel extends SplitPanel {
+
+	// Information about the content
 	public PanelViewStateEnum enumState = PanelViewStateEnum.books;
 	protected String viewedPage;
-	protected SelectionWebView webView;
-	protected float swipeOriginX, swipeOriginY;
+
 	// Position within the page loaded from before
 	protected Integer loadPositionX, loadPositionY;
+
+	// Our customized WebView
+	protected SelectionWebView webView;
+
+	// Fields for onTouch events.
+	protected float swipeOriginX, swipeOriginY;
+
+
 
 	@Override
 	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)	{
@@ -141,36 +150,6 @@ public class BookPanel extends SplitPanel {
 	}
 
 	/**
-	 * Returns the URL of the currently displayed page.
-	 */
-	public String getViewedPage() {
-		return viewedPage;
-	}
-
-	/**
-	 * Load page through URL path.
-	 * @param path to load
-	 */
-	public void loadPage(String path)
-	{
-		viewedPage = path;
-		if(created) {
-
-			// TODO Estimate scroll position of each paragraph for proper synchronized scrolling.
-
-			webView.loadUrl(path);
-
-			// Load position from before if this is a page opening from before.
-			if (loadPositionX != null && loadPositionY != null) {
-				webView.setScrollX(loadPositionX);
-				webView.setScrollY(loadPositionY);
-				loadPositionX = null;
-				loadPositionY = null;
-			}
-		}
-	}
-
-	/**
 	 * Evaluates the touch/swipe event and changes page if appropriate.
 	 * @param v The WebView where the swipe took place
 	 * @param event The MotionEvent of the swipe
@@ -220,6 +199,36 @@ public class BookPanel extends SplitPanel {
 			break;
 		}
 
+	}
+
+	/**
+	 * Returns the URL of the currently displayed page.
+	 */
+	public String getViewedPage() {
+		return viewedPage;
+	}
+
+	/**
+	 * Load page through URL path.
+	 * @param path to load
+	 */
+	public void loadPage(String path)
+	{
+		viewedPage = path;
+		if(created) {
+
+			// TODO Estimate scroll position of each paragraph for proper synchronized scrolling.
+
+			webView.loadUrl(path);
+
+			// Load position from before if this is a page opening from before.
+			if (loadPositionX != null && loadPositionY != null) {
+				webView.setScrollX(loadPositionX);
+				webView.setScrollY(loadPositionY);
+				loadPositionX = null;
+				loadPositionY = null;
+			}
+		}
 	}
 
 	/**
