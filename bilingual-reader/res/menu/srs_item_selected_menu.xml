@@ -2,7 +2,7 @@
 
     <item
         android:id="@+id/delete_srs_card_menu_item"
-        android:icon="@android:drawable/ic_menu_delete"
+        android:icon="@drawable/ic_action_delete"
         android:showAsAction="always"
         android:title="@string/Delete"/>
 
