@@ -179,23 +179,21 @@
     <string name="share_menu_headline">Open in</string>
     <string name="word_colon">Word:</string>
     <string name="translation_colon">Translation:</string>
-    
     <string name="drawer_open">Open drawer</string>
     <string name="drawer_close">Close drawer</string>
-    
     <string name="activated_sync_chapters">Activated synchronized chapters.</string>
     <string name="deactivated_sync_chapters">Deactivated synchronized chapters.</string>
     <string name="default_dictionary_colon">Default dictionary:</string>
     <string name="Settings">Settings</string>
     <string name="Set_default_dictionary">Pick a default dictionary in the settings.</string>
-    <string name="See_dictionaries_that_work_with_this_app">See dictionaries that work with this app.</string>
+    <string name="Test_this_dictionary_app">Test this dictionary app.</string>
     <string name="Dictionaries_that_work_with_this_app">Dictionaries that work with this app</string>
-    
+
     <string-array name="spinner_no_dictionaries">
         <item>No available dictionaries,</item>
         <item>please install some.</item>
     </string-array>
-    
+
     <string name="File_list_refreshed">File list refreshed.</string>
     <string name="action_bar_title">BR</string>
     <string name="button_reset_panel_size_to_50_50">Reset to 50/50</string>
@@ -215,6 +213,8 @@
     <string name="Delete">Delete</string>
     <string name="Sort_alphabetically">Sort alphabetically</string>
     <string name="Sort_by_last_added">Sort by last added</string>
-    
-    
+    <string name="Description_of_dictionary_functionality">To allow integration with <i>any</i> installed
+         dictionary, please pick your desired dictionary from the following
+         list of all apps that handle text.</string>
+
 </resources>

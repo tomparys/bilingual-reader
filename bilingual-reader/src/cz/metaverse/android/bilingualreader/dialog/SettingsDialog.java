@@ -9,9 +9,9 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.helper.Dictionary;
@@ -30,7 +30,6 @@ public class SettingsDialog extends DialogFragment implements DialogInterface.On
 
 	// Data
 	private List<Dictionary> dictionaries;
-	private boolean ignoreFirstSpinnerSelection = false;
 
 	/**
 	 * Called when the dialog gets created.
@@ -41,31 +40,24 @@ public class SettingsDialog extends DialogFragment implements DialogInterface.On
 		// Inflate the form with EditTexts for data
 		form = getActivity().getLayoutInflater().inflate(R.layout.dialog_settings, null);
 		spinner = (Spinner) form.findViewById(R.id.default_dict_spinner);
-
-		// After user selects item in the spinner, open the dictionary as a test.
-		spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				// Ignore the first time, if we ourselves are setting the default into the spinner.
-				if (ignoreFirstSpinnerSelection) {
-					ignoreFirstSpinnerSelection = false;
-				} else {
-					// Try the dictionary
-					if (dictionaries.size() > 0) {
-						Dictionary selectedDict = (Dictionary) spinner.getSelectedItem();
-						selectedDict.open(getActivity(),
-								getActivity().getString(R.string.test_dictionary_string));
-					}
-				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {}
-		});
+		Button button = (Button) form.findViewById(R.id.see_dictionaries_that_work_with_this_app);
 
 		// Initialize the spinner
 		dictionaries = Dictionary.getAvailable(getActivity());
 		initializeDictSpinner(spinner);
+
+		// Initialize the button that will test the selected dictionary.
+		button.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// Test the dictionary
+				if (dictionaries.size() > 0) {
+					Dictionary selectedDict = (Dictionary) spinner.getSelectedItem();
+					selectedDict.open(getActivity(),
+							getActivity().getString(R.string.test_dictionary_string));
+				}
+			}
+		});
 
 		// Use builder to create the rest of the Dialog
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -93,7 +85,6 @@ public class SettingsDialog extends DialogFragment implements DialogInterface.On
 			if (defaultDict != null) {
 				int defaultDictPosition = dictionaries.indexOf(defaultDict);
 				if (defaultDictPosition != -1) {
-					ignoreFirstSpinnerSelection = true;
 					spinner.setSelection(defaultDictPosition);
 				}
 			}
