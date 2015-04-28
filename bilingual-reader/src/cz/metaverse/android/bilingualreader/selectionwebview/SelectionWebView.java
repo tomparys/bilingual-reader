@@ -24,8 +24,11 @@ import cz.metaverse.android.bilingualreader.ReaderActivity;
  */
 public class SelectionWebView extends WebView {
 	private Context context;
+
 	// For setting custom action bar
 	private ActionMode mActionMode;
+	private boolean inActionMode = false;
+
 	private ActionMode.Callback mSelectActionModeCallback;
 	private GestureDetector mDetector;
 
@@ -129,8 +132,28 @@ public class SelectionWebView extends WebView {
 		if (mDetector != null) {
 			mDetector.onTouchEvent(event);
 		}
+
+		performClick(); // Android system mandates we pass the baton to the onClick listener now.
+
 		// If the detected gesture is unimplemented, send it to the superclass
 		return super.onTouchEvent(event);
+	}
+
+	/**
+	 * Android sends out warning unless we override this method.
+	 */
+	@Override
+	public boolean performClick() {
+		// Calls the super implementation, which generates an AccessibilityEvent
+		// and calls the onClick() listener on the view, if any.
+		return super.performClick();
+	}
+
+	/**
+	 * Returns whether ActionMode is currently active or not.
+	 */
+	public boolean inSelectionActionMode() {
+		return inActionMode;
 	}
 
 
@@ -149,6 +172,7 @@ public class SelectionWebView extends WebView {
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 			mActionMode = mode;
+			inActionMode = true;
 
 			// Inflate our menu items
 			mActionMode.getMenuInflater().inflate(R.menu.text_selection_menu, menu);
@@ -176,6 +200,8 @@ public class SelectionWebView extends WebView {
 
 		@Override
 		public void onDestroyActionMode(ActionMode mode) {
+			inActionMode = false;
+
 			// Checks the SDK version and uses the appropriate methods.
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 				clearFocus();
@@ -194,9 +220,10 @@ public class SelectionWebView extends WebView {
 	 */
 	private class CustomOnGestureListener extends GestureDetector.SimpleOnGestureListener {
 		@Override
-		public boolean onSingleTapUp(MotionEvent e) {
+		public boolean onSingleTapConfirmed(MotionEvent e) {
 			if (mActionMode != null) {
 				mActionMode.finish();
+				inActionMode = false;
 				return true;
 			}
 			return false;
