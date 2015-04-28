@@ -272,13 +272,13 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			}
 		}
 	}
-
-
-
+	
+	
+	
 	// ============================================================================================
 	//		Full-screen mode
 	// ============================================================================================
-
+	
 	/**
 	 * Switches between full-screen and normal mode.
 	 */

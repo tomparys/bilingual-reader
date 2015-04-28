@@ -34,20 +34,19 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:visibility="visible"
-            android:padding="0dp" />
+            android:padding="0dp"
+            android:visibility="visible" />
 
         <Button
             android:id="@+id/CloseButton"
-            android:background="@drawable/button_close"
             android:layout_width="@dimen/close_button_dimen"
             android:layout_height="@dimen/close_button_dimen"
-            android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/button_close"
             android:padding="@dimen/all_margin"
             android:textColorHint="@color/dark_grey"
             android:textColorLink="@color/dark_grey" />
     </RelativeLayout>
 
 </RelativeLayout>
-
