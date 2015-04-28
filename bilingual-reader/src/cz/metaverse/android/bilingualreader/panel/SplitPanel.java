@@ -96,7 +96,7 @@ public abstract class SplitPanel extends Fragment {
 	}
 
 	protected void closeView() {
-		navigator.closeView(index);
+		navigator.closePanelView(index);
 		// If one of the panels gets closed, user no longer reads bilingual ebook in a bilingual mode.
 		navigator.setReadingBilingualEbook(false);
 	}

@@ -165,9 +165,11 @@ public class PanelNavigator {
 	 * @param index			Index of the panel
 	 */
 	public void loadPageIntoView(String pathOfPage, int index) {
+		// Default - set panel state to *notes*.
 		PanelViewStateEnum enumState = PanelViewStateEnum.notes;
 
-		// If the page is contained in the opened book in this panel, set enumState to *books*
+		// Only if the page is contained in the opened book in this panel,
+		// set enumState to *books*
 		if (books[index] != null) {
 			if ((pathOfPage.equals(books[index].getCurrentPageURL()))
 					|| (books[index].getPageIndex(pathOfPage) >= 0)) {
@@ -175,9 +177,10 @@ public class PanelNavigator {
 			}
 		}
 
-		// If this panel has no opened book, set enumState to *notes*
-		if (books[index] == null)
-			enumState = PanelViewStateEnum.notes;
+		// If this panel has no opened book, set enumState to *empty*
+		if (books[index] == null) {
+			enumState = PanelViewStateEnum.empty;
+		}
 
 		// If this panel isn't yet open or isn't instance of BookView, open it and make it BookView.
 		if (splitViews[index] == null || !(splitViews[index] instanceof BookPanel))
@@ -231,7 +234,7 @@ public class PanelNavigator {
 	 * Close one of the panels
 	 * @param index		The panel to be closed
 	 */
-	public void closeView(int index) {
+	public void closePanelView(int index) {
 		// If it's AudioView panel, stop the playback.
 		if (splitViews[index] instanceof AudioPanel) {
 			((AudioPanel) splitViews[index]).stop();
@@ -239,7 +242,7 @@ public class PanelNavigator {
 		}
 		// If the other panel is an AudioView panel opened from this one, close the other one as well.
 		if (extractAudio[index] && splitViews[(index + 1) % nBooks] instanceof AudioPanel) {
-			closeView((index + 1) % nBooks);
+			closePanelView((index + 1) % nBooks);
 			extractAudio[index] = false;
 		}
 
