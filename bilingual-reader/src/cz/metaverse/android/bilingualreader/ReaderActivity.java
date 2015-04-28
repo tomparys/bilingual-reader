@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package cz.metaverse.android.bilingualreader;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
@@ -32,6 +33,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -56,7 +58,7 @@ import cz.metaverse.android.bilingualreader.sync.ParagraphPositions;
  * Here it all begins, here it all ends.
  *
  */
-public class ReaderActivity extends Activity {
+public class ReaderActivity extends Activity implements View.OnSystemUiVisibilityChangeListener {
 
 	public PanelNavigator navigator;
 	protected int bookSelector;
@@ -69,12 +71,16 @@ public class ReaderActivity extends Activity {
 	private Button[] drawerBookButton;
 	private String[] drawerBookButtonText;
 
-	// Used exclusively for debugging purposes (e.g. Displaying toasts without context)
-	public static Context debugContext;	// TODO remove when no longer needed
-
 	// Request codes so we know from which Activity we have just returned.
 	public static final int ACTIVITY_RESULT_FILE_CHOOSER = 1;
 	public static final int ACTIVITY_RESULT_SRS_DATABASE = 2;
+
+	// Fields pertaining to full-screen mode
+	private View decorView;
+	private boolean fullscreenMode = false;
+
+	// Used exclusively for debugging purposes (e.g. Displaying toasts without context)
+	public static Context debugContext;	// TODO remove when no longer needed
 
 
 	/**
@@ -84,6 +90,10 @@ public class ReaderActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		// Initialize our ability to switch to fullscreen.
+		decorView = getWindow().getDecorView();
+		decorView.setOnSystemUiVisibilityChangeListener(this);
 
 		// Set the Activity title that will be displayed on the ActionBar (among other places).
 		setTitle(R.string.action_bar_title);
@@ -193,7 +203,7 @@ public class ReaderActivity extends Activity {
 		outState.putStringArray("nps_drawerBookButtonText", drawerBookButtonText);
 
 		// --- Removing panels is no longer necessary, because they are being retained through
-		//       the recreation of the Activity. Leaving just in case.
+		//	   the recreation of the Activity. Leaving just in case.
 		// Remove current panels from view (they still exist, they just won't be attached
 		//  to the FragmentManager and therefore won't be displayed.
 		// They will be readded in in onResume() or they will be recreated and readded
@@ -259,6 +269,93 @@ public class ReaderActivity extends Activity {
 			if (resultCode == Activity.RESULT_OK) {
 				String path = data.getStringExtra(getString(R.string.bpath));
 				navigator.openBook(path, bookSelector);
+			}
+		}
+	}
+
+
+
+	// ============================================================================================
+	//		Full-screen mode
+	// ============================================================================================
+
+	/**
+	 * Switches between full-screen and normal mode.
+	 */
+	public void switchFullscreen() {
+		if (fullscreenMode) {
+			deactivateFullscreen();
+		} else {
+			activateFullscreen();
+		}
+	}
+
+	/**
+	 * Activates full-screen mode - hides status bar, system navigation and the Action Bar.
+	 */
+	@SuppressLint("InlinedApi") // Android versions not supporting Immersive Fullscreen ignore unsupported flags.
+	public void activateFullscreen() {
+		// Set basic fullscreen flags
+		int flags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION  // Hides the system navigation
+				| View.SYSTEM_UI_FLAG_FULLSCREEN;  // Hides the status bar
+
+		// Set flags for devices with support for immersive fullscreen.
+		if (Build.VERSION.SDK_INT >= 19) {
+			// The last two flags make for a smoother transition in android versions with IMMERSIVE fullscreen.
+			flags = flags
+					| View.SYSTEM_UI_FLAG_IMMERSIVE  // Ensures that no touch events won't cancel fullscreen mode.
+					| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION  // Ensures more seamless transition.
+					| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;  // Ensures more seamless transition.
+		}
+
+		// Hide action bar and activate fullscreen flags.
+		getActionBar().hide();
+		decorView.setSystemUiVisibility(flags);
+	}
+
+	// This snippet shows the system bars. It does this by removing all the flags
+	// except for the ones that make the content appear under the system bars.
+	/**
+	 * Deactivates full-screen mode - shows status bar, system navigation and the Action Bar.
+	 */
+	public void deactivateFullscreen() {
+		getActionBar().show();
+		decorView.setSystemUiVisibility(0); // Seting no flags returns all to normal.
+	}
+
+	/**
+	 * Called when the visibility of the System UIs changes - when we enter or leave fullscreen mode.
+	 */
+	@Override
+	public void onSystemUiVisibilityChange(int visibility) {
+		// Note that system bars will only be "visible" if none of the
+		//  LOW_PROFILE, HIDE_NAVIGATION, or FULLSCREEN flags are set.
+		// But we're setting only the SYSTEM_UI_FLAG_FULLSCREEN flag, so we test for it.
+		if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+			// The system bars are visible - show the action bar if it is hidden.
+			fullscreenMode = false;
+			if (!getActionBar().isShowing()) {
+				getActionBar().show();
+			}
+		} else {
+			// The system bars are NOT visible - hide the action bar if it is shown.
+			fullscreenMode = true;
+			if (getActionBar().isShowing()) {
+				getActionBar().hide();
+			}
+		}
+	}
+
+	/**
+	 * Called when we have gained or lost focus.
+	 */
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		if (hasFocus) {
+			if (fullscreenMode) {
+				// If we have regained back focus and fullscreenImmersion was active before,
+				// re-hide system UI.
+				activateFullscreen();
 			}
 		}
 	}
