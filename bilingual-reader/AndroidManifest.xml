@@ -9,7 +9,7 @@
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="21" />
+        android:targetSdkVersion="22" />
 
     <application
         android:allowBackup="true"
@@ -21,24 +21,19 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="cz.metaverse.android.bilingualreader.FileChooserActivity" >
-        </activity>
+        <activity android:name="cz.metaverse.android.bilingualreader.FileChooserActivity" />
         <activity
             android:name="cz.metaverse.android.bilingualreader.panel.BookPanel"
-            android:label="@string/title_activity_book_view" >
-        </activity>
+            android:label="@string/title_activity_book_view" />
         <activity
             android:name="cz.metaverse.android.bilingualreader.panel.DataPanel"
-            android:label="@string/title_activity_data_view" >
-        </activity>
+            android:label="@string/title_activity_data_view" />
         <activity
             android:name="cz.metaverse.android.bilingualreader.panel.AudioPanel"
-            android:label="@string/title_activity_audio_view" >
-        </activity>
+            android:label="@string/title_activity_audio_view" />
     </application>
 
 </manifest>
