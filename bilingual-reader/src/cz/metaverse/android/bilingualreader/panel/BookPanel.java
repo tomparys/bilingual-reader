@@ -89,17 +89,17 @@ public class BookPanel extends SplitPanel {
 			}
 		});
 
-		// Set long-click listener - NOTE & LINK
+		// Set long-click listener:
+		//  If the user long-clicks on any URL link we open it in the other panel.
 		webView.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
-
-				// Create a message and its handler
+				// Create a message and a method that will serve as its target.
+				// The target method will look for URL in the messages data,
+				//  and if there is one, it dispatches it to the PanelsNavigator
+				//  to open it as a Note in the other panel.
 				Message msg = new Message();
-
 				msg.setTarget(new Handler() {
-
-					// A handler for the message
 					@Override
 					public void handleMessage(Message msg) {
 						super.handleMessage(msg);
