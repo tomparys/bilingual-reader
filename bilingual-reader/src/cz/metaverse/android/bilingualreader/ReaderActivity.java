@@ -651,7 +651,7 @@ public class ReaderActivity extends Activity {
 	 */
 	public void addPanel(SplitPanel p) {
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-		fragmentTransaction.add(R.id.MainLayout, p, p.getTag());
+		fragmentTransaction.add(R.id.PanelsLayout, p, p.getTag());
 		fragmentTransaction.commit();
 
 		panelCount++;
@@ -851,7 +851,7 @@ public class ReaderActivity extends Activity {
 	 * @return height of the display area
 	 */
 	public int getHeight() {
-		LinearLayout main = (LinearLayout) findViewById(R.id.MainLayout);
+		LinearLayout main = (LinearLayout) findViewById(R.id.PanelsLayout);
 		return main.getMeasuredHeight();
 	}
 
@@ -859,7 +859,7 @@ public class ReaderActivity extends Activity {
 	 * @return width of the display area
 	 */
 	public int getWidth() {
-		LinearLayout main = (LinearLayout) findViewById(R.id.MainLayout);
+		LinearLayout main = (LinearLayout) findViewById(R.id.PanelsLayout);
 		return main.getWidth();
 	}
 
