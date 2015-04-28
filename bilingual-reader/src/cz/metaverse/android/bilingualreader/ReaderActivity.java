@@ -72,6 +72,10 @@ public class ReaderActivity extends Activity {
 	// Used exclusively for debugging purposes (e.g. Displaying toasts without context)
 	public static Context debugContext;	// TODO remove when no longer needed
 
+	// Request codes so we know from which Activity we have just returned.
+	public static final int ACTIVITY_RESULT_FILE_CHOOSER = 1;
+	public static final int ACTIVITY_RESULT_SRS_DATABASE = 2;
+
 
 	/**
 	 * Called when the application gets started.
@@ -166,7 +170,7 @@ public class ReaderActivity extends Activity {
 		if (panelCount == 0) {
 			bookSelector = 0;
 			Intent goToChooser = new Intent(this, FileChooserActivity.class);
-			startActivityForResult(goToChooser, 0);
+			startActivityForResult(goToChooser, ACTIVITY_RESULT_FILE_CHOOSER);
 		}
 	}
 
@@ -249,10 +253,13 @@ public class ReaderActivity extends Activity {
 			navigator.loadViews(preferences);
 		}
 
-		// Open the selected book in a given panel if all went well.
-		if (resultCode == Activity.RESULT_OK) {
-			String path = data.getStringExtra(getString(R.string.bpath));
-			navigator.openBook(path, bookSelector);
+		// If we have just returned from the FileChooserActivity.
+		if (requestCode == ACTIVITY_RESULT_FILE_CHOOSER) {
+			// Open the selected book in a given panel if all went well.
+			if (resultCode == Activity.RESULT_OK) {
+				String path = data.getStringExtra(getString(R.string.bpath));
+				navigator.openBook(path, bookSelector);
+			}
 		}
 	}
 
@@ -281,7 +288,7 @@ public class ReaderActivity extends Activity {
 			bookSelector = 0;
 			Intent goToChooser1 = new Intent(ReaderActivity.this, FileChooserActivity.class);
 			goToChooser1.putExtra(getString(R.string.second), getString(R.string.time));
-			startActivityForResult(goToChooser1, 0);
+			startActivityForResult(goToChooser1, ACTIVITY_RESULT_FILE_CHOOSER);
 			break;
 
 		// Book title 2 - open Table of Contents
@@ -301,12 +308,12 @@ public class ReaderActivity extends Activity {
 			bookSelector = 1;
 			Intent goToChooser2 = new Intent(ReaderActivity.this, FileChooserActivity.class);
 			goToChooser2.putExtra(getString(R.string.second), getString(R.string.time));
-			startActivityForResult(goToChooser2, 0);
+			startActivityForResult(goToChooser2, ACTIVITY_RESULT_FILE_CHOOSER);
 			break;
 
 		// SRS Database
 		case R.id.drawer_SRS_database_button:
-			startActivity(new Intent(this, SRSDatabaseActivity.class));
+			startActivityForResult(new Intent(this, SRSDatabaseActivity.class), ACTIVITY_RESULT_SRS_DATABASE);
 			break;
 
 		// Settings
