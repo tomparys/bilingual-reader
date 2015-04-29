@@ -36,6 +36,7 @@ import cz.metaverse.android.bilingualreader.helper.PanelViewState;
 import cz.metaverse.android.bilingualreader.panel.AudioPanel;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
+import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 
 /**
  *
@@ -599,6 +600,17 @@ public class PanelNavigator {
 	 */
 	public BookPanel getSisterBookPanel(int panel) {
 		return getBookPanel(nextPanelIndex(panel));
+	}
+
+	/**
+	 * Returns the other book panel's WebView, if it exists.
+	 */
+	public SelectionWebView getSisterWebView(int panel) {
+		BookPanel bookPanel = getBookPanel(nextPanelIndex(panel));
+		if (bookPanel != null) {
+			return bookPanel.getWebView();
+		}
+		return null;
 	}
 
 	/**

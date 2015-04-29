@@ -1,5 +1,6 @@
 package cz.metaverse.android.bilingualreader.dialog;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -29,6 +30,7 @@ public class PanelSizeDialog extends DialogFragment {
 	protected Context context;
 	protected SharedPreferences preferences;
 
+	@SuppressLint("InflateParams")  // Normal practice for inflation of DialogFragments.
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -96,9 +98,16 @@ public class PanelSizeDialog extends DialogFragment {
 		// Save the value on the seek bar to preferences
 		seekBarValue = seekBarProgress;
 
+		saveSeekBarValue(preferences, seekBarValue);
+	}
+
+	public static void saveSeekBarValue(SharedPreferences preferences, int seekBarValue) {
 		SharedPreferences.Editor editor = preferences.edit();
 		editor.putInt("seekBarValue", seekBarValue);
 		editor.commit();
 	}
 
+	public static void saveSeekBarValue(SharedPreferences preferences, float weight) {
+		saveSeekBarValue(preferences, (int) (weight * 100));
+	}
 }

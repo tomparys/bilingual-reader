@@ -17,7 +17,6 @@ import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.helper.ScrollSyncMethod;
 import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
-import cz.metaverse.android.bilingualreader.panel.BookPanel;
 
 /**
  *
@@ -26,6 +25,8 @@ import cz.metaverse.android.bilingualreader.panel.BookPanel;
  *
  */
 public class SelectionWebView extends WebView {
+
+	private static final String LOG = "alfons";
 
 	private ReaderActivity readerActivity;
 	private PanelNavigator navigator;
@@ -45,6 +46,7 @@ public class SelectionWebView extends WebView {
 	private boolean userIsScrolling = false;
 	// When user is still interacting with this WebView, but the sync scrolling is temporarily paused.
 	private boolean userScrollingPaused = false;
+	private boolean noScrollAtAll = false;
 
 	// ScrollSync method offset
 	private int scrollSyncOffset;
@@ -203,15 +205,21 @@ public class SelectionWebView extends WebView {
 	 */
 	@Override
 	public void computeScroll() {
-		super.computeScroll();
+		if (!noScrollAtAll) {
+			super.computeScroll();
+		}
 
-		// If Scroll Sync is active, not paused, the user is scrolling this WebView and its content is rendered.
-		if (navigator.isScrollSync() && userIsScrolling && !userScrollingPaused && getContentHeight() != 0) {
+		// If Scroll Sync is active, the user is scrolling this WebView and his scrolling is not paused.
+		if (navigator.isScrollSync() && userIsScrolling && !userScrollingPaused) {
 
-			BookPanel sisterPanel = readerActivity.navigator.getSisterBookPanel(panelIndex);
-			if (sisterPanel != null) {
-				SelectionWebView sisterWV = sisterPanel.getWebView();
+			// If maxScrollY is positive.
+			int computedMaxScrollY = computeMaxScrollY();
+			if (computedMaxScrollY != 0) {
+
+				// If sisterWebView exists.
+				SelectionWebView sisterWV = readerActivity.navigator.getSisterWebView(panelIndex);
 				if (sisterWV != null) {
+
 					// Compute and set the corresponding scroll position of the other WebView.
 					int scrollValue = 0;
 					switch (scrollSyncMethod) {
@@ -219,7 +227,7 @@ public class SelectionWebView extends WebView {
 					// Offset - the webviews are synchronized on their % of scroll + offset pixels
 					case offset:
 						scrollValue = (getScrollY() - scrollSyncOffset)
-								* sisterWV.computeMaxScrollY() / computeMaxScrollY();
+								* sisterWV.computeMaxScrollY() / computedMaxScrollY;
 						break;
 
 					default:
@@ -230,6 +238,24 @@ public class SelectionWebView extends WebView {
 					sisterWV.setScrollY(scrollValue);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Overriding this method so we can stop the WebView from scrolling at any time we want.
+	 */
+	@Override
+	public boolean overScrollBy(int deltaX, int deltaY, int scrollX, int scrollY,
+			int scrollRangeX, int scrollRangeY, int maxOverScrollX,
+			int maxOverScrollY, boolean isTouchEvent) {
+
+		if (noScrollAtAll) {
+			// WebView will not scroll at all.
+			return false;
+		} else {
+			// WebView will scroll normally.
+			return super.overScrollBy(deltaX, deltaY, scrollX, scrollY, scrollRangeX, scrollRangeY,
+					maxOverScrollX, maxOverScrollY, isTouchEvent);
 		}
 	}
 
@@ -272,7 +298,7 @@ public class SelectionWebView extends WebView {
 
 			case offset:
 				scrollSyncOffset += getScrollY() - scrollYwhenPaused;
-				Log.d("alfons", "[" + panelIndex + "] new offset: " + scrollSyncOffset);
+				//Log.d(LOG, "[" + panelIndex + "] new offset: " + scrollSyncOffset);
 				break;
 
 			default:
@@ -306,20 +332,17 @@ public class SelectionWebView extends WebView {
 	 */
 	private void setCorrespondingScrollSyncDataOnSisterWebView() {
 		/* Set corresponding ScrollSyncMethod data on the sister WebView. */
-		BookPanel otherPanel = readerActivity.navigator.getSisterBookPanel(panelIndex);
-		if (otherPanel != null) {
+		SelectionWebView sisterWV = readerActivity.navigator.getSisterWebView(panelIndex);
+		if (sisterWV != null) {
 
-			SelectionWebView otherWV = otherPanel.getWebView();
-			if (otherWV != null) {
-				switch (scrollSyncMethod) {
+			switch (scrollSyncMethod) {
 
-				case offset:
-					otherWV.setCorrespondingScrollSyncOffset(scrollSyncOffset);
-					break;
+			case offset:
+				sisterWV.setCorrespondingScrollSyncOffset(scrollSyncOffset);
+				break;
 
-				default:
-					break;
-				}
+			default:
+				break;
 			}
 		}
 	}
@@ -329,6 +352,14 @@ public class SelectionWebView extends WebView {
 	 */
 	public void setCorrespondingScrollSyncOffset(int offset) {
 		scrollSyncOffset = -offset;
+	}
+
+	/**
+	 * Set whether the WebView will react to scrolling or not scroll at all.
+	 */
+	public void setNoScrollAtAll(boolean noScrollAtAll) {
+		//Log.d(LOG, "noScrollAtAll " + noScrollAtAll);
+		this.noScrollAtAll = noScrollAtAll;
 	}
 
 	/**

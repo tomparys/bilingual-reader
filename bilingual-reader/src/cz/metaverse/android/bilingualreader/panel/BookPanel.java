@@ -25,6 +25,7 @@ THE SOFTWARE.
 package cz.metaverse.android.bilingualreader.panel;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -40,11 +41,13 @@ import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
+import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
 import cz.metaverse.android.bilingualreader.helper.PanelViewState;
 import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 
@@ -70,7 +73,7 @@ public class BookPanel extends SplitPanel
 	protected SelectionWebView webView;
 
 	/* Fields for touch/gesture events. */
-	protected static final String DEBUG_TAG = "alfons";
+	protected static final String LOG = "alfons";
 	protected GestureDetectorCompat gestureDetector;
 
 	// For scrolling gesture events.
@@ -84,8 +87,10 @@ public class BookPanel extends SplitPanel
 	private boolean isDoubleTapSwipe;
 	private float doubleTapOriginX;
 	private float doubleTapOriginY;
-
-
+	private boolean doubleTapSwipeEscapedBounds;
+	private float newPanelsWeight;
+	private int doubleTapSwipe_contentStartsAtHeight;
+	private int doubleTapSwipe_viewHeight;
 
 
 	@Override
@@ -300,14 +305,64 @@ public class BookPanel extends SplitPanel
 		// Provide data to the GestureDetector.
 		gestureDetector.onTouchEvent(event);
 
-		if(MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_UP) {
-			Log.d(DEBUG_TAG, "[" + index + "] OnTouchListener --> onTouch ACTION_UP");
+		/*
+		 * Handle Double Tap Swipe in real time.
+		 *  This handling isn't in onDoubleTapEvent() because that method has a limit how many times
+		 *  it gets called after which it isn't called at all until the user lifts the finger in which
+		 *  case it gets called one last time. That is not workable for on-the-fly resizing of panels.
+		 */
+		if (isDoubleTapSwipe) {
+			float absDiffX = Math.abs(doubleTapOriginX - event.getX());
+			float absDiffY = Math.abs(doubleTapOriginY - event.getY());
 
+			// If the swipe was over 1/8 of the screen high and it was higher than wider.
+			if (doubleTapSwipeEscapedBounds || (absDiffY * 2 > quarterHeight && absDiffY > absDiffX)) {
+
+				if (!doubleTapSwipeEscapedBounds) {
+					// This is the first time doubleTapSwipe escaped it's bounds
+					// - we're officially in the set-panels-size mode.
+					doubleTapSwipeEscapedBounds = true;
+
+					// Find out and save the relevant dimensions of our view/display
+					Window window = activity.getWindow();
+					doubleTapSwipe_contentStartsAtHeight = window.findViewById(Window.ID_ANDROID_CONTENT).getTop();
+					doubleTapSwipe_viewHeight = window.getDecorView().getHeight();
+				}
+
+				// Compute the panels weight
+				newPanelsWeight = (event.getRawY() - doubleTapSwipe_contentStartsAtHeight)
+						/ (doubleTapSwipe_viewHeight - doubleTapSwipe_contentStartsAtHeight);
+
+				// If the weight is close to 0.5, let it stick to it.
+				if (Math.abs(0.5 - newPanelsWeight) < 0.05) {
+					newPanelsWeight = 0.5f;
+				}
+
+				// Change relative panel size on the fly.
+				navigator.changePanelsWeight(newPanelsWeight);
+
+				Log.d(LOG, "doubleTapSwipe " + newPanelsWeight);
+				//+ " = (" + event.getRawY() + " - " + contentViewTop + ") / " + (height - contentViewTop));
+			}
+		}
+
+		/*
+		 * Handle ACTION_UP event for scrolling, because onScroll (almost?) never gets
+		 * called with the last MotionEvent.ACTION_UP.
+		 * Don't forget to mirror any changes made here in the onScroll() method as well, to be safe.
+		 */
+		if(MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_UP) {
+			Log.d(LOG, "[" + index + "] OnTouchListener --> onTouch ACTION_UP");
+
+			// Only if it's not DoubleTapSwipe, that is handled separately.
 			if (!isDoubleTapSwipe) {
 				// Evaluate if the scroll that has just ended constitutes some gesture.
 				handleScrollEnd(event);
 
-				if(scrollIsMultitouch) {
+				// If it was multitouch scroll, it functions as independent scrolling
+				// and therefore webView.pauseScrollSync() gets called to pause ScrollSync.
+				// Since multitouch scroll ended, resumeScrollSync().
+				if(navigator.isScrollSync() && webView.isUserScrolling() && scrollIsMultitouch) {
 					scrollIsMultitouch = false;
 
 					webView.resumeScrollSync();
@@ -321,7 +376,7 @@ public class BookPanel extends SplitPanel
 	 */
 	@Override
 	public boolean onDown(MotionEvent event) {
-		Log.d(DEBUG_TAG, "[" + index + "] onDown"); //: " + event.toString());
+		Log.d(LOG, "[" + index + "] onDown"); //: " + event.toString());
 
 		// Reset fields dealing with scroll.
 		scrollIsMultitouch = false;
@@ -331,7 +386,13 @@ public class BookPanel extends SplitPanel
 
 		// Reset fields dealing with double tap swipe.
 		isDoubleTapSwipe = false;
+		doubleTapSwipeEscapedBounds = false;
+		webView.setNoScrollAtAll(false);  // (Re)activate WebView scrolling.
+		doubleTapSwipe_contentStartsAtHeight = 0; // Will be recomputed upon need, and with current values
+		doubleTapSwipe_viewHeight = 0;            // instead of saved ones that need to be updated upon change.
 
+
+		// If ScrollSync is active:
 		if (navigator.isScrollSync()) {
 			// The user laid finger in this WebView and may start scrolling it.
 			// Therefore activate User Scrolling in this WebView and deactivate it in the sister WebView.
@@ -349,24 +410,32 @@ public class BookPanel extends SplitPanel
 
 		return true;
 	}
+
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-		Log.d(DEBUG_TAG, "[" + index + "] onFling"); //: " + event1.toString()+event2.toString());
+		Log.d(LOG, "[" + index + "] onFling"); //: " + event1.toString()+event2.toString());
 
 		// Evaluate if the scroll that has just ended constitutes some gesture.
 		handleScrollEnd(e2);
 
+		// If it was multitouch scroll, it functions as independent scrolling
+		// and therefore webView.pauseScrollSync() gets called to pause ScrollSync.
+		// Since multitouch scroll ended, resumeScrollSync().
 		if (navigator.isScrollSync() && webView.isUserScrolling() && scrollIsMultitouch) {
 			scrollIsMultitouch = false;
+
 			webView.resumeScrollSync();
 		}
 
 		return true;
 	}
 
+	/**
+	 * Gets called when the user scrolls, but not when he double taps and swipes/scrolls.
+	 */
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		Log.d(DEBUG_TAG, "[" + index + "] onScroll"); //: " + e2.toString());
+		Log.d(LOG, "[" + index + "] onScroll"); //: " + e2.toString());
 
 		/* Change from single to a Multi-touch event */
 		if (e2.getPointerCount() > 1 && !scrollIsMultitouch) {
@@ -384,7 +453,7 @@ public class BookPanel extends SplitPanel
 			scrollOriginX = e2.getX();
 			scrollOriginY = e2.getY();
 
-			Log.d(DEBUG_TAG, "[" + index + "] onScroll: Change from single to a Multitouch event");
+			Log.d(LOG, "[" + index + "] onScroll: Change from single to a Multitouch event");
 		}
 		/* Change from multi to a Single-touch event */
 		else if (e2.getPointerCount() <= 1 && scrollIsMultitouch && scrollIsMultitouch) {
@@ -392,7 +461,7 @@ public class BookPanel extends SplitPanel
 			handleScrollEnd(e2);
 
 			if (navigator.isScrollSync() && webView.isUserScrolling()) {
-				// Resume ScrollSync activate new scrolling offset.
+				// Resume ScrollSync - WebView will compute a new offest/syncPoint/...
 				webView.resumeScrollSync();
 			}
 
@@ -401,16 +470,24 @@ public class BookPanel extends SplitPanel
 			scrollOriginX = e2.getX();
 			scrollOriginY = e2.getY();
 
-			Log.d(DEBUG_TAG, "[" + index + "] onScroll: Change from multi to a Singletouch event");
+			Log.d(LOG, "[" + index + "] onScroll: Change from multi to a Singletouch event");
 		}
 
+		// Warning, the last onScroll call with MotionEvent.ACTION_UP (almost?) never happens.
+		// Therefore this functionality is moved to handleWebViewTouch().
+		// I'm leaving it here as well just in case.
 		if (MotionEventCompat.getActionMasked(e2) == MotionEvent.ACTION_UP) {
-			Log.d(DEBUG_TAG, "[" + index + "] onScroll ACTION_UP");
+			Log.d(LOG, "[" + index + "] onScroll ACTION_UP");
 
 			// Evaluate if the scroll that has just ended constitutes some gesture.
 			handleScrollEnd(e2);
 
+			// If it was multitouch scroll, it functions as independent scrolling
+			// and therefore webView.pauseScrollSync() gets called to pause ScrollSync.
+			// Since multitouch scroll ended, resumeScrollSync().
 			if (navigator.isScrollSync() && webView.isUserScrolling() && scrollIsMultitouch) {
+				scrollIsMultitouch = false;
+
 				webView.resumeScrollSync();
 			}
 		}
@@ -428,9 +505,10 @@ public class BookPanel extends SplitPanel
 		float absDiffY = Math.abs(diffY);
 
 		// If this scroll is and always was single touch:
-		if (!scrollIsMultitouch && !scrollWasMultitouch) {
+		if (!scrollIsMultitouch && !scrollWasMultitouch && !isDoubleTapSwipe) {
 			// If the WebView is displaying a book:
 			if (enumState == PanelViewState.books) {
+
 				// Single touch scroll on a book - evaluate if the user wants to change chapters.
 				if (diffX > quarterWidth && absDiffX > absDiffY) {
 					// Next chapter - If the swipe was to the right, over 1/4 of the screen wide,
@@ -466,7 +544,7 @@ public class BookPanel extends SplitPanel
 
 	@Override
 	public boolean onDoubleTap(MotionEvent event) {
-		Log.d(DEBUG_TAG, "[" + index + "] onDoubleTap"); //: " + event.toString());
+		Log.d(LOG, "[" + index + "] onDoubleTap"); //: " + event.toString());
 
 		doubleTapOriginX = event.getX();
 		doubleTapOriginY = event.getY();
@@ -475,13 +553,26 @@ public class BookPanel extends SplitPanel
 
 	/**
 	 * Called when the user double taps and then swipes his finger away on the second tap.
+	 *
+	 * Warning: Gets called before the second onDown() call, which resets values used here.
+	 * But the subsequent call of this method can repair the damage.
 	 */
 	@Override
 	public boolean onDoubleTapEvent(MotionEvent event) {
-		Log.d(DEBUG_TAG, "[" + index + "] onDoubleTapEvent"); //: " + event.toString());
+		Log.d(LOG, "[" + index + "] onDoubleTapEvent"); //: " + event.toString());
 
 		// This cannot be moved to onDoubleTap, because another onDown comes after it that wipes it out.
-		isDoubleTapSwipe = true;
+		if (!isDoubleTapSwipe) {
+			isDoubleTapSwipe = true;
+			webView.setNoScrollAtAll(true);
+		}
+
+		/*
+		 * Detecting Double tap + swipe up/down was moved directly to handleWebViewTouch(),
+		 *  because this method has a limit how many times it gets called after which it isn't called
+		 *  at all until the user lifts the finger in which case it gets called one last time.
+		 *  That is not workable for on-the-fly resizing of panels.
+		 */
 
 		// If the finger has finally risen.
 		if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_UP) {
@@ -490,10 +581,19 @@ public class BookPanel extends SplitPanel
 			float absDiffX = Math.abs(doubleTapOriginX - event.getX());
 			float absDiffY = Math.abs(doubleTapOriginY - event.getY());
 
-			if (absDiffX > quarterWidth || absDiffY > quarterHeight) {
-				// Hide panel -
-				//  If the swipe was over 1/4 of the screen wide or over 1/4 of the screen high.
+			// If the swipe was over 1/4 of the screen wide and it was wider than higher.
+			if (absDiffX > quarterWidth && absDiffX > absDiffY) {
+				// Hide panel.
 				Toast.makeText(ReaderActivity.debugContext, "Hiding panel - by DoubleTap swipe.", Toast.LENGTH_SHORT).show();
+			}
+
+			// If doubleTapSwipe escaped its vertical bounds and up/down sliding begun changing
+			// the relative size of panels on the fly. The user has settled on a relative size he wants,
+			// and our job now is to save this preference into PanelSizeDialog for further use in the dialog.
+			if (doubleTapSwipeEscapedBounds) {
+				// Save the newly set panels weight into preferences so PanelSizeDialog can acess it.
+				SharedPreferences preferences = activity.getPreferences(Context.MODE_PRIVATE);
+				PanelSizeDialog.saveSeekBarValue(preferences, newPanelsWeight);
 			}
 		}
 
@@ -505,7 +605,7 @@ public class BookPanel extends SplitPanel
 	 */
 	@Override
 	public boolean onSingleTapConfirmed(MotionEvent event) {
-		Log.d(DEBUG_TAG,"[" + index + "] onSingleTapConfirmed"); //: " + event.toString());
+		Log.d(LOG,"[" + index + "] onSingleTapConfirmed"); //: " + event.toString());
 
 		if (!webView.inSelectionActionMode()) {
 			activity.switchFullscreen();
@@ -515,18 +615,18 @@ public class BookPanel extends SplitPanel
 
 	@Override
 	public boolean onSingleTapUp(MotionEvent event) {
-		Log.d(DEBUG_TAG,"[" + index + "] onSingleTapUp"); //: " + event.toString());
+		Log.d(LOG,"[" + index + "] onSingleTapUp"); //: " + event.toString());
 		return true;
 	}
 
 	@Override
 	public void onLongPress(MotionEvent event) {
-		Log.d(DEBUG_TAG, "[" + index + "] onLongPress"); //: " + event.toString());
+		Log.d(LOG, "[" + index + "] onLongPress"); //: " + event.toString());
 	}
 
 	@Override
 	public void onShowPress(MotionEvent event) {
-		Log.d(DEBUG_TAG, "[" + index + "] onShowPress"); //: " + event.toString());
+		Log.d(LOG, "[" + index + "] onShowPress"); //: " + event.toString());
 	}
 
 }
