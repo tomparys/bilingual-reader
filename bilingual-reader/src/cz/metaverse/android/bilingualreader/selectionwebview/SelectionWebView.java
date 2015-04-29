@@ -15,6 +15,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
+import cz.metaverse.android.bilingualreader.helper.ScrollSyncMethod;
 import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
 
@@ -39,8 +40,15 @@ public class SelectionWebView extends WebView {
 	private long actionModeEndedAt;
 
 	/* Scroll Sync */
+	private ScrollSyncMethod scrollSyncMethod = ScrollSyncMethod.offset;
 	private Integer panelIndex;
 	private boolean userIsScrolling = false;
+	// When user is still interacting with this WebView, but the sync scrolling is temporarily paused.
+	private boolean userScrollingPaused = false;
+
+	// ScrollSync method offset
+	private int scrollSyncOffset;
+	private int scrollYwhenPaused;
 
 
 	/**
@@ -197,17 +205,29 @@ public class SelectionWebView extends WebView {
 	public void computeScroll() {
 		super.computeScroll();
 
-		// If Scroll Sync is active, the user is scrolling this WebView and its content is rendered.
-		if (navigator.isScrollSync() && userIsScrolling && getContentHeight() != 0) {
+		// If Scroll Sync is active, not paused, the user is scrolling this WebView and its content is rendered.
+		if (navigator.isScrollSync() && userIsScrolling && !userScrollingPaused && getContentHeight() != 0) {
 
-			BookPanel otherPanel = readerActivity.navigator.getSisterBookPanel(panelIndex);
-			if (otherPanel != null) {
-				SelectionWebView otherWV = otherPanel.getWebView();
-				if (otherWV != null) {
-
+			BookPanel sisterPanel = readerActivity.navigator.getSisterBookPanel(panelIndex);
+			if (sisterPanel != null) {
+				SelectionWebView sisterWV = sisterPanel.getWebView();
+				if (sisterWV != null) {
 					// Compute and set the corresponding scroll position of the other WebView.
-					int scrollValue = getScrollY() * otherWV.computeMaxScrollY() / computeMaxScrollY();
-					otherWV.setScrollY(scrollValue);
+					int scrollValue = 0;
+					switch (scrollSyncMethod) {
+
+					// Offset - the webviews are synchronized on their % of scroll + offset pixels
+					case offset:
+						scrollValue = (getScrollY() - scrollSyncOffset)
+								* sisterWV.computeMaxScrollY() / computeMaxScrollY();
+						break;
+
+					default:
+						break;
+					}
+
+					// Set the computed scroll to the sister webview.
+					sisterWV.setScrollY(scrollValue);
 				}
 			}
 		}
@@ -224,10 +244,107 @@ public class SelectionWebView extends WebView {
 	}
 
 	/**
+	 * Temporarily pause ScrollSync - user is using two-finger scroll for independent scrolling.
+	 */
+	public void pauseScrollSync() {
+		userScrollingPaused = true;
+
+		switch (scrollSyncMethod) {
+
+		case offset:
+			scrollYwhenPaused = getScrollY();
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	/**
+	 * Resume scrolling from temporary pause - user stopped independent scrolling.
+	 */
+	public void resumeScrollSync() {
+		// Make resume computations only if we were really paused.
+		if (userScrollingPaused) {
+			userScrollingPaused = false;
+
+			switch (scrollSyncMethod) {
+
+			case offset:
+				scrollSyncOffset += getScrollY() - scrollYwhenPaused;
+				Log.d("alfons", "[" + panelIndex + "] new offset: " + scrollSyncOffset);
+				break;
+
+			default:
+				break;
+			}
+
+			setCorrespondingScrollSyncDataOnSisterWebView();
+		}
+	}
+
+	/**
+	 * Reset ScrollSync - for instance when new chapter is opened.
+	 */
+	public void resetScrollSync() {
+		switch (scrollSyncMethod) {
+
+		case offset:
+			scrollSyncOffset = 0;
+			break;
+
+		default:
+			break;
+		}
+
+		setCorrespondingScrollSyncDataOnSisterWebView();
+	}
+
+	/**
+	 * For the user to be able to scroll both webviews in synchronized manner,
+	 * both webviews have to be aware of the pertinent ScrollSyncMethod data.
+	 */
+	private void setCorrespondingScrollSyncDataOnSisterWebView() {
+		/* Set corresponding ScrollSyncMethod data on the sister WebView. */
+		BookPanel otherPanel = readerActivity.navigator.getSisterBookPanel(panelIndex);
+		if (otherPanel != null) {
+
+			SelectionWebView otherWV = otherPanel.getWebView();
+			if (otherWV != null) {
+				switch (scrollSyncMethod) {
+
+				case offset:
+					otherWV.setCorrespondingScrollSyncOffset(scrollSyncOffset);
+					break;
+
+				default:
+					break;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Sets corresponding data for the ScrollSyncMethod offset method.
+	 */
+	public void setCorrespondingScrollSyncOffset(int offset) {
+		scrollSyncOffset = -offset;
+	}
+
+	/**
 	 * Set whether the user is scrolling this WebView or not at this moment.
 	 */
 	public void setUserIsScrolling(boolean isScrolling) {
-		this.userIsScrolling = isScrolling;
+		userIsScrolling = isScrolling;
+		userScrollingPaused = false;
+
+	}
+
+	/**
+	 * Returns whether the user is scrolling this view or not.
+	 */
+	public boolean isUserScrolling() {
+		return userIsScrolling;
 	}
 
 	/**
