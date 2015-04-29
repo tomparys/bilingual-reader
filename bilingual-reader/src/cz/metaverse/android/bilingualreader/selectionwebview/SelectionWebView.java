@@ -27,7 +27,10 @@ public class SelectionWebView extends WebView {
 
 	// For setting custom action bar
 	private ActionMode mActionMode;
+
 	private boolean inActionMode = false;
+	private boolean wasInActionMode = false;
+	private long actionModeEndedAt;
 
 	private ActionMode.Callback mSelectActionModeCallback;
 	private GestureDetector mDetector;
@@ -153,7 +156,21 @@ public class SelectionWebView extends WebView {
 	 * Returns whether ActionMode is currently active or not.
 	 */
 	public boolean inSelectionActionMode() {
-		return inActionMode;
+		if (inActionMode) {
+			return true;
+		} else {
+			// If this is the first time someone asked inSelectionActionMode() after ActionMode ended,
+			// i.e. if this is the first time someone did a single tap on the screen after AM ended.
+			if (wasInActionMode) {
+				wasInActionMode = false;
+
+				// If the ActionMode ended less than a second ago, say that ActionMode is active
+				// so the recipient knows the click they're evaluating highly probably served to close
+				// the ActionMode, and therefore should not be used to switch Fullscreen.
+				return System.currentTimeMillis() - actionModeEndedAt < 1000;
+			} else
+				return false;
+		}
 	}
 
 
@@ -201,6 +218,8 @@ public class SelectionWebView extends WebView {
 		@Override
 		public void onDestroyActionMode(ActionMode mode) {
 			inActionMode = false;
+			wasInActionMode = true;
+			actionModeEndedAt = System.currentTimeMillis();
 
 			// Checks the SDK version and uses the appropriate methods.
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -223,7 +242,11 @@ public class SelectionWebView extends WebView {
 		public boolean onSingleTapConfirmed(MotionEvent e) {
 			if (mActionMode != null) {
 				mActionMode.finish();
+
 				inActionMode = false;
+				wasInActionMode = true;
+				actionModeEndedAt = System.currentTimeMillis();
+
 				return true;
 			}
 			return false;

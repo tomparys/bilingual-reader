@@ -32,6 +32,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MotionEventCompat;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -321,18 +322,12 @@ public class BookPanel extends SplitPanel
 	}
 
 	/**
-	 * SingleTapUp - Activate/deactivate immersive fullscreen mode.
-	 *
-	 * Note: This is not possible to move to SingleTapConfirmed, because at that time we do not know if
-	 *  webView.inSelectionActionMode() was true or not, because at that time, the WebView has already
-	 *  cancelled the selection ActionMode. Therefore we do not know whether the click was aimed to close
-	 *  the ActionMode or whether we should use it to de/activate fullscreen.
-	 *
-	 *  In case implementing double tap is ever needed, we have to move switching of fullscreen directly
-	 *  to the SelectionWebView class.
+	 * onSingleTapConfirmed - Activate/deactivate immersive fullscreen mode.
 	 */
 	@Override
-	public boolean onSingleTapUp(MotionEvent event) {
+	public boolean onSingleTapConfirmed(MotionEvent event) {
+		Log.d(DEBUG_TAG,"onSingleTapConfirmed: " + event.toString());
+
 		if (!webView.inSelectionActionMode()) {
 			activity.switchFullscreen();
 		}
@@ -340,47 +335,48 @@ public class BookPanel extends SplitPanel
 	}
 
 	@Override
-	public boolean onSingleTapConfirmed(MotionEvent event) {
+	public boolean onSingleTapUp(MotionEvent event) {
+		Log.d(DEBUG_TAG,"onSingleTapUp: " + event.toString());
 		return true;
 	}
 
 	@Override
 	public boolean onDown(MotionEvent event) {
-		//Log.d(DEBUG_TAG,"onDown: " + event.toString());
+		Log.d(DEBUG_TAG,"onDown: " + event.toString());
 		return true;
 	}
 
 	@Override
 	public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
-		//Log.d(DEBUG_TAG, "onFling: " + event1.toString()+event2.toString());
+		Log.d(DEBUG_TAG, "onFling: " + event1.toString()+event2.toString());
 		return true;
 	}
 
 	@Override
 	public void onLongPress(MotionEvent event) {
-		//Log.d(DEBUG_TAG, "onLongPress: " + event.toString());
+		Log.d(DEBUG_TAG, "onLongPress: " + event.toString());
 	}
 
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		//Log.d(DEBUG_TAG, "onScroll: " + e1.toString()+e2.toString());
+		Log.d(DEBUG_TAG, "onScroll: " + e1.toString()+e2.toString());
 		return true;
 	}
 
 	@Override
 	public void onShowPress(MotionEvent event) {
-		//Log.d(DEBUG_TAG, "onShowPress: " + event.toString());
+		Log.d(DEBUG_TAG, "onShowPress: " + event.toString());
 	}
 
 	@Override
 	public boolean onDoubleTap(MotionEvent event) {
-		//Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
+		Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
 		return true;
 	}
 
 	@Override
 	public boolean onDoubleTapEvent(MotionEvent event) {
-		//Log.d(DEBUG_TAG, "onDoubleTapEvent: " + event.toString());
+		Log.d(DEBUG_TAG, "onDoubleTapEvent: " + event.toString());
 		return true;
 	}
 
