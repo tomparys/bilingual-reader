@@ -28,6 +28,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -91,6 +92,7 @@ public class BookPanel extends SplitPanel
 	private float newPanelsWeight;
 	private int doubleTapSwipe_contentStartsAtHeight;
 	private int doubleTapSwipe_viewHeight;
+	private int doubleTapSwipe_orientation;
 
 
 	@Override
@@ -316,7 +318,14 @@ public class BookPanel extends SplitPanel
 			float absDiffY = Math.abs(doubleTapOriginY - event.getY());
 
 			// If the swipe was over 1/8 of the screen high and it was higher than wider.
-			if (doubleTapSwipeEscapedBounds || (absDiffY * 2 > quarterHeight && absDiffY > absDiffX)) {
+			if (doubleTapSwipeEscapedBounds ||
+					// Bounds for PORTRAIT orientation.
+					(absDiffY * 2 > quarterHeight && absDiffY > absDiffX
+							&& doubleTapSwipe_orientation == Configuration.ORIENTATION_PORTRAIT) ||
+					// Bounds for LANDSCAPE orientation.
+					(absDiffX * 2 > quarterWidth && absDiffX > absDiffY
+							&& doubleTapSwipe_orientation != Configuration.ORIENTATION_PORTRAIT)) {
+
 
 				if (!doubleTapSwipeEscapedBounds) {
 					// This is the first time doubleTapSwipe escaped it's bounds
@@ -325,12 +334,21 @@ public class BookPanel extends SplitPanel
 
 					// Find out and save the relevant dimensions of our view/display
 					Window window = activity.getWindow();
-					doubleTapSwipe_contentStartsAtHeight = window.findViewById(Window.ID_ANDROID_CONTENT).getTop();
-					doubleTapSwipe_viewHeight = window.getDecorView().getHeight();
+
+					if(doubleTapSwipe_orientation == Configuration.ORIENTATION_PORTRAIT) {
+						doubleTapSwipe_contentStartsAtHeight = window.findViewById(Window.ID_ANDROID_CONTENT).getTop();
+						doubleTapSwipe_viewHeight = window.getDecorView().getHeight();
+					} else {
+						doubleTapSwipe_contentStartsAtHeight = window.findViewById(Window.ID_ANDROID_CONTENT).getLeft();
+						doubleTapSwipe_viewHeight = window.getDecorView().getWidth();
+					}
 				}
 
 				// Compute the panels weight
-				newPanelsWeight = (event.getRawY() - doubleTapSwipe_contentStartsAtHeight)
+				float useCoordinate = (doubleTapSwipe_orientation == Configuration.ORIENTATION_PORTRAIT)
+						? event.getRawY() : event.getRawX();
+
+				newPanelsWeight = (useCoordinate - doubleTapSwipe_contentStartsAtHeight)
 						/ (doubleTapSwipe_viewHeight - doubleTapSwipe_contentStartsAtHeight);
 
 				// If the weight is close to 0.5, let it stick to it.
@@ -390,6 +408,7 @@ public class BookPanel extends SplitPanel
 		webView.setNoScrollAtAll(false);  // (Re)activate WebView scrolling.
 		doubleTapSwipe_contentStartsAtHeight = 0; // Will be recomputed upon need, and with current values
 		doubleTapSwipe_viewHeight = 0;            // instead of saved ones that need to be updated upon change.
+		doubleTapSwipe_orientation = getResources().getConfiguration().orientation;
 
 
 		// If ScrollSync is active:
@@ -578,15 +597,6 @@ public class BookPanel extends SplitPanel
 		if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_UP) {
 			//Log.d(DEBUG_TAG, "onDoubleTapEvent ACTION_UP"); //: " + event.toString());
 
-			float absDiffX = Math.abs(doubleTapOriginX - event.getX());
-			float absDiffY = Math.abs(doubleTapOriginY - event.getY());
-
-			// If the swipe was over 1/4 of the screen wide and it was wider than higher.
-			if (absDiffX > quarterWidth && absDiffX > absDiffY) {
-				// Hide panel.
-				Toast.makeText(ReaderActivity.debugContext, "Hiding panel - by DoubleTap swipe.", Toast.LENGTH_SHORT).show();
-			}
-
 			// If doubleTapSwipe escaped its vertical bounds and up/down sliding begun changing
 			// the relative size of panels on the fly. The user has settled on a relative size he wants,
 			// and our job now is to save this preference into PanelSizeDialog for further use in the dialog.
@@ -594,6 +604,23 @@ public class BookPanel extends SplitPanel
 				// Save the newly set panels weight into preferences so PanelSizeDialog can acess it.
 				SharedPreferences preferences = activity.getPreferences(Context.MODE_PRIVATE);
 				PanelSizeDialog.saveSeekBarValue(preferences, newPanelsWeight);
+			}
+			else {
+				// DoubleTapSwipe never escaped its bounds and therefore
+				// we will evaluate if it constituted a swipe to the side.
+				float absDiffX = Math.abs(doubleTapOriginX - event.getX());
+				float absDiffY = Math.abs(doubleTapOriginY - event.getY());
+
+						// PORTRAIT: If the swipe was over 1/4 of the screen wide and it was wider than higher.
+				if (	(absDiffX > quarterWidth && absDiffX > absDiffY
+								&& doubleTapSwipe_orientation == Configuration.ORIENTATION_PORTRAIT) ||
+						// LANDSCAPE: If the swipe was over 1/4 of the screen high and it was higher than wider.
+						(absDiffY > quarterHeight && absDiffY > absDiffX
+								&& doubleTapSwipe_orientation != Configuration.ORIENTATION_PORTRAIT)) {
+
+					// Hide panel.
+					Toast.makeText(ReaderActivity.debugContext, "Hiding panel - by DoubleTap swipe.", Toast.LENGTH_SHORT).show();
+				}
 			}
 		}
 
