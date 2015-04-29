@@ -23,7 +23,8 @@ import cz.metaverse.android.bilingualreader.ReaderActivity;
  *
  */
 public class SelectionWebView extends WebView {
-	private Context context;
+
+	private ReaderActivity readerActivity;
 
 	// For setting custom action bar
 	private ActionMode mActionMode;
@@ -38,13 +39,13 @@ public class SelectionWebView extends WebView {
 
 	/**
 	 * Constructor in case of XML initialization.
-	 * @param context		Activity context
-	 * @param attributeSet	Set of attributes from the XML declaration
+	 * @param readerActivity  ReaderActivity context
+	 * @param attributeSet  Set of attributes from the XML declaration
 	 */
 	@SuppressLint("SetJavaScriptEnabled") // Our opensource application has literally nothing to hide.
-	public SelectionWebView(Context context, AttributeSet attributeSet) {
-		super(context, attributeSet);
-		this.context = context;
+	public SelectionWebView(Context readerActivity, AttributeSet attributeSet) {
+		super(readerActivity, attributeSet);
+		this.readerActivity = (ReaderActivity) readerActivity;
 		WebSettings webviewSettings = getSettings();
 		webviewSettings.setJavaScriptEnabled(true);
 
@@ -52,7 +53,7 @@ public class SelectionWebView extends WebView {
 		//  Casting context into ReaderActivity, because it is needed there and the only thing
 		//  that should ever own our WebView is an Activity.
 		try {
-			addJavascriptInterface(new WebAppInterface((ReaderActivity) context), "JSInterface");
+			addJavascriptInterface(new WebAppInterface(this.readerActivity), "JSInterface");
 		} catch (ClassCastException e) {
 			Log.e("SelectionWebView class constructor",
 					"SelectionWebView has been passed a Context that can't be cast " +
@@ -61,11 +62,11 @@ public class SelectionWebView extends WebView {
 	}
 
 	/**
-	 * Constructor in case of programmatical initialization.
-	 * @param context Activity context
+	 * Constructor in case of programmatic initialization.
+	 * @param readerActivity ReaderActivity context
 	 */
-	public SelectionWebView(Context context) {
-		this(context, null);
+	public SelectionWebView(Context readerActivity) {
+		this(readerActivity, null);
 	}
 
 	/**
@@ -83,7 +84,7 @@ public class SelectionWebView extends WebView {
 			String name = callback.getClass().toString();
 			if (name.contains("SelectActionModeCallback")) {
 				mSelectActionModeCallback = callback;
-				mDetector = new GestureDetector(context, new CustomOnGestureListener());
+				mDetector = new GestureDetector(readerActivity, new CustomOnGestureListener());
 			}
 		}
 
@@ -171,6 +172,14 @@ public class SelectionWebView extends WebView {
 			} else
 				return false;
 		}
+	}
+
+	/**
+	 * Called when scroll needs to be updated.
+	 */
+	@Override
+	public void computeScroll() {
+		super.computeScroll();
 	}
 
 
