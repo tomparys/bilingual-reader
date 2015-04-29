@@ -376,15 +376,6 @@ public class BookPanel extends SplitPanel
 			if (!isDoubleTapSwipe) {
 				// Evaluate if the scroll that has just ended constitutes some gesture.
 				handleScrollEnd(event);
-
-				// If it was multitouch scroll, it functions as independent scrolling
-				// and therefore webView.pauseScrollSync() gets called to pause ScrollSync.
-				// Since multitouch scroll ended, resumeScrollSync().
-				if(navigator.isScrollSync() && webView.isUserScrolling() && scrollIsMultitouch) {
-					scrollIsMultitouch = false;
-
-					webView.resumeScrollSync();
-				}
 			}
 		}
 	}
@@ -395,6 +386,7 @@ public class BookPanel extends SplitPanel
 	@Override
 	public boolean onDown(MotionEvent event) {
 		Log.d(LOG, "[" + index + "] onDown"); //: " + event.toString());
+
 
 		// Reset fields dealing with scroll.
 		scrollIsMultitouch = false;
@@ -414,11 +406,15 @@ public class BookPanel extends SplitPanel
 		// If ScrollSync is active:
 		if (navigator.isScrollSync()) {
 			// The user laid finger in this WebView and may start scrolling it.
-			// Therefore activate User Scrolling in this WebView and deactivate it in the sister WebView.
+			//  Therefore send resumeScrollSync to both WebViews, the one that was active in User Scrolling
+			//   will compute new offset and send it to the other one.
+			//  Afterwards activate User Scrolling in this WebView and deactivate it in the sister WebView.
+			webView.resumeScrollSync();
 			webView.setUserIsScrolling(true);
 
 			BookPanel otherBookPanel = activity.navigator.getSisterBookPanel(index);
 			if (otherBookPanel != null) {
+				otherBookPanel.getWebView().resumeScrollSync();
 				otherBookPanel.getWebView().setUserIsScrolling(false);
 
 				// onDown() gesture stops the fling in this WebView,
@@ -437,15 +433,6 @@ public class BookPanel extends SplitPanel
 		// Evaluate if the scroll that has just ended constitutes some gesture.
 		handleScrollEnd(e2);
 
-		// If it was multitouch scroll, it functions as independent scrolling
-		// and therefore webView.pauseScrollSync() gets called to pause ScrollSync.
-		// Since multitouch scroll ended, resumeScrollSync().
-		if (navigator.isScrollSync() && webView.isUserScrolling() && scrollIsMultitouch) {
-			scrollIsMultitouch = false;
-
-			webView.resumeScrollSync();
-		}
-
 		return true;
 	}
 
@@ -454,10 +441,12 @@ public class BookPanel extends SplitPanel
 	 */
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		Log.d(LOG, "[" + index + "] onScroll"); //: " + e2.toString());
+		//Log.d(LOG, "[" + index + "] onScroll"); //: " + e2.toString());
 
 		/* Change from single to a Multi-touch event */
 		if (e2.getPointerCount() > 1 && !scrollIsMultitouch) {
+			Log.d(LOG, "[" + index + "] onScroll: Change from single to a Multitouch event");
+
 			// Evaluate if the scroll section that has just ended constitutes some gesture.
 			handleScrollEnd(e2);
 
@@ -471,25 +460,10 @@ public class BookPanel extends SplitPanel
 			scrollWasMultitouch = true;
 			scrollOriginX = e2.getX();
 			scrollOriginY = e2.getY();
-
-			Log.d(LOG, "[" + index + "] onScroll: Change from single to a Multitouch event");
 		}
 		/* Change from multi to a Single-touch event */
 		else if (e2.getPointerCount() <= 1 && scrollIsMultitouch && scrollIsMultitouch) {
-			// Evaluate if the scroll section that has just ended constitutes some gesture.
-			handleScrollEnd(e2);
-
-			if (navigator.isScrollSync() && webView.isUserScrolling()) {
-				// Resume ScrollSync - WebView will compute a new offest/syncPoint/...
-				webView.resumeScrollSync();
-			}
-
-			// Start a new scroll section.
-			scrollIsMultitouch = false;
-			scrollOriginX = e2.getX();
-			scrollOriginY = e2.getY();
-
-			Log.d(LOG, "[" + index + "] onScroll: Change from multi to a Singletouch event");
+			Log.d(LOG, "[" + index + "] onScroll: Change from multi to a Singletouch event detected - doing nothing.");
 		}
 
 		// Warning, the last onScroll call with MotionEvent.ACTION_UP (almost?) never happens.
@@ -500,15 +474,6 @@ public class BookPanel extends SplitPanel
 
 			// Evaluate if the scroll that has just ended constitutes some gesture.
 			handleScrollEnd(e2);
-
-			// If it was multitouch scroll, it functions as independent scrolling
-			// and therefore webView.pauseScrollSync() gets called to pause ScrollSync.
-			// Since multitouch scroll ended, resumeScrollSync().
-			if (navigator.isScrollSync() && webView.isUserScrolling() && scrollIsMultitouch) {
-				scrollIsMultitouch = false;
-
-				webView.resumeScrollSync();
-			}
 		}
 		return true;
 	}

@@ -228,8 +228,20 @@ public class SelectionWebView extends WebView {
 
 					// Offset - the webviews are synchronized on their % of scroll + offset pixels
 					case offset:
-						scrollValue = (getScrollY() - scrollSyncOffset)
-								* sisterWV.computeMaxScrollY() / computedMaxScrollY;
+						// Because the position equation isn't symmetrical,
+						// we have to compute them differently for each panel:
+						if (panelIndex == 0) {
+							scrollValue = (getScrollY() - scrollSyncOffset)
+									* sisterWV.computeMaxScrollY() / computedMaxScrollY;
+						} else {
+							scrollValue = getScrollY()
+									* sisterWV.computeMaxScrollY() / computedMaxScrollY - scrollSyncOffset;
+						}
+
+						/*Log.d(LOG, "[" + panelIndex + "] computeScroll:  from " + getScrollY()
+								+ "  to " + scrollValue + "  offset " + scrollSyncOffset
+								+ "   (maxScrollY " + computedMaxScrollY + "  destinationMaxScrollY "
+								+ sisterWV.computeMaxScrollY() + ")"); /**/
 						break;
 
 					default:
@@ -275,16 +287,21 @@ public class SelectionWebView extends WebView {
 	 * Temporarily pause ScrollSync - user is using two-finger scroll for independent scrolling.
 	 */
 	public void pauseScrollSync() {
-		userScrollingPaused = true;
+		// Pause only if we were really user scrolling and not paused.
+		if (userIsScrolling && !userScrollingPaused) {
+			Log.d(LOG, "[" + panelIndex + "] pauseScrollSync for now");
 
-		switch (scrollSyncMethod) {
+			userScrollingPaused = true;
 
-		case offset:
-			scrollYwhenPaused = getScrollY();
-			break;
+			switch (scrollSyncMethod) {
 
-		default:
-			break;
+			case offset:
+				scrollYwhenPaused = getScrollY();
+				break;
+
+			default:
+				break;
+			}
 		}
 	}
 
@@ -292,15 +309,34 @@ public class SelectionWebView extends WebView {
 	 * Resume scrolling from temporary pause - user stopped independent scrolling.
 	 */
 	public void resumeScrollSync() {
-		// Make resume computations only if we were really paused.
-		if (userScrollingPaused) {
+		// Make resume computations only if we were really user scrolling and paused.
+		if (userIsScrolling && userScrollingPaused) {
+			Log.d(LOG, "[" + panelIndex + "] resumeScrollSync went through");
+
 			userScrollingPaused = false;
 
 			switch (scrollSyncMethod) {
 
 			case offset:
-				scrollSyncOffset += getScrollY() - scrollYwhenPaused;
-				//Log.d(LOG, "[" + panelIndex + "] new offset: " + scrollSyncOffset);
+				// Because the position equation isn't symmetrical,
+				// we have to compute offset differently in each panel:
+				if (panelIndex == 0) {
+					scrollSyncOffset += getScrollY() - scrollYwhenPaused;
+				} else {
+					// If maxScrollY is positive.
+					int computedMaxScrollY = computeMaxScrollY();
+					if (computedMaxScrollY != 0) {
+
+						// If sisterWebView exists.
+						SelectionWebView sisterWV = readerActivity.navigator.getSisterWebView(panelIndex);
+						if (sisterWV != null) {
+
+							scrollSyncOffset += (getScrollY() - scrollYwhenPaused)
+									* sisterWV.computeMaxScrollY() / computedMaxScrollY;
+						}
+					}
+				}
+				Log.d(LOG, "[" + panelIndex + "] new offset: " + scrollSyncOffset);
 				break;
 
 			default:
@@ -353,6 +389,7 @@ public class SelectionWebView extends WebView {
 	 * Sets corresponding data for the ScrollSyncMethod offset method.
 	 */
 	public void setCorrespondingScrollSyncOffset(int offset) {
+		//Log.d(LOG, "[" + panelIndex + "] received new offset: " + offset);
 		scrollSyncOffset = -offset;
 	}
 
@@ -360,7 +397,8 @@ public class SelectionWebView extends WebView {
 	 * Set whether the WebView will react to scrolling or not scroll at all.
 	 */
 	public void setNoScrollAtAll(boolean noScrollAtAll) {
-		//Log.d(LOG, "noScrollAtAll " + noScrollAtAll);
+		//Log.d(LOG, "[" + panelIndex + "] noScrollAtAll " + noScrollAtAll);
+
 		this.noScrollAtAll = noScrollAtAll;
 	}
 
