@@ -525,7 +525,7 @@ public class BookPanel extends SplitPanel
 
 		// If this scroll is and always was single touch:
 		if (!scrollIsMultitouch && !scrollWasMultitouch && !isDoubleTapSwipe) {
-			// If the WebView is displaying a book:
+			// If the WebView is displaying a book (no sense in switching chapters of metadata or Toc):
 			if (enumState == PanelViewState.books) {
 
 				// Single touch scroll on a book - evaluate if the user wants to change chapters.
