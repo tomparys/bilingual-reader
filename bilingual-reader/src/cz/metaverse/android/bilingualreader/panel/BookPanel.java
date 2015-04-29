@@ -42,6 +42,7 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.helper.PanelViewState;
@@ -68,10 +69,18 @@ public class BookPanel extends SplitPanel
 	// Our customized WebView
 	protected SelectionWebView webView;
 
-	// Fields for onTouch events.
-	protected float swipeOriginX, swipeOriginY;
-	protected GestureDetectorCompat gestureDetector;
+	/* Fields for touch/gesture events. */
 	protected static final String DEBUG_TAG = "alfons";
+	protected GestureDetectorCompat gestureDetector;
+
+	// For scrolling gesture events.
+	protected boolean scrollIsMultitouch = false;
+	protected float scrollOriginX;
+	protected float scrollOriginY;
+
+	// For DoubleTapEvent gestures.
+	private float doubleTapOriginX;
+	private float doubleTapOriginY;
 
 
 
@@ -177,6 +186,13 @@ public class BookPanel extends SplitPanel
 	}
 
 	/**
+	 * Returns this panel's WebView.
+	 */
+	public WebView getWebView() {
+		return webView;
+	}
+
+	/**
 	 * Load page through URL path.
 	 * @param path to load
 	 */
@@ -276,57 +292,167 @@ public class BookPanel extends SplitPanel
 		// Provide data to the GestureDetector.
 		gestureDetector.onTouchEvent(event);
 
-		// Analyze the motion event.
-		int action = MotionEventCompat.getActionMasked(event);
+		view.performClick(); // Android system mandates we pass the baton to the onClick listener now.
+	}
 
-		switch (action) {
-		// Finger was just laid on the screen - save the original coordinates.
-		case (MotionEvent.ACTION_DOWN):
-			if (enumState == PanelViewState.books) {
-				swipeOriginX = event.getX();
-				swipeOriginY = event.getY();
+	/**
+	 * First finger was put on the screen.
+	 */
+	@Override
+	public boolean onDown(MotionEvent event) {
+		Log.d(DEBUG_TAG,"onDown"); //: " + event.toString());
+
+		scrollOriginX = event.getX();
+		scrollOriginY = event.getY();
+		return true;
+	}
+	@Override
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+		Log.d(DEBUG_TAG, "onFling"); //: " + event1.toString()+event2.toString());
+
+		if (!scrollIsMultitouch) {
+			// Primitive version of scroll sync.
+			BookPanel otherBookPanel = activity.navigator.getOtherBookPanel(index);
+			if (otherBookPanel != null) {
+				otherBookPanel.getWebView().flingScroll((int) velocityX, (int) -velocityY);
 			}
-			break;
+		}
 
-		// Finger was just lifted - calculate what kind of swipe has it been.
-		case (MotionEvent.ACTION_UP):
+		// Evaluate if the scroll that has just ended constitutes some gesture.
+		handleScrollEnd(e2);
+		return true;
+	}
+
+	@Override
+	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+		//Log.d(DEBUG_TAG, "onScroll"); //: " + e1.toString()+e2.toString());
+
+		if (MotionEventCompat.getActionMasked(e2) == MotionEvent.ACTION_MOVE) {
+			if (!scrollIsMultitouch) {
+				// Primitive version of scroll sync.
+				BookPanel otherBookPanel = activity.navigator.getOtherBookPanel(index);
+				if (otherBookPanel != null) {
+					otherBookPanel.getWebView().scrollBy((int) distanceX, (int) distanceY);
+				}
+			}
+		}
+
+		if (e2.getPointerCount() > 1 && !scrollIsMultitouch) {
+			/* Change from single to a Multitouch event */
+			// Evaluate if the scroll section that has just ended constitutes some gesture.
+			handleScrollEnd(e2);
+
+			// Start a new scroll section.
+			scrollIsMultitouch = true;
+			scrollOriginX = e2.getX();
+			scrollOriginY = e2.getY();
+
+		    Log.d(DEBUG_TAG,"Change from single to a Multitouch event");
+		}
+		else if (e2.getPointerCount() <= 1 && scrollIsMultitouch) {
+			/* Change from multi to a Singletouch event */
+			// Evaluate if the scroll section that has just ended constitutes some gesture.
+			handleScrollEnd(e2);
+
+			// Start a new scroll section.
+			scrollIsMultitouch = false;
+			scrollOriginX = e2.getX();
+			scrollOriginY = e2.getY();
+
+		    Log.d(DEBUG_TAG,"Change from multi to a Singletouch event");
+		}
+
+		if (MotionEventCompat.getActionMasked(e2) == MotionEvent.ACTION_UP) {
+			// Evaluate if the scroll that has just ended constitutes some gesture.
+			handleScrollEnd(e2);
+		}
+		return true;
+	}
+
+	/**
+	 * Handles the ending of a scroll gesture.
+	 * @param e2  The last MotionEvent of the scroll or of the scroll section.
+	 */
+	private void handleScrollEnd(MotionEvent e2) {
+		float diffX = scrollOriginX - e2.getX();
+		float diffY = scrollOriginY - e2.getY();
+		float absDiffX = Math.abs(diffX);
+		float absDiffY = Math.abs(diffY);
+
+		if (!scrollIsMultitouch) {
+			// Scroll is single touch - do nothing if we're not displaying a book.
 			if (enumState == PanelViewState.books) {
-				int quarterWidth = (int) (screenWidth * 0.25); // A quarter of the screen's width
-				float diffX = swipeOriginX - event.getX();
-				float diffY = swipeOriginY - event.getY();
-				float absDiffX = Math.abs(diffX);
-				float absDiffY = Math.abs(diffY);
-
-				if ((diffX > quarterWidth) && (absDiffX > absDiffY)) {
-					// If swipe was to the left and over 1/4 of the screen wide,
-					// 		and swipe was more broad than high
+				// Single touch scroll on a book - evaluate if the user wants to change chapters.
+				if (diffX > quarterWidth && absDiffX > absDiffY) {
+					// Next chapter - If the swipe was to the right, over 1/4 of the screen wide,
+					//  and more broad than high.
 					try {
 						navigator.goToNextChapter(index);
 					} catch (Exception e) {
 						errorMessage(getString(R.string.error_cannotTurnPage));
 					}
-				} else if ((diffX < -quarterWidth) && (absDiffX > absDiffY)) {
-					// If swipe was to the right and over 1/4 of the screen wide,
-					// 		and swipe was more broad than high
+				} else if (diffX < -quarterWidth && absDiffX > absDiffY) {
+					// Previous chapter - If the swipe was to the left, over 1/4 of the screen wide,
+					//  and more broad than high.
 					try {
 						navigator.goToPrevChapter(index);
 					} catch (Exception e) {
 						errorMessage(getString(R.string.error_cannotTurnPage));
 					}
 				}
+			} else {
+				// Multitouch scroll
+				if (absDiffX > quarterWidth && absDiffX > absDiffY) {
+					// Hide panel -
+					//  If the swipe was over 1/4 of the screen wide, and more broad than high.
+					Toast.makeText(ReaderActivity.debugContext, "Hiding panel - by multitouch scroll.", Toast.LENGTH_SHORT).show();
+				}
 			}
-			break;
 		}
 
-		view.performClick(); // Android system mandates we pass the baton to the onClick listener now.
+		scrollIsMultitouch = false;
 	}
 
 	/**
 	 * onSingleTapConfirmed - Activate/deactivate immersive fullscreen mode.
 	 */
+
+	@Override
+	public boolean onDoubleTap(MotionEvent event) {
+		Log.d(DEBUG_TAG, "onDoubleTap"); //: " + event.toString());
+
+		doubleTapOriginX = event.getX();
+		doubleTapOriginY = event.getY();
+		return true;
+	}
+
+	/**
+	 * Called when the user double taps and then swipes his finger away on the second tap.
+	 */
+	@Override
+	public boolean onDoubleTapEvent(MotionEvent event) {
+		//Log.d(DEBUG_TAG, "onDoubleTapEvent"); //: " + event.toString());
+
+		// If the finger has finally risen.
+		if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_UP) {
+			Log.d(DEBUG_TAG, "onDoubleTapEvent ACTION_UP"); //: " + event.toString());
+
+			float absDiffX = Math.abs(doubleTapOriginX - event.getX());
+			float absDiffY = Math.abs(doubleTapOriginY - event.getY());
+
+			if (absDiffX > quarterWidth || absDiffY > quarterHeight) {
+				// Hide panel -
+				//  If the swipe was over 1/4 of the screen wide or over 1/4 of the screen high.
+				Toast.makeText(ReaderActivity.debugContext, "Hiding panel - by DoubleTap swipe.", Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		return true;
+	}
+
 	@Override
 	public boolean onSingleTapConfirmed(MotionEvent event) {
-		Log.d(DEBUG_TAG,"onSingleTapConfirmed: " + event.toString());
+		Log.d(DEBUG_TAG,"onSingleTapConfirmed"); //: " + event.toString());
 
 		if (!webView.inSelectionActionMode()) {
 			activity.switchFullscreen();
@@ -336,48 +462,18 @@ public class BookPanel extends SplitPanel
 
 	@Override
 	public boolean onSingleTapUp(MotionEvent event) {
-		Log.d(DEBUG_TAG,"onSingleTapUp: " + event.toString());
-		return true;
-	}
-
-	@Override
-	public boolean onDown(MotionEvent event) {
-		Log.d(DEBUG_TAG,"onDown: " + event.toString());
-		return true;
-	}
-
-	@Override
-	public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
-		Log.d(DEBUG_TAG, "onFling: " + event1.toString()+event2.toString());
+		Log.d(DEBUG_TAG,"onSingleTapUp"); //: " + event.toString());
 		return true;
 	}
 
 	@Override
 	public void onLongPress(MotionEvent event) {
-		Log.d(DEBUG_TAG, "onLongPress: " + event.toString());
-	}
-
-	@Override
-	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		Log.d(DEBUG_TAG, "onScroll: " + e1.toString()+e2.toString());
-		return true;
+		Log.d(DEBUG_TAG, "onLongPress"); //: " + event.toString());
 	}
 
 	@Override
 	public void onShowPress(MotionEvent event) {
-		Log.d(DEBUG_TAG, "onShowPress: " + event.toString());
-	}
-
-	@Override
-	public boolean onDoubleTap(MotionEvent event) {
-		Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
-		return true;
-	}
-
-	@Override
-	public boolean onDoubleTapEvent(MotionEvent event) {
-		Log.d(DEBUG_TAG, "onDoubleTapEvent: " + event.toString());
-		return true;
+		Log.d(DEBUG_TAG, "onShowPress"); //: " + event.toString());
 	}
 
 }

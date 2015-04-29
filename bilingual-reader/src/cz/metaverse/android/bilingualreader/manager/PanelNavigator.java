@@ -591,6 +591,13 @@ public class PanelNavigator {
 	}
 
 	/**
+	 * Returns the other book panel, if it exists.
+	 */
+	public BookPanel getOtherBookPanel(int panel) {
+		return getBookPanel(nextPanelIndex(panel));
+	}
+
+	/**
 	 * Returns a class extending SplitPanel based on className in a String
 	 * @param className		String containing the className
 	 * @return				the SplitPanel instance

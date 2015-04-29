@@ -55,6 +55,8 @@ public abstract class SplitPanel extends Fragment {
 	protected PanelNavigator navigator;
 	protected int screenWidth;
 	protected int screenHeight;
+	protected int quarterWidth;
+	protected int quarterHeight;
 	protected float weight = 0.5f; // weight of the generalLayout
 	protected boolean created; // tells whether the fragment has been created
 
@@ -83,6 +85,8 @@ public abstract class SplitPanel extends Fragment {
 		DisplayMetrics metrics = this.getResources().getDisplayMetrics();
 		screenWidth = metrics.widthPixels;
 		screenHeight = metrics.heightPixels;
+		quarterWidth = (int) (screenWidth * 0.25);
+		quarterHeight = (int) (screenHeight * 0.25);
 
 		changeWeight(weight);
 
