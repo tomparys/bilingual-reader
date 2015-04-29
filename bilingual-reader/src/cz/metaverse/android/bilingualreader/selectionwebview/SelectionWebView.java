@@ -15,8 +15,10 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
+import cz.metaverse.android.bilingualreader.helper.PanelViewState;
 import cz.metaverse.android.bilingualreader.helper.ScrollSyncMethod;
 import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
+import cz.metaverse.android.bilingualreader.panel.BookPanel;
 
 /**
  *
@@ -366,9 +368,28 @@ public class SelectionWebView extends WebView {
 	 * Set whether the user is scrolling this WebView or not at this moment.
 	 */
 	public void setUserIsScrolling(boolean isScrolling) {
-		userIsScrolling = isScrolling;
-		userScrollingPaused = false;
 
+		if (!navigator.isScrollSync() || !isScrolling) {
+			// If ScrollSync isn't active, or if we want to disable user scrolling:
+			userIsScrolling = false;
+		}
+		else {
+			// If ScrollSync is active and we want to activate user scrolling:
+			BookPanel thisPanel = navigator.getBookPanel(panelIndex);
+			BookPanel sisterPanel = navigator.getSisterBookPanel(panelIndex);
+
+			if (thisPanel != null && thisPanel.enumState == PanelViewState.books
+					&& sisterPanel != null && sisterPanel.enumState == PanelViewState.books) {
+
+				// If both opened panels are showing books, we can start user scrolling.
+				userIsScrolling = true;
+			} else {
+				userIsScrolling = false;
+			}
+		}
+
+		// Always reset Paused status.
+		userScrollingPaused = false;
 	}
 
 	/**
