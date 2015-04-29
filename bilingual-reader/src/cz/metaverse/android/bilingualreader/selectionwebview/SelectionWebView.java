@@ -43,7 +43,7 @@ public class SelectionWebView extends WebView {
 	private long actionModeEndedAt;
 
 	/* Scroll Sync */
-	private ScrollSyncMethod scrollSyncMethod = ScrollSyncMethod.offset;
+	private ScrollSyncMethod scrollSyncMethod = ScrollSyncMethod.percentual_withOffset;
 	private Integer panelIndex;
 	private boolean userIsScrolling = false;
 	// When user is still interacting with this WebView, but the sync scrolling is temporarily paused.
@@ -227,7 +227,7 @@ public class SelectionWebView extends WebView {
 					switch (scrollSyncMethod) {
 
 					// Offset - the webviews are synchronized on their % of scroll + offset pixels
-					case offset:
+					case percentual_withOffset:
 						// Because the position equation isn't symmetrical,
 						// we have to compute them differently for each panel:
 						if (panelIndex == 0) {
@@ -295,7 +295,7 @@ public class SelectionWebView extends WebView {
 
 			switch (scrollSyncMethod) {
 
-			case offset:
+			case percentual_withOffset:
 				scrollYwhenPaused = getScrollY();
 				break;
 
@@ -317,7 +317,7 @@ public class SelectionWebView extends WebView {
 
 			switch (scrollSyncMethod) {
 
-			case offset:
+			case percentual_withOffset:
 				// Because the position equation isn't symmetrical,
 				// we have to compute offset differently in each panel:
 				if (panelIndex == 0) {
@@ -353,7 +353,7 @@ public class SelectionWebView extends WebView {
 	public void resetScrollSync() {
 		switch (scrollSyncMethod) {
 
-		case offset:
+		case percentual_withOffset:
 			scrollSyncOffset = 0;
 			break;
 
@@ -375,7 +375,7 @@ public class SelectionWebView extends WebView {
 
 			switch (scrollSyncMethod) {
 
-			case offset:
+			case percentual_withOffset:
 				sisterWV.setCorrespondingScrollSyncOffset(scrollSyncOffset);
 				break;
 

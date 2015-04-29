@@ -6,5 +6,5 @@ package cz.metaverse.android.bilingualreader.helper;
  *
  */
 public enum ScrollSyncMethod {
-	offset, syncPoint, paragraphs
+	percentual_withOffset, linear_withOffset, percentual_syncPoint, paragraphs
 }
