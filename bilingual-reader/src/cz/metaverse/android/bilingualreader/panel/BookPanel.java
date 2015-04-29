@@ -118,11 +118,12 @@ public class BookPanel extends SplitPanel
 
 		// Set touch listener with the option to SWIPE pages.
 		webView.setOnTouchListener(new OnTouchListener() {
-			@SuppressLint("ClickableViewAccessibility") // The "performClick" method is launched inside the
-			@Override									// handleWebViewTouch method, which eclipse fails to realize.
+			@Override
 			public boolean onTouch(View view, MotionEvent motionEvent) {
 				// Call a method that will evaluate the touch/swipe.
 				handleWebViewTouch(view, motionEvent);
+
+				view.performClick(); // Android system mandates we pass the baton to the onClick listener now.
 
 				return view.onTouchEvent(motionEvent);
 			}
@@ -313,8 +314,6 @@ public class BookPanel extends SplitPanel
 				}
 			}
 		}
-
-		view.performClick(); // Android system mandates we pass the baton to the onClick listener now.
 	}
 
 	/**
