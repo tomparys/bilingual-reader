@@ -35,7 +35,6 @@ import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.helper.PanelViewState;
 import cz.metaverse.android.bilingualreader.panel.AudioPanel;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
-import cz.metaverse.android.bilingualreader.panel.DataPanel;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
 
 /**
@@ -62,6 +61,8 @@ public class PanelNavigator {
 	private boolean readingBilingualEbook = false;
 	private ReaderActivity activity;
 	private Context context;
+
+	private int notesDisplayedLastInPanel = 0;
 
 	/**
 	 * Singleton-pattern getter static method.
@@ -189,6 +190,12 @@ public class PanelNavigator {
 		// Set state and load appropriate page.
 		((BookPanel) splitViews[index]).enumState = enumState;
 		((BookPanel) splitViews[index]).loadPage(pathOfPage);
+
+		// If the panel is indeed now displaying *notes* or *metadata*
+		// save his index as the last panel that opened notes.
+		if (enumState == PanelViewState.notes || enumState == PanelViewState.metadata) {
+			notesDisplayedLastInPanel = index;
+		}
 	}
 
 	/**
@@ -231,6 +238,29 @@ public class PanelNavigator {
 	}
 
 	/**
+	 * Closes the last opened Metadata/Table of Contents/other non-book content panel view.
+	 * @return
+	 */
+	public boolean closeLastOpenedNotes() {
+		BookPanel bookPanel = getBookPanel(notesDisplayedLastInPanel);
+		if (bookPanel != null && (bookPanel.enumState == PanelViewState.notes
+				|| bookPanel.enumState == PanelViewState.metadata)) {
+
+			closePanelView(notesDisplayedLastInPanel);
+			notesDisplayedLastInPanel = nextPanelIndex(notesDisplayedLastInPanel);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Given the index of one panel returns the index of the other.
+	 */
+	private int nextPanelIndex(int index) {
+		return (index + 1) % nBooks;
+	}
+
+	/**
 	 * Close one of the panels
 	 * @param index		The panel to be closed
 	 */
@@ -250,14 +280,22 @@ public class PanelNavigator {
 		//   BUT there is a book (EpubManipulator) opened for this panel
 		if (books[index] != null &&
 				(
-						!(splitViews[index] instanceof BookPanel)
+						!(splitViews[index] instanceof BookPanel) // TODO this is wrong!
 						|| (((BookPanel) splitViews[index]).enumState != PanelViewState.books)
 				)
 			) {
-			// Make this panel into a BookView with the opened book instead of closing it.
-			BookPanel v = new BookPanel();
-			changePanel(v, index);
-			v.loadPage(books[index].getCurrentPageURL());
+			if (splitViews[index] instanceof BookPanel) {
+				// Change the content of the BookPanel back to the book.
+				BookPanel bookPanel = getBookPanel(index);
+				bookPanel.enumState = PanelViewState.books;
+				bookPanel.loadPage(books[index].getCurrentPageURL());
+				//setBookPage(books[index].getCurrentPageURL(), index);*/
+			} else {
+				// Make this panel into a BookView with the opened book instead of closing it.
+				BookPanel v = new BookPanel();
+				changePanel(v, index);
+				v.loadPage(books[index].getCurrentPageURL());
+			}
 		}
 		else // all other cases
 		{
@@ -373,22 +411,38 @@ public class PanelNavigator {
 			return false;
 	}
 
+
+
+
+
+
+
+
+
 	/**
 	 * Display book metadata
 	 * @param book	id of the panel containing the book
 	 * @return		true if metadata are available, false otherwise
 	 */
 	public boolean displayMetadata(int book) {
-		boolean res = true;
+		notesDisplayedLastInPanel = book;
 
 		if (books[book] != null) {
-			DataPanel dv = new DataPanel();
-			dv.loadData(books[book].metadata());
-			changePanel(dv, book);
-		} else
-			res = false;
+			// Use the existing BookPanel to display metadata or open a new one if needed.
+			BookPanel bookPanel = getBookPanel(book);
+			if (bookPanel == null) {
+				// Open a new BookPanel to display metadata
+				bookPanel = new BookPanel();
+				changePanel(bookPanel, book);
+			}
 
-		return res;
+			bookPanel.loadData(books[book].metadata(), books[book].tableOfContents());
+			bookPanel.enumState = PanelViewState.metadata;
+
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -397,13 +451,12 @@ public class PanelNavigator {
 	 * @return		true if TOC is available, false otherwise
 	 */
 	public boolean displayTOC(int book) {
-		boolean res = true;
-
-		if (books[book] != null)
+		if (books[book] != null) {
 			setBookPage(books[book].tableOfContents(), book);
-		else
-			res = false;
-		return res;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -525,7 +578,7 @@ public class PanelNavigator {
 	}
 
 	/**
-	 * If there is a BookPanel in the specified *panel*, it returns it.
+	 * If there is a BookPanel in the specified *panel*, it returns it, otherwise you get null.
 	 */
 	public BookPanel getBookPanel(int panel) {
 		if (0 <= panel && panel < nBooks && splitViews[panel] != null
@@ -546,8 +599,6 @@ public class PanelNavigator {
 		// TODO: update when a new SplitPanel's inherited class is created
 		if (className.equals(BookPanel.class.getName()))
 			return new BookPanel();
-		if (className.equals(DataPanel.class.getName()))
-			return new DataPanel();
 		if (className.equals(AudioPanel.class.getName()))
 			return new AudioPanel();
 		return null;
@@ -678,8 +729,7 @@ public class PanelNavigator {
 		for (int i = 0; i < nBooks; i++) {
 			// Only load the panel if it isn't already up and ready.
 			if (splitViews[i] == null) {
-				splitViews[i] = newPanelByClassName(preferences.getString(
-						getS(R.string.ViewType) + i, ""));
+				splitViews[i] = newPanelByClassName(preferences.getString(getS(R.string.ViewType) + i, ""));
 				if (splitViews[i] != null) {
 					splitViews[i].setKey(i);
 					if (splitViews[i] instanceof AudioPanel) {

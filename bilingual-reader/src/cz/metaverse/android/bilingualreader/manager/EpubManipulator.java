@@ -73,6 +73,7 @@ public class EpubManipulator {
 	private List<Boolean> translations; 	// tells whether a page has a translation available
 	private String decompressedFolder;
 	private String pathOPF;
+	private String metadata;
 
 	private String fileName;
 	FileInputStream fileInputStream;
@@ -134,6 +135,8 @@ public class EpubManipulator {
 		if (spineElements.size() > 0) {
 			goToPage(0);
 		}
+
+		metadata = generateMetadata();
 		createTableOfContentsFile();
 	}
 
@@ -180,6 +183,8 @@ public class EpubManipulator {
 					+ pathOPF + "/" + spineElements.get(i);
 		}
 		goToPage(spineIndex);
+
+		metadata = generateMetadata();
 	}
 
 	/**
@@ -501,11 +506,15 @@ public class EpubManipulator {
 		return goToPage(this.currentSpineElementIndex - 1);
 	}
 
+	public String metadata() {
+		return metadata;
+	}
+
 	/**
 	 * Create an HTML page with book metadata
 	 * @return html page
 	 */
-	public String metadata() {
+	public String generateMetadata() {
 		// TODO: style it and escape metadata values
 		// TODO: use StringBuilder
 		List<String> tmp;

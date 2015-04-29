@@ -273,6 +273,18 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		}
 	}
 
+	/**
+	 * Called when the user presses the Back key.
+	 */
+	@Override
+	public void onBackPressed() {
+		// See if there is some PanelViewState.notes or PanelViewState.metadata panel to be closed,
+		// if so, close it. If not, moveTaskToBack().
+		if (!navigator.closeLastOpenedNotes()) {
+			moveTaskToBack(true);
+		}
+	}
+
 
 
 	// ============================================================================================
@@ -672,12 +684,12 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			return true;
 
 		case R.id.table_of_contents_1_menu_item:
-			if (navigator.displayTOC(0))
+			if (!navigator.displayTOC(0))
 				errorMessage(getString(R.string.error_tocNotFound));
 			return true;
 
 		case R.id.table_of_contents_2_menu_item:
-			if (navigator.displayTOC(1))
+			if (!navigator.displayTOC(1))
 				errorMessage(getString(R.string.error_tocNotFound));
 			return true;
 

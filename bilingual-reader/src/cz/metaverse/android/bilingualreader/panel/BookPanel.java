@@ -59,6 +59,7 @@ public class BookPanel extends SplitPanel
 	// Information about the content
 	public PanelViewState enumState = PanelViewState.books;
 	protected String displayedPage;
+	protected String displayedData;
 
 	// Position within the page loaded from before
 	protected Integer loadPositionX, loadPositionY;
@@ -160,7 +161,11 @@ public class BookPanel extends SplitPanel
 		});
 
 		// Load the page.
-		loadPage(displayedPage);
+		if (enumState == PanelViewState.metadata) {
+			loadData(displayedData, displayedPage);
+		} else {
+			loadPage(displayedPage);
+		}
 	}
 
 	/**
@@ -174,13 +179,10 @@ public class BookPanel extends SplitPanel
 	 * Load page through URL path.
 	 * @param path to load
 	 */
-	public void loadPage(String path)
-	{
+	public void loadPage(String path) {
 		displayedPage = path;
+
 		if(created) {
-
-			// TODO Estimate scroll position of each paragraph for proper synchronized scrolling.
-
 			webView.loadUrl(path);
 
 			// Load position from before if this is a page opening from before.
@@ -194,6 +196,22 @@ public class BookPanel extends SplitPanel
 	}
 
 	/**
+	 * Loads text data into the WebView.
+	 * @param data 		String data to display
+	 * @param baseUrl	URL of any file from the associated epub to get proper encoding from it.
+	 */
+	public void loadData(String data, String baseUrl) {
+		displayedPage = baseUrl;
+		displayedData = data;
+
+		if (created) {
+			webView.loadDataWithBaseURL(baseUrl, data,
+					getActivity().getApplicationContext().getResources().getString(R.string.textOrHTML),
+					null, null);
+		}
+	}
+
+	/**
 	 * Save state and content of the page.
 	 */
 	@Override
@@ -203,7 +221,10 @@ public class BookPanel extends SplitPanel
 			editor.putString("state"+index, enumState.name());
 		}
 		if (displayedPage != null) {
-			editor.putString("page"+index, displayedPage);
+			editor.putString("displayedPage"+index, displayedPage);
+		}
+		if (enumState == PanelViewState.metadata) {
+			editor.putString("displayedData"+index, displayedData);
 		}
 
 		// Save the position within the page.
@@ -220,8 +241,19 @@ public class BookPanel extends SplitPanel
 	public void loadState(SharedPreferences preferences)
 	{
 		super.loadState(preferences);
-		enumState = PanelViewState.valueOf(preferences.getString("state"+index, PanelViewState.books.name()));
-		loadPage(preferences.getString("page"+index, ""));
+		try {
+			enumState = PanelViewState.valueOf(preferences.getString("state"+index, PanelViewState.books.name()));
+		} catch (IllegalArgumentException e) {
+			enumState = PanelViewState.books;
+		}
+
+		String page = preferences.getString("displayedPage"+index, "");
+
+		if (enumState == PanelViewState.metadata) {
+			loadData(preferences.getString("displayedData"+index, ""), page);
+		} else {
+			loadPage(page);
+		}
 
 		// Load the position within the page from before to be used when webView is instantiated.
 		loadPositionX = preferences.getInt("positionX"+index, 0);
