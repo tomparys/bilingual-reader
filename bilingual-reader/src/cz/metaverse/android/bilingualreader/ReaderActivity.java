@@ -408,8 +408,13 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 				if (!navigator.displayTOC(1)) {
 					errorMessage(getString(R.string.error_tocNotFound));
 				}
+			} else {
+				// If only one non-bilingual book is opened, act like open_book_2_button.
+				bookSelector = 1;
+				Intent goToChooser2 = new Intent(ReaderActivity.this, FileChooserActivity.class);
+				goToChooser2.putExtra(getString(R.string.second), getString(R.string.time));
+				startActivityForResult(goToChooser2, ACTIVITY_RESULT_FILE_CHOOSER);
 			}
-			// If only one non-bilingual book is opened, we do nothing.
 			break;
 
 		// Open book 2
