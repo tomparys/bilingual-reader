@@ -15,6 +15,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
+import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
+import cz.metaverse.android.bilingualreader.panel.BookPanel;
 
 /**
  *
@@ -25,16 +27,20 @@ import cz.metaverse.android.bilingualreader.ReaderActivity;
 public class SelectionWebView extends WebView {
 
 	private ReaderActivity readerActivity;
+	private PanelNavigator navigator;
 
-	// For setting custom action bar
+	/* For setting custom Contextual Action Bar (CAB) */
 	private ActionMode mActionMode;
+	private ActionMode.Callback mSelectActionModeCallback;
+	private GestureDetector mDetector;
 
 	private boolean inActionMode = false;
 	private boolean wasInActionMode = false;
 	private long actionModeEndedAt;
 
-	private ActionMode.Callback mSelectActionModeCallback;
-	private GestureDetector mDetector;
+	/* Scroll Sync */
+	private Integer panelIndex;
+	private boolean userIsScrolling = false;
 
 
 	/**
@@ -43,9 +49,11 @@ public class SelectionWebView extends WebView {
 	 * @param attributeSet  Set of attributes from the XML declaration
 	 */
 	@SuppressLint("SetJavaScriptEnabled") // Our opensource application has literally nothing to hide.
-	public SelectionWebView(Context readerActivity, AttributeSet attributeSet) {
-		super(readerActivity, attributeSet);
-		this.readerActivity = (ReaderActivity) readerActivity;
+	public SelectionWebView(Context rActivity, AttributeSet attributeSet) {
+		super(rActivity, attributeSet);
+		this.readerActivity = (ReaderActivity) rActivity;
+		navigator = readerActivity.navigator;
+
 		WebSettings webviewSettings = getSettings();
 		webviewSettings.setJavaScriptEnabled(true);
 
@@ -53,7 +61,7 @@ public class SelectionWebView extends WebView {
 		//  Casting context into ReaderActivity, because it is needed there and the only thing
 		//  that should ever own our WebView is an Activity.
 		try {
-			addJavascriptInterface(new WebAppInterface(this.readerActivity), "JSInterface");
+			addJavascriptInterface(new WebAppInterface(readerActivity), "JSInterface");
 		} catch (ClassCastException e) {
 			Log.e("SelectionWebView class constructor",
 					"SelectionWebView has been passed a Context that can't be cast " +
@@ -174,12 +182,59 @@ public class SelectionWebView extends WebView {
 		}
 	}
 
+
+
+	// ============================================================================================
+	//		Synchronized Scrolling
+	// ============================================================================================
+
 	/**
-	 * Called when scroll needs to be updated.
+	 * Called when scroll position needs to be updated.
+	 *
+	 * If the user is scrolling this WebView and if scroll sync is enabled, scrolls the other WebView.
 	 */
 	@Override
 	public void computeScroll() {
 		super.computeScroll();
+
+		// If Scroll Sync is active, the user is scrolling this WebView and its content is rendered.
+		if (navigator.isScrollSync() && userIsScrolling && getContentHeight() != 0) {
+
+			BookPanel otherPanel = readerActivity.navigator.getSisterBookPanel(panelIndex);
+			if (otherPanel != null) {
+				SelectionWebView otherWV = otherPanel.getWebView();
+				if (otherWV != null) {
+
+					// Compute and set the corresponding scroll position of the other WebView.
+					int scrollValue = getScrollY() * otherWV.computeMaxScrollY() / computeMaxScrollY();
+					otherWV.setScrollY(scrollValue);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Returns the maximal scrollY position.
+	 * If you set setScrollY() to this position, the document will be scrolled as far down as possible.
+	 */
+	public int computeMaxScrollY() {
+		// More accurate then simple getContentHeight()
+		// Deduced directly from the original code of WebView.computeMaxScrollY().
+		return Math.max(computeVerticalScrollRange() - getHeight(), 0);
+	}
+
+	/**
+	 * Set whether the user is scrolling this WebView or not at this moment.
+	 */
+	public void setUserIsScrolling(boolean isScrolling) {
+		this.userIsScrolling = isScrolling;
+	}
+
+	/**
+	 * Set the index of the panel this WebView belongs to.
+	 */
+	public void setPanelIndex(int index) {
+		panelIndex = index;
 	}
 
 

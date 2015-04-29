@@ -57,11 +57,15 @@ public class PanelNavigator {
 	private EpubManipulator[] books;
 	private SplitPanel[] splitViews;
 	private boolean[] extractAudio;
-	private boolean synchronizedChapters;
-	private boolean readingBilingualEbook = false;
 	private ReaderActivity activity;
 	private Context context;
 
+	/* Sync */
+	private boolean scrollSync = true;
+	private boolean synchronizedChapters;
+	private boolean readingBilingualEbook = false;
+
+	// For proper operation of the Back system button.
 	private int notesDisplayedLastInPanel = 0;
 
 	/**
@@ -593,8 +597,15 @@ public class PanelNavigator {
 	/**
 	 * Returns the other book panel, if it exists.
 	 */
-	public BookPanel getOtherBookPanel(int panel) {
+	public BookPanel getSisterBookPanel(int panel) {
 		return getBookPanel(nextPanelIndex(panel));
+	}
+
+	/**
+	 * Returns whether Scroll Sync is active or not.
+	 */
+	public boolean isScrollSync() {
+		return scrollSync;
 	}
 
 	/**

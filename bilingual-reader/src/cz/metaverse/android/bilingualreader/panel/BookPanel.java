@@ -104,6 +104,7 @@ public class BookPanel extends SplitPanel
 
 		// Find our customized web view that will server as our viewport
 		webView = (SelectionWebView) getView().findViewById(R.id.Viewport);
+		webView.setPanelIndex(index);
 		// Enable JavaScript for cool things to happen!
 		webView.getSettings().setJavaScriptEnabled(true);
 
@@ -186,9 +187,9 @@ public class BookPanel extends SplitPanel
 	}
 
 	/**
-	 * Returns this panel's WebView.
+	 * Returns this panel's SelectionWebView.
 	 */
-	public WebView getWebView() {
+	public SelectionWebView getWebView() {
 		return webView;
 	}
 
@@ -304,38 +305,37 @@ public class BookPanel extends SplitPanel
 
 		scrollOriginX = event.getX();
 		scrollOriginY = event.getY();
+
+		if (navigator.isScrollSync()) {
+			// The user laid finger in this WebView and may start scrolling it.
+			// Therefore activate User Scrolling in this WebView and deactivate it in the sister WebView.
+			webView.setUserIsScrolling(true);
+
+			BookPanel otherBookPanel = activity.navigator.getSisterBookPanel(index);
+			if (otherBookPanel != null) {
+				otherBookPanel.getWebView().setUserIsScrolling(false);
+
+				// onDown() gesture stops the fling in this WebView,
+				//  therefore we do the same for the sister WebView.
+				otherBookPanel.getWebView().flingScroll(0, 0);
+			}
+		}
+
 		return true;
 	}
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 		Log.d(DEBUG_TAG, "onFling"); //: " + event1.toString()+event2.toString());
 
-		if (!scrollIsMultitouch) {
-			// Primitive version of scroll sync.
-			BookPanel otherBookPanel = activity.navigator.getOtherBookPanel(index);
-			if (otherBookPanel != null) {
-				otherBookPanel.getWebView().flingScroll((int) velocityX, (int) -velocityY);
-			}
-		}
-
 		// Evaluate if the scroll that has just ended constitutes some gesture.
 		handleScrollEnd(e2);
+
 		return true;
 	}
 
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 		//Log.d(DEBUG_TAG, "onScroll"); //: " + e1.toString()+e2.toString());
-
-		if (MotionEventCompat.getActionMasked(e2) == MotionEvent.ACTION_MOVE) {
-			if (!scrollIsMultitouch) {
-				// Primitive version of scroll sync.
-				BookPanel otherBookPanel = activity.navigator.getOtherBookPanel(index);
-				if (otherBookPanel != null) {
-					otherBookPanel.getWebView().scrollBy((int) distanceX, (int) distanceY);
-				}
-			}
-		}
 
 		if (e2.getPointerCount() > 1 && !scrollIsMultitouch) {
 			/* Change from single to a Multitouch event */
