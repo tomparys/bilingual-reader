@@ -22,40 +22,47 @@ import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 
 /**
  *
- *                                                  /===-_---~~~~~~~~~------____
- *                                                 |===-~___                _,-'
- *                  -==\\                         `//~\\   ~~~~`---.___.-~~
- *              ______-==|                         | |  \\           _-~`
- *        __--~~~  ,-/-==\\                        | |   `\        ,'
- *     _-~       /'    |  \\                      / /      \      /
- *   .'        /       |   \\                   /' /        \   /'
- *  /  ____  /         |    \`\.__/-~~ ~ \ _ _/'  /          \/'
- * /-'~    ~~~~~---__  |     ~-/~         ( )   /'        _--~`
- *                   \_|      /        _)   ;  ),   __--~~
- *                     '~~--_/      _-~/-  / \   '-~ \
- *                    {\__--_/}    / \\_>- )<__\      \
- *                    /'   (_/  _-~  | |__>--<__|      |
- *                   |0  0 _/) )-~     | |__>--<__|     |
- *                   / /~ ,_/       / /__>---<__/      |
- *                  o o _//        /-~_>---<__-~      /
- *                  (^(~          /~_>---<__-      _-~
- *                 ,/|           /__>--<__/     _-~
- *              ,//('(          |__>--<__|     /                  .----_
- *             ( ( '))          |__>--<__|    |                 /' _---_~\
- *          `-)) )) (           |__>--<__|    |               /'  /     ~\`\
- *         ,/,'//( (             \__>--<__\    \            /'  //        ||
- *       ,( ( ((, ))              ~-__>--<_~-_  ~--____---~' _/'/        /'
- *     `~/  )` ) ,/|                 ~-_~>--<_/-__       __-~ _/
- *   ._-~//( )/ )) `                    ~~-'_/_/ /~~~~~~~__--~
- *    ;'( ')/ ,)(                              ~~~~~~~~~~
- *   ' ') '( (/
- *     '   '  `
+ *                                                       /===-_---~~~~~~~~~------____
+ *                                                      |===-~___                _,-'
+ *                       -==\\                         `//~\\   ~~~~`---.___.-~~
+ *                   ______-==|                         | |  \\           _-~`
+ *             __--~~~  ,-/-==\\                        | |   `\        ,'
+ *          _-~       /'    |  \\                      / /      \      /
+ *        .'        /       |   \\                   /' /        \   /'
+ *       /  ____  /         |    \`\.__/-~~ ~ \ _ _/'  /          \/'
+ *      /-'~    ~~~~~---__  |     ~-/~         ( )   /'        _--~`
+ *                        \_|      /        _)   ;  ),   __--~~
+ *                          '~~--_/      _-~/-  / \   '-~ \
+ *                         {\__--_/}    / \\_>- )<__\      \
+ *                         /'   (_/  _-~  | |__>--<__|      |
+ *                        |0  0 _/) )-~     | |__>--<__|     |
+ *                        / /~ ,_/       / /__>---<__/      |
+ *                       o o _//        /-~_>---<__-~      /
+ *                       (^(~          /~_>---<__-      _-~
+ *                      ,/|           /__>--<__/     _-~
+ *                   ,//('(          |__>--<__|     /                  .----_
+ *                  ( ( '))          |__>--<__|    |                 /' _---_~\
+ *               `-)) )) (           |__>--<__|    |               /'  /     ~\`\
+ *              ,/,'//( (             \__>--<__\    \            /'  //        ||
+ *            ,( ( ((, ))              ~-__>--<_~-_  ~--____---~' _/'/        /'
+ *          `~/  )` ) ,/|                 ~-_~>--<_/-__       __-~ _/
+ *        ._-~//( )/ )) `                    ~~-'_/_/ /~~~~~~~__--~
+ *         ;'( ')/ ,)(                              ~~~~~~~~~~
+ *        ' ') '( (/
+ *          '   '  `
  *
- *                       HERE BE DRAGONS
+ *                            HERE BE DRAGONS
+ *
+ *
+ *
+ * Be warned, stranger, editing this class is perilous.
+ * Editing one functionality can and will have unforeseen adverse effects in other areas.
+ * Test your changes profusely.
  *
  *
  *
  * This class serves as a OnTouchListener for our BookPanel.
+ *
  * It comprises of a complex logic that allows to discern several single and multitouch gestures:
  *
  *   - Single finger swipe up/down
@@ -75,10 +82,6 @@ import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
  *   - Double tap and swipe towards or away from the center of the device
  *               (up/down in landscape, left/right in portrait)
  *      - Change the relative size of the two panels on the fly.
- *
- *
- * Be warned, editing this class is perilous. Editing one functionality can have
- * unforeseen adverse effects in other areas. Be sure to test your changes profusely.
  *
  *
  */
