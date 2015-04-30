@@ -112,7 +112,7 @@ public class PanelNavigator {
 			}
 
 			books[index] = new EpubManipulator(path, index + "", context);
-			changePanel(new BookPanel(), index);
+			changePanel(new BookPanel(index), index);
 			setBookPage(books[index].getSpineElementPath(0), index);
 
 			// If we opened a new book, we automatically cancelled the reading of a bilingual book,
@@ -190,7 +190,7 @@ public class PanelNavigator {
 
 		// If this panel isn't yet open or isn't instance of BookView, open it and make it BookView.
 		if (splitViews[index] == null || !(splitViews[index] instanceof BookPanel))
-			changePanel(new BookPanel(), index);
+			changePanel(new BookPanel(index), index);
 
 		// Set state and load appropriate page.
 		((BookPanel) splitViews[index]).enumState = enumState;
@@ -297,7 +297,7 @@ public class PanelNavigator {
 				//setBookPage(books[index].getCurrentPageURL(), index);*/
 			} else {
 				// Make this panel into a BookView with the opened book instead of closing it.
-				BookPanel v = new BookPanel();
+				BookPanel v = new BookPanel(index);
 				changePanel(v, index);
 				v.loadPage(books[index].getCurrentPageURL());
 			}
@@ -437,7 +437,7 @@ public class PanelNavigator {
 			BookPanel bookPanel = getBookPanel(book);
 			if (bookPanel == null) {
 				// Open a new BookPanel to display metadata
-				bookPanel = new BookPanel();
+				bookPanel = new BookPanel(book);
 				changePanel(bookPanel, book);
 			}
 
@@ -623,12 +623,13 @@ public class PanelNavigator {
 	/**
 	 * Returns a class extending SplitPanel based on className in a String
 	 * @param className		String containing the className
+	 * @param index			Index for the newly created panel
 	 * @return				the SplitPanel instance
 	 */
-	private SplitPanel newPanelByClassName(String className) {
+	private SplitPanel newPanelByClassName(String className, int index) {
 		// TODO: update when a new SplitPanel's inherited class is created
 		if (className.equals(BookPanel.class.getName()))
-			return new BookPanel();
+			return new BookPanel(index);
 		if (className.equals(AudioPanel.class.getName()))
 			return new AudioPanel();
 		return null;
@@ -759,7 +760,7 @@ public class PanelNavigator {
 		for (int i = 0; i < nBooks; i++) {
 			// Only load the panel if it isn't already up and ready.
 			if (splitViews[i] == null) {
-				splitViews[i] = newPanelByClassName(preferences.getString(getS(R.string.ViewType) + i, ""));
+				splitViews[i] = newPanelByClassName(preferences.getString(getS(R.string.ViewType) + i, ""), i);
 				if (splitViews[i] != null) {
 					splitViews[i].setIndex(i);
 					if (splitViews[i] instanceof AudioPanel) {

@@ -63,6 +63,15 @@ public class BookPanel extends SplitPanel {
 	protected SelectionWebView webView;
 
 
+	/**
+	 * Constructor for our BookPanel.
+	 * @param index  Index of the new panel.
+	 */
+	public BookPanel(int index) {
+		setIndex(index);
+	}
+
+
 	@Override
 	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)	{
 		super.onCreateView(inflater, container, savedInstanceState);
