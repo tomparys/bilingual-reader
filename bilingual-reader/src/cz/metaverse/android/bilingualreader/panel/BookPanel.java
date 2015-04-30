@@ -78,9 +78,7 @@ public class BookPanel extends SplitPanel
 	protected GestureDetectorCompat gestureDetector;
 
 	// For scrolling gesture events.
-	protected boolean scrollIsMultitouch;
-	// If over the course of the gesture there were at any time more fingers, if so, don't change chapters.
-	protected boolean scrollWasMultitouch;
+	protected boolean scrollIsOrWasMultitouch;
 	protected float scrollOriginX;
 	protected float scrollOriginY;
 
@@ -387,10 +385,15 @@ public class BookPanel extends SplitPanel
 	public boolean onDown(MotionEvent event) {
 		Log.d(LOG, "[" + index + "] onDown"); //: " + event.toString());
 
-
+		/*
+		 * Reset all variables from handling of the last touch gesture
+		 * and re-initiate them for this new touch gesture handling.
+		 *
+		 * Warning: When doing double-tap, after the second tap, all variables get re-initiated here for
+		 *  the second time. There's no good way around this, but it also doesn't cause any issues so far.
+		 */
 		// Reset fields dealing with scroll.
-		scrollIsMultitouch = false;
-		scrollWasMultitouch = false;
+		scrollIsOrWasMultitouch = false;
 		scrollOriginX = event.getX();
 		scrollOriginY = event.getY();
 
@@ -443,7 +446,7 @@ public class BookPanel extends SplitPanel
 		//Log.d(LOG, "[" + index + "] onScroll"); //: " + e2.toString());
 
 		/* Change from single to a Multi-touch event */
-		if (e2.getPointerCount() > 1 && !scrollIsMultitouch) {
+		if (e2.getPointerCount() > 1 && !scrollIsOrWasMultitouch) {
 			Log.d(LOG, "[" + index + "] onScroll: Change from single to a Multitouch event");
 
 			// Evaluate if the scroll section that has just ended constitutes some gesture.
@@ -455,13 +458,12 @@ public class BookPanel extends SplitPanel
 			}
 
 			// Start a new scroll section.
-			scrollIsMultitouch = true;
-			scrollWasMultitouch = true;
+			scrollIsOrWasMultitouch = true;
 			scrollOriginX = e2.getX();
 			scrollOriginY = e2.getY();
 		}
 		/* Change from multi to a Single-touch event */
-		else if (e2.getPointerCount() <= 1 && scrollIsMultitouch && scrollIsMultitouch) {
+		else if (e2.getPointerCount() <= 1 && scrollIsOrWasMultitouch) {
 			// Do nothing.
 			Log.d(LOG, "[" + index + "] onScroll: Change from multi to a Singletouch event detected - doing nothing.");
 		}
@@ -483,8 +485,8 @@ public class BookPanel extends SplitPanel
 		float absDiffX = Math.abs(diffX);
 		float absDiffY = Math.abs(diffY);
 
-		// If this scroll is and always was single touch:
-		if (!scrollIsMultitouch && !scrollWasMultitouch && !isDoubleTapSwipe) {
+		// If this scroll has never been multi-touch or doubleTapSwipe:
+		if (!scrollIsOrWasMultitouch && !isDoubleTapSwipe) {
 			// If the WebView is displaying a book (no sense in switching chapters of metadata or Toc):
 			if (enumState == PanelViewState.books) {
 
