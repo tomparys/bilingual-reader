@@ -28,7 +28,6 @@ import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,10 +52,6 @@ public abstract class SplitPanel extends Fragment {
 	protected RelativeLayout contentBoxLayout;
 	protected Button closeButton;
 	protected PanelNavigator navigator;
-	protected int screenWidth;
-	protected int screenHeight;
-	protected int quarterWidth;
-	protected int quarterHeight;
 	protected float weight = 0.5f; // weight of the generalLayout
 	protected boolean created; // tells whether the fragment has been created
 
@@ -80,13 +75,6 @@ public abstract class SplitPanel extends Fragment {
 		splitPanelLayout = (RelativeLayout) getView().findViewById(R.id.GeneralLayout);
 		contentBoxLayout = (RelativeLayout) getView().findViewById(R.id.Content);
 		closeButton = (Button) getView().findViewById(R.id.CloseButton);
-
-		// Get activity screen size
-		DisplayMetrics metrics = this.getResources().getDisplayMetrics();
-		screenWidth = metrics.widthPixels;
-		screenHeight = metrics.heightPixels;
-		quarterWidth = (int) (screenWidth * 0.25);
-		quarterHeight = (int) (screenHeight * 0.25);
 
 		changeWeight(weight);
 
@@ -119,7 +107,11 @@ public abstract class SplitPanel extends Fragment {
 		return weight;
 	}
 
-	public void setKey(int value) {
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int value) {
 		index = value;
 	}
 

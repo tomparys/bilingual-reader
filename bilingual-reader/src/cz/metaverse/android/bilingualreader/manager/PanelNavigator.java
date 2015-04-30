@@ -324,7 +324,7 @@ public class PanelNavigator {
 				splitViews[index] = splitViews[index + 1]; // shift left the 2nd panel
 				if (splitViews[index] != null) {
 					// Update the panel key
-					splitViews[index].setKey(index);
+					splitViews[index].setIndex(index);
 
 					if (splitViews[index] instanceof BookPanel
 							&& ((BookPanel) splitViews[index]).enumState == PanelViewState.books) {
@@ -569,7 +569,7 @@ public class PanelNavigator {
 			activity.removePanelWithoutClosing(p);
 		}
 
-		p.setKey(index);
+		p.setIndex(index);
 		splitViews[index] = p;
 		activity.addPanel(p);
 
@@ -761,7 +761,7 @@ public class PanelNavigator {
 			if (splitViews[i] == null) {
 				splitViews[i] = newPanelByClassName(preferences.getString(getS(R.string.ViewType) + i, ""));
 				if (splitViews[i] != null) {
-					splitViews[i].setKey(i);
+					splitViews[i].setIndex(i);
 					if (splitViews[i] instanceof AudioPanel) {
 						((AudioPanel) splitViews[i]).setAudioList(books[i > 0 ? i - 1 : nBooks - 1].getAudio());
 					}
