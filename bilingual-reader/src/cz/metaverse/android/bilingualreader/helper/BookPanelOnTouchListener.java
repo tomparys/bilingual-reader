@@ -51,7 +51,7 @@ import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
  *        ' ') '( (/
  *          '   '  `
  *
- *                            HERE BE DRAGONS
+ *                                HERE BE DRAGONS
  *
  *
  *
