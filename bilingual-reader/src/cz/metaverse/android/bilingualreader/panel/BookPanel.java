@@ -163,6 +163,41 @@ public class BookPanel extends SplitPanel {
 	}
 
 	/**
+	 * Set the new index for the panel.
+	 */
+	@Override
+	public void setIndex(int index) {
+		super.setIndex(index);
+
+		// Pass the new index onto classes that work with it.
+		if (webView != null) {
+			webView.setPanelIndex(index);
+		}
+	}
+
+
+	// ============================================================================================
+	//		Display page or HTML data
+	// ============================================================================================
+
+	/**
+	 * Loads text data into the WebView.
+	 * @param data 		String data to display
+	 * @param baseUrl	URL of any file from the associated epub to get proper encoding from it.
+	 */
+	public void loadData(String data, String baseUrl) {
+		displayedPage = baseUrl;
+		displayedData = data;
+
+		if (created) {
+			webView.loadDataWithBaseURL(baseUrl, data,
+					getActivity().getApplicationContext().getResources().getString(R.string.textOrHTML),
+					null, null);
+			webView.resetScrollSync();
+		}
+	}
+
+	/**
 	 * Load page through URL path.
 	 * @param path to load
 	 */
@@ -183,22 +218,10 @@ public class BookPanel extends SplitPanel {
 		}
 	}
 
-	/**
-	 * Loads text data into the WebView.
-	 * @param data 		String data to display
-	 * @param baseUrl	URL of any file from the associated epub to get proper encoding from it.
-	 */
-	public void loadData(String data, String baseUrl) {
-		displayedPage = baseUrl;
-		displayedData = data;
 
-		if (created) {
-			webView.loadDataWithBaseURL(baseUrl, data,
-					getActivity().getApplicationContext().getResources().getString(R.string.textOrHTML),
-					null, null);
-			webView.resetScrollSync();
-		}
-	}
+	// ============================================================================================
+	//		Save and load state to preferences
+	// ============================================================================================
 
 	/**
 	 * Save state and content of the page.
