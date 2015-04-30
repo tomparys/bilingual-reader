@@ -430,8 +430,7 @@ public class BookPanel extends SplitPanel
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 		Log.d(LOG, "[" + index + "] onFling"); //: " + event1.toString()+event2.toString());
 
-		// Evaluate if the scroll that has just ended constitutes some gesture.
-		handleScrollEnd(e2);
+		// Evaluation of the end of the scroll is handled directly in onTouch for consistent results.
 
 		return true;
 	}
@@ -463,18 +462,14 @@ public class BookPanel extends SplitPanel
 		}
 		/* Change from multi to a Single-touch event */
 		else if (e2.getPointerCount() <= 1 && scrollIsMultitouch && scrollIsMultitouch) {
+			// Do nothing.
 			Log.d(LOG, "[" + index + "] onScroll: Change from multi to a Singletouch event detected - doing nothing.");
 		}
 
-		// Warning, the last onScroll call with MotionEvent.ACTION_UP (almost?) never happens.
-		// Therefore this functionality is moved to handleWebViewTouch().
-		// I'm leaving it here as well just in case.
-		if (MotionEventCompat.getActionMasked(e2) == MotionEvent.ACTION_UP) {
-			Log.d(LOG, "[" + index + "] onScroll ACTION_UP");
+		// Evaluation of the end of the scroll is handled directly in onTouch for consistent results,
+		//  because the last onScroll call with MotionEvent.ACTION_UP (almost?) never happens.
+		//  Also, this solution unifies handling with scrolls that end up in onFling.
 
-			// Evaluate if the scroll that has just ended constitutes some gesture.
-			handleScrollEnd(e2);
-		}
 		return true;
 	}
 
