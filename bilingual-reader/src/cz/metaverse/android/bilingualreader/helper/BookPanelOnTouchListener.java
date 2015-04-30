@@ -20,6 +20,68 @@ import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
 import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 
+/**
+ *
+ *                                                  /===-_---~~~~~~~~~------____
+ *                                                 |===-~___                _,-'
+ *                  -==\\                         `//~\\   ~~~~`---.___.-~~
+ *              ______-==|                         | |  \\           _-~`
+ *        __--~~~  ,-/-==\\                        | |   `\        ,'
+ *     _-~       /'    |  \\                      / /      \      /
+ *   .'        /       |   \\                   /' /        \   /'
+ *  /  ____  /         |    \`\.__/-~~ ~ \ _ _/'  /          \/'
+ * /-'~    ~~~~~---__  |     ~-/~         ( )   /'        _--~`
+ *                   \_|      /        _)   ;  ),   __--~~
+ *                     '~~--_/      _-~/-  / \   '-~ \
+ *                    {\__--_/}    / \\_>- )<__\      \
+ *                    /'   (_/  _-~  | |__>--<__|      |
+ *                   |0  0 _/) )-~     | |__>--<__|     |
+ *                   / /~ ,_/       / /__>---<__/      |
+ *                  o o _//        /-~_>---<__-~      /
+ *                  (^(~          /~_>---<__-      _-~
+ *                 ,/|           /__>--<__/     _-~
+ *              ,//('(          |__>--<__|     /                  .----_
+ *             ( ( '))          |__>--<__|    |                 /' _---_~\
+ *          `-)) )) (           |__>--<__|    |               /'  /     ~\`\
+ *         ,/,'//( (             \__>--<__\    \            /'  //        ||
+ *       ,( ( ((, ))              ~-__>--<_~-_  ~--____---~' _/'/        /'
+ *     `~/  )` ) ,/|                 ~-_~>--<_/-__       __-~ _/
+ *   ._-~//( )/ )) `                    ~~-'_/_/ /~~~~~~~__--~
+ *    ;'( ')/ ,)(                              ~~~~~~~~~~
+ *   ' ') '( (/
+ *     '   '  `
+ *
+ *                       HERE BE DRAGONS
+ *
+ *
+ *
+ * This class serves as a OnTouchListener for our BookPanel.
+ * It comprises of a complex logic that allows to discern several single and multitouch gestures:
+ *
+ *   - Single finger swipe up/down
+ *   	- standard scrolling (implicit, not implemented here) with ScrollSync scrolling
+ *        of the other panel, if ScrollSync is activated.
+ *
+ *   - Single finger swipe left/right - switch book chapter
+ *
+ *   - Two (or more) finger swipe up or down
+ *      - standard scrolling with forced disabled ScrollSync, i.e. other panel won't never scroll,
+ *        after the end of this scroll, the SelectionWebView is given notice to resume ScrollSync
+ *        if appropriate and compute new offset/sync point. See SelectionWebView class.
+ *
+ *   - Double tap and swipe towards the side of the device (left/right in landscape, up/down in portrait)
+ *      - Reappear the other panel if it is hidden, or hide this panel.
+ *
+ *   - Double tap and swipe towards or away from the center of the device
+ *               (up/down in landscape, left/right in portrait)
+ *      - Change the relative size of the two panels on the fly.
+ *
+ *
+ * Be warned, editing this class is perilous. Editing one functionality can have
+ * unforeseen adverse effects in other areas. Be sure to test your changes profusely.
+ *
+ *
+ */
 public class BookPanelOnTouchListener
 		implements OnTouchListener, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
