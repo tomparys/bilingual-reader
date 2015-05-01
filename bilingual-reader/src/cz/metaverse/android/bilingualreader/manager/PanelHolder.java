@@ -149,6 +149,7 @@ public class PanelHolder {
 			// Remove the displayed name of the book in the navigation drawer of our main activity.
 			activity.setBookNameInDrawer(pos, null);
 
+			// Dereference the panel and its book before we switch panels.
 			book = null;
 			panel = null;
 

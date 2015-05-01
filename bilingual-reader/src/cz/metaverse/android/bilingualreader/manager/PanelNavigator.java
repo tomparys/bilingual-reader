@@ -317,8 +317,10 @@ public class PanelNavigator {
 		if (firstLanguage != -1) {
 			try {
 				if (secondLanguage != -1) {
+					Log.d(LOG, "activateBilingualEbook - first and second language ready");
+
 					panelHolder[otherIndex(book)].openBook(
-							panelHolder[otherIndex(book)].getBook().getFileName());
+							panelHolder[book].getBook().getFileName());
 					panelHolder[otherIndex(book)].getBook().goToPage(
 							panelHolder[book].getBook().getCurrentSpineElementIndex());
 					panelHolder[otherIndex(book)].getBook().setLanguage(secondLanguage);
