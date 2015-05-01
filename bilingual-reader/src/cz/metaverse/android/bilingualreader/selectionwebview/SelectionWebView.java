@@ -17,6 +17,7 @@ import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.helper.PanelViewState;
 import cz.metaverse.android.bilingualreader.helper.ScrollSyncMethod;
+import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
 
@@ -28,10 +29,11 @@ import cz.metaverse.android.bilingualreader.panel.BookPanel;
  */
 public class SelectionWebView extends WebView {
 
-	private static final String LOG = "alfons";
+	private static final String LOG = "SelectionWebView";
 
 	private ReaderActivity readerActivity;
 	private PanelNavigator navigator;
+	private PanelHolder panelHolder;
 
 	/* For setting custom Contextual Action Bar (CAB) */
 	private ActionMode mActionMode;
@@ -44,7 +46,7 @@ public class SelectionWebView extends WebView {
 
 	/* Scroll Sync */
 	private ScrollSyncMethod scrollSyncMethod = ScrollSyncMethod.percentual_withOffset;
-	private Integer panelIndex;
+	private Integer panelPos;
 	private boolean userIsScrolling = false;
 	// When user is still interacting with this WebView, but the sync scrolling is temporarily paused.
 	private boolean userScrollingPaused = false;
@@ -88,6 +90,38 @@ public class SelectionWebView extends WebView {
 	public SelectionWebView(Context readerActivity) {
 		this(readerActivity, null);
 	}
+
+
+	/**
+	 * Set the holder and position of the panel this WebView belongs to.
+	 */
+	public void setPanelHolderAndPosition(PanelHolder panelHolder, int position) {
+		Log.d(LOG, "setPanelHolderAndPosition");
+		this.panelHolder = panelHolder;
+		panelPos = position;
+	}
+
+	/**
+	 * Update the position of the panel this WebView belongs to.
+	 */
+	public void updatePanelPosition(int pos) {
+		panelPos = pos;
+	}
+
+	/**
+	 * Returns the WebView belonging to the sister panel of the one containing this WebView.
+	 */
+	public SelectionWebView getSisterWebView() {
+		if (panelHolder != null) {
+			//Log.v(LOG, "[" + panelPos + "] getSisterWebView");
+
+			return panelHolder.getSisterWebView();
+		}
+
+		//Log.v(LOG, "[" + panelPos + "] getSisterWebView - null panelHolder");
+		return null;
+	}
+
 
 	/**
 	 * This overrides the default action bar on long press and substitutes our own.
@@ -219,7 +253,7 @@ public class SelectionWebView extends WebView {
 			if (computedMaxScrollY != 0) {
 
 				// If sisterWebView exists.
-				SelectionWebView sisterWV = readerActivity.navigator.getSisterWebView(panelIndex);
+				SelectionWebView sisterWV = getSisterWebView();
 				if (sisterWV != null) {
 
 					// Compute and set the corresponding scroll position of the other WebView.
@@ -230,7 +264,7 @@ public class SelectionWebView extends WebView {
 					case percentual_withOffset:
 						// Because the position equation isn't symmetrical,
 						// we have to compute them differently for each panel:
-						if (panelIndex == 0) {
+						if (panelPos == 0) {
 							scrollValue = (getScrollY() - scrollSyncOffset)
 									* sisterWV.computeMaxScrollY() / computedMaxScrollY;
 						} else {
@@ -238,7 +272,7 @@ public class SelectionWebView extends WebView {
 									* sisterWV.computeMaxScrollY() / computedMaxScrollY - scrollSyncOffset;
 						}
 
-						/*Log.d(LOG, "[" + panelIndex + "] computeScroll:  from " + getScrollY()
+						/*Log.v(LOG, "[" + panelPos + "] computeScroll:  from " + getScrollY()
 								+ "  to " + scrollValue + "  offset " + scrollSyncOffset
 								+ "   (maxScrollY " + computedMaxScrollY + "  destinationMaxScrollY "
 								+ sisterWV.computeMaxScrollY() + ")"); /**/
@@ -289,7 +323,7 @@ public class SelectionWebView extends WebView {
 	public void pauseScrollSync() {
 		// Pause only if we were really user scrolling and not paused.
 		if (userIsScrolling && !userScrollingPaused) {
-			Log.d(LOG, "[" + panelIndex + "] pauseScrollSync for now");
+			//Log.d(LOG, "[" + panelPos + "] pauseScrollSync for now");
 
 			userScrollingPaused = true;
 
@@ -311,7 +345,7 @@ public class SelectionWebView extends WebView {
 	public void resumeScrollSync() {
 		// Make resume computations only if we were really user scrolling and paused.
 		if (userIsScrolling && userScrollingPaused) {
-			Log.d(LOG, "[" + panelIndex + "] resumeScrollSync went through");
+			//Log.d(LOG, "[" + panelPos + "] resumeScrollSync went through");
 
 			userScrollingPaused = false;
 
@@ -320,7 +354,7 @@ public class SelectionWebView extends WebView {
 			case percentual_withOffset:
 				// Because the position equation isn't symmetrical,
 				// we have to compute offset differently in each panel:
-				if (panelIndex == 0) {
+				if (panelPos == 0) {
 					scrollSyncOffset += getScrollY() - scrollYwhenPaused;
 				} else {
 					// If maxScrollY is positive.
@@ -328,7 +362,7 @@ public class SelectionWebView extends WebView {
 					if (computedMaxScrollY != 0) {
 
 						// If sisterWebView exists.
-						SelectionWebView sisterWV = readerActivity.navigator.getSisterWebView(panelIndex);
+						SelectionWebView sisterWV = getSisterWebView();
 						if (sisterWV != null) {
 
 							scrollSyncOffset += (getScrollY() - scrollYwhenPaused)
@@ -336,7 +370,7 @@ public class SelectionWebView extends WebView {
 						}
 					}
 				}
-				Log.d(LOG, "[" + panelIndex + "] new offset: " + scrollSyncOffset);
+				//Log.d(LOG, "[" + panelPos + "] new offset: " + scrollSyncOffset);
 				break;
 
 			default:
@@ -370,7 +404,7 @@ public class SelectionWebView extends WebView {
 	 */
 	private void setCorrespondingScrollSyncDataOnSisterWebView() {
 		/* Set corresponding ScrollSyncMethod data on the sister WebView. */
-		SelectionWebView sisterWV = readerActivity.navigator.getSisterWebView(panelIndex);
+		SelectionWebView sisterWV = getSisterWebView();
 		if (sisterWV != null) {
 
 			switch (scrollSyncMethod) {
@@ -389,7 +423,7 @@ public class SelectionWebView extends WebView {
 	 * Sets corresponding data for the ScrollSyncMethod offset method.
 	 */
 	public void setCorrespondingScrollSyncOffset(int offset) {
-		//Log.d(LOG, "[" + panelIndex + "] received new offset: " + offset);
+		//Log.d(LOG, "[" + panelPos + "] received new offset: " + offset);
 		scrollSyncOffset = -offset;
 	}
 
@@ -397,7 +431,7 @@ public class SelectionWebView extends WebView {
 	 * Set whether the WebView will react to scrolling or not scroll at all.
 	 */
 	public void setNoScrollAtAll(boolean noScrollAtAll) {
-		//Log.d(LOG, "[" + panelIndex + "] noScrollAtAll " + noScrollAtAll);
+		//Log.d(LOG, "[" + panelPos + "] noScrollAtAll " + noScrollAtAll);
 
 		this.noScrollAtAll = noScrollAtAll;
 	}
@@ -413,8 +447,8 @@ public class SelectionWebView extends WebView {
 		}
 		else {
 			// If ScrollSync is active and we want to activate user scrolling:
-			BookPanel thisPanel = navigator.getBookPanel(panelIndex);
-			BookPanel sisterPanel = navigator.getSisterBookPanel(panelIndex);
+			BookPanel thisPanel = navigator.getBookPanel(panelPos);
+			BookPanel sisterPanel = navigator.getSisterBookPanel(panelPos);
 
 			if (thisPanel != null && thisPanel.enumState == PanelViewState.books
 					&& sisterPanel != null && sisterPanel.enumState == PanelViewState.books) {
@@ -435,13 +469,6 @@ public class SelectionWebView extends WebView {
 	 */
 	public boolean isUserScrolling() {
 		return userIsScrolling;
-	}
-
-	/**
-	 * Set the index of the panel this WebView belongs to.
-	 */
-	public void setPanelIndex(int index) {
-		panelIndex = index;
 	}
 
 

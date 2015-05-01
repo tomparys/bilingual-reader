@@ -30,5 +30,5 @@ package cz.metaverse.android.bilingualreader.helper;
  *
  */
 public enum PanelViewState {
-	books, notes, invisible, empty, metadata
+	books, notes, metadata, empty
 }

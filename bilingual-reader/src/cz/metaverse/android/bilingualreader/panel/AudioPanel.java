@@ -48,6 +48,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 
 /**
  *
@@ -69,6 +70,17 @@ public class AudioPanel extends SplitPanel {
 	private SeekBar progressBar;
 	private Runnable update;
 	private Handler progressHandler;
+
+
+	/**
+	 * Constructor - let's get the important info filled.
+	 * @param panelHolder  The PanelHolder instance holding this panel.
+	 * @param position  The position of this panel.
+	 */
+	public AudioPanel(PanelHolder panelHolder, int position) {
+		super(panelHolder, position);
+	}
+
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,

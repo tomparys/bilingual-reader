@@ -37,6 +37,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
 
 /**
@@ -47,13 +48,27 @@ import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
  */
 public abstract class SplitPanel extends Fragment {
 
-	private RelativeLayout splitPanelLayout;
+	protected PanelNavigator navigator;
+	protected PanelHolder panelHolder;
 	protected int index;
+
+	private RelativeLayout splitPanelLayout;
 	protected RelativeLayout contentBoxLayout;
 	protected Button closeButton;
-	protected PanelNavigator navigator;
 	protected float weight = 0.5f; // weight of the generalLayout
 	protected boolean created; // tells whether the fragment has been created
+
+
+	/**
+	 * Constructor - let's get the important info filled.
+	 * @param panelHolder  The PanelHolder instance holding this panel.
+	 * @param position  The position of this panel.
+	 */
+	public SplitPanel(PanelHolder panelHolder, int position) {
+		this.panelHolder = panelHolder;
+		updatePosition(position);
+	}
+
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -88,7 +103,7 @@ public abstract class SplitPanel extends Fragment {
 	}
 
 	protected void closeView() {
-		navigator.closePanelView(index);
+		panelHolder.closePanel();
 		// If one of the panels gets closed, user no longer reads bilingual ebook in a bilingual mode.
 		navigator.setReadingBilingualEbook(false);
 	}
@@ -111,7 +126,7 @@ public abstract class SplitPanel extends Fragment {
 		return index;
 	}
 
-	public void setIndex(int value) {
+	public void updatePosition(int value) {
 		index = value;
 	}
 

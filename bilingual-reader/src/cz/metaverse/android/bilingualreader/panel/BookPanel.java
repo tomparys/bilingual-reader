@@ -30,6 +30,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnLongClickListener;
@@ -40,6 +41,7 @@ import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.helper.BookPanelOnTouchListener;
 import cz.metaverse.android.bilingualreader.helper.PanelViewState;
+import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 
 /**
@@ -48,6 +50,8 @@ import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
  *
  */
 public class BookPanel extends SplitPanel {
+
+	private static final String LOG = "hugo";
 
 	private ReaderActivity activity;
 
@@ -65,15 +69,16 @@ public class BookPanel extends SplitPanel {
 
 	/**
 	 * Constructor for our BookPanel.
-	 * @param index  Index of the new panel.
+	 * @param panelHolder  PanelHolder instance that's holding our panel.
+	 * @param position  Position of this panel.
 	 */
-	public BookPanel(int index) {
-		setIndex(index);
+	public BookPanel(PanelHolder panelHolder, int position) {
+		super(panelHolder, position); // Invokes changePosition(position)
 	}
 
 
 	@Override
-	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)	{
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)	{
 		super.onCreateView(inflater, container, savedInstanceState);
 		View v = inflater.inflate(R.layout.panel_book, container, false);
 		return v;
@@ -85,6 +90,7 @@ public class BookPanel extends SplitPanel {
 	@SuppressLint("SetJavaScriptEnabled") // Our opensource application has literally nothing to hide.
 	@Override
 	public void onActivityCreated(Bundle saved) {
+		Log.d(LOG, "BookPanel onActivityCreated");
 		super.onActivityCreated(saved);
 
 		// Our panels are designed to work strictly with our ReaderActivity.
@@ -92,14 +98,14 @@ public class BookPanel extends SplitPanel {
 
 		// Find our customized web view that will server as our viewport
 		webView = (SelectionWebView) getView().findViewById(R.id.Viewport);
-		webView.setPanelIndex(index);
+		webView.setPanelHolderAndPosition(panelHolder, index);
 		// Enable JavaScript for cool things to happen!
 		webView.getSettings().setJavaScriptEnabled(true);
 
 		// Set our custom complex OnTouchListener class that will handle
 		// the multitude of supported touch and multi-touch gestures for our BookPanel.
 		BookPanelOnTouchListener onTouchListener =
-				new BookPanelOnTouchListener(activity, navigator, this, webView);
+				new BookPanelOnTouchListener(activity, navigator, panelHolder, this, webView);
 		webView.setOnTouchListener(onTouchListener);
 
 		// Set long-click listener:
@@ -122,7 +128,7 @@ public class BookPanel extends SplitPanel {
 
 						// If url isn't empty, set note with the url into this SplitPanel/fragment.
 						if (url != null) {
-							navigator.setNote(url, index);
+							panelHolder.setNote(url);
 						}
 					}
 				});
@@ -141,7 +147,7 @@ public class BookPanel extends SplitPanel {
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 				// Set book page through the navigator if possible.
 				try {
-					navigator.setBookPage(url, index);
+					panelHolder.setBookPage(url);
 				} catch (Exception e) {
 					errorMessage(getString(R.string.error_LoadPage));
 				}
@@ -155,6 +161,8 @@ public class BookPanel extends SplitPanel {
 		} else {
 			loadPage(displayedPage);
 		}
+
+		Log.d(LOG, "BookPanel onActivityCreated finished");
 	}
 
 	/**
@@ -175,12 +183,12 @@ public class BookPanel extends SplitPanel {
 	 * Set the new index for the panel.
 	 */
 	@Override
-	public void setIndex(int index) {
-		super.setIndex(index);
+	public void updatePosition(int pos) {
+		super.updatePosition(pos);
 
 		// Pass the new index onto classes that work with it.
 		if (webView != null) {
-			webView.setPanelIndex(index);
+			webView.updatePanelPosition(pos);
 		}
 	}
 
@@ -266,6 +274,12 @@ public class BookPanel extends SplitPanel {
 			enumState = PanelViewState.valueOf(preferences.getString("state"+index, PanelViewState.books.name()));
 		} catch (IllegalArgumentException e) {
 			enumState = PanelViewState.books;
+		}
+
+		// If this is one of the BookPanelStates that get closed by pressing the back button,
+		// inform navigator of that fact so it can close it properly.
+		if (enumState == PanelViewState.notes || enumState == PanelViewState.metadata) {
+			navigator.notesDisplayedLastIn = panelHolder;
 		}
 
 		String page = preferences.getString("displayedPage"+index, "");
