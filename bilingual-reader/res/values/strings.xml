@@ -198,8 +198,8 @@
     <string name="action_bar_title">BR</string>
     <string name="button_reset_panel_size_to_50_50">Reset to 50/50</string>
     <string name="Exit">Exit</string>
-    <string name="First_book">First book</string>
-    <string name="Second_book">Second book</string>
+    <string name="Panel_1_empty">Panel 1 is empty.</string>
+    <string name="Panel_2_empty">Panel 2 is empty.</string>
     <string name="Open_book_1_dots">Open book 1...</string>
     <string name="Open_book_2_dots">Open book 2...</string>
     <string name="SRS_Database">SRS Database</string>

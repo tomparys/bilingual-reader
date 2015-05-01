@@ -119,12 +119,18 @@ public class PanelNavigator {
 
 	public void switchPanels() {
 		Log.d(LOG, "switchPanels");
+
+		// Switch the panel holder positions.
 		PanelHolder temp = panelHolder[0];
 		panelHolder[0] = panelHolder[1];
 		panelHolder[1] = temp;
 
+		// Notify the panelholders and subsequently the panels of the new positions.
 		panelHolder[0].updatePosition(0);
 		panelHolder[1].updatePosition(1);
+
+		// Switch the displayed book names in the navigation drawer.
+		activity.switchBookNamesInDrawer();
 	}
 
 	public PanelHolder getSisterPanelHolder(int panel) {

@@ -146,6 +146,9 @@ public class PanelHolder {
 			// Remove the panel
 			activity.removePanel(panel);
 
+			// Remove the displayed name of the book in the navigation drawer of our main activity.
+			activity.setBookNameInDrawer(pos, null);
+
 			// If this is the 1st panel (pos=0), and the sister panel holder has an open panel,
 			// switch panel holder instances so that it is now first.
 			if (pos == 0 && sisterPanelHolder.hasOpenPanel()) {

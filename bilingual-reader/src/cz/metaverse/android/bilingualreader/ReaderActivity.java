@@ -464,9 +464,23 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 */
 	public void setBookNameInDrawer(int panel, String name) {
 		if (drawerBookButton[panel] != null) {
-			drawerBookButton[panel].setText(name);
+			if (name != null) {
+				drawerBookButton[panel].setText(name);
+			} else {
+				drawerBookButton[panel].setText(getString(
+						panel == 0 ? R.string.Panel_1_empty : R.string.Panel_2_empty));
+			}
 		}
 		drawerBookButtonText[panel] = name;
+	}
+
+	/**
+	 * When panels get switched, we have to switch displayed book names as well.
+	 */
+	public void switchBookNamesInDrawer() {
+		String temp = drawerBookButtonText[0];
+		setBookNameInDrawer(0, drawerBookButtonText[1]);
+		setBookNameInDrawer(1, temp);
 	}
 
 	/**
