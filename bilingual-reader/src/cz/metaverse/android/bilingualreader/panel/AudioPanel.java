@@ -46,9 +46,10 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.manager.PanelHolder;
+import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
 
 /**
  *
@@ -74,11 +75,12 @@ public class AudioPanel extends SplitPanel {
 
 	/**
 	 * Constructor - let's get the important info filled.
+	 * @param navigator  The Governor of our application.
 	 * @param panelHolder  The PanelHolder instance holding this panel.
 	 * @param position  The position of this panel.
 	 */
-	public AudioPanel(PanelHolder panelHolder, int position) {
-		super(panelHolder, position);
+	public AudioPanel(PanelNavigator navigator, PanelHolder panelHolder, int position) {
+		super(navigator, panelHolder, position);
 	}
 
 

@@ -129,7 +129,7 @@ public class PanelHolder {
 				// setBookPage(books[index].getCurrentPageURL(), index);*/
 			} else {
 				// Make this panel into a BookView with the opened book instead of closing it.
-				BookPanel v = new BookPanel(this, pos);
+				BookPanel v = new BookPanel(navigator, this, pos);
 				changePanel(v);
 				v.loadPage(book.getCurrentPageURL());
 			}
@@ -149,14 +149,14 @@ public class PanelHolder {
 			// Remove the displayed name of the book in the navigation drawer of our main activity.
 			activity.setBookNameInDrawer(pos, null);
 
+			book = null;
+			panel = null;
+
 			// If this is the 1st panel (pos=0), and the sister panel holder has an open panel,
 			// switch panel holder instances so that it is now first.
 			if (pos == 0 && sisterPanelHolder.hasOpenPanel()) {
 				navigator.switchPanels();
 			}
-
-			book = null;
-			panel = null;
 		}
 	}
 
@@ -286,7 +286,7 @@ public class PanelHolder {
 			}
 
 			book = new EpubManipulator(path, "" + pos, activity);
-			changePanel(new BookPanel(this, pos));
+			changePanel(new BookPanel(navigator, this, pos));
 			setBookPage(book.getSpineElementPath(0));
 
 			// If we opened a new book, we automatically cancelled the reading of a bilingual book,
@@ -353,7 +353,7 @@ public class PanelHolder {
 
 		// If this panel isn't yet open or isn't instance of BookView, open it and make it BookView.
 		if (panel == null || !(panel instanceof BookPanel)) {
-			changePanel(new BookPanel(this, pos));
+			changePanel(new BookPanel(navigator, this, pos));
 		}
 
 		// Set state and load appropriate page.
@@ -443,7 +443,7 @@ public class PanelHolder {
 			BookPanel bookPanel = getBookPanel();
 			if (bookPanel == null) {
 				// Open a new BookPanel to display metadata
-				bookPanel = new BookPanel(this, pos);
+				bookPanel = new BookPanel(navigator, this, pos);
 				changePanel(bookPanel);
 			}
 
@@ -460,8 +460,10 @@ public class PanelHolder {
 	 * Displays Table of Contents or returns false.
 	 * @return true if TOC is available, false otherwise
 	 */
-	public boolean displayTOC() {
+	public boolean displayToC() {
 		if (book != null) {
+			Log.d(LOG, "Displaying ToC at " + book.tableOfContents());
+
 			setBookPage(book.tableOfContents());
 			return true;
 		} else {
@@ -489,7 +491,7 @@ public class PanelHolder {
 	public boolean extractAudio() {
 		if (book.getAudio().length > 0) {
 			extractAudioFromThisPanel = true;
-			AudioPanel a = new AudioPanel(this, pos);
+			AudioPanel a = new AudioPanel(navigator, this, pos);
 			a.setAudioList(book.getAudio());
 			sisterPanelHolder.changePanel(a);
 			return true;
@@ -643,9 +645,9 @@ public class PanelHolder {
 	private SplitPanel newPanelByClassName(String className) {
 		// TODO: update if a new SplitPanel's inherited class is created
 		if (className.equals(BookPanel.class.getName()))
-			return new BookPanel(this, pos);
+			return new BookPanel(navigator, this, pos);
 		if (className.equals(AudioPanel.class.getName()))
-			return new AudioPanel(this, pos);
+			return new AudioPanel(navigator, this, pos);
 		return null;
 	}
 

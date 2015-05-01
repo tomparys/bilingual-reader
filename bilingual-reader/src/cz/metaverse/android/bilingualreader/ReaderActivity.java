@@ -398,7 +398,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 
 		// Book title 1 - open Table of Contents
 		case R.id.drawer_book_title_1_button:
-			if (!navigator.getPanelHolder(0).displayTOC()) {
+			if (!navigator.getPanelHolder(0).displayToC()) {
 				errorMessage(getString(R.string.error_tocNotFound));
 			}
 			break;
@@ -416,7 +416,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			// If two books are open or if we're reading a bilingual book
 			if (!navigator.exactlyOneBookOpen() || navigator.isReadingBilingualEbook()) {
 				// Open ToC of the second book
-				if (!navigator.getPanelHolder(1).displayTOC()) {
+				if (!navigator.getPanelHolder(1).displayToC()) {
 					errorMessage(getString(R.string.error_tocNotFound));
 				}
 			} else {
@@ -711,17 +711,17 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		// Table of contents
 		case R.id.table_of_contents_menu_item:
 			if (navigator.exactlyOneBookOpen() == true || navigator.isReadingBilingualEbook() == true) {
-				navigator.getPanelHolder(0).displayTOC();
+				navigator.getPanelHolder(0).displayToC();
 			}
 			return true;
 
 		case R.id.table_of_contents_1_menu_item:
-			if (!navigator.getPanelHolder(0).displayTOC())
+			if (!navigator.getPanelHolder(0).displayToC())
 				errorMessage(getString(R.string.error_tocNotFound));
 			return true;
 
 		case R.id.table_of_contents_2_menu_item:
-			if (!navigator.getPanelHolder(1).displayTOC())
+			if (!navigator.getPanelHolder(1).displayToC())
 				errorMessage(getString(R.string.error_tocNotFound));
 			return true;
 

@@ -62,6 +62,9 @@ import cz.metaverse.android.bilingualreader.R;
  *
  */
 public class EpubManipulator {
+
+	private static final String LOG = "EpubManipulator";
+
 	private Book book;
 	private String title;
 	private int currentSpineElementIndex;
@@ -420,6 +423,8 @@ public class EpubManipulator {
 	 * @param newName	new name
 	 */
 	public void changeDirName(String newName) {
+		Log.d(LOG, "EpubManipulator changeDirName");
+
 		// Rename the directory
 		File dir = new File(tempLocation + decompressedFolder);
 		File newDir = new File(tempLocation + newName);

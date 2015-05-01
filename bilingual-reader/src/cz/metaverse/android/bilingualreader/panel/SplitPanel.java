@@ -61,10 +61,12 @@ public abstract class SplitPanel extends Fragment {
 
 	/**
 	 * Constructor - let's get the important info filled.
+	 * @param navigator  The Governor of our application.
 	 * @param panelHolder  The PanelHolder instance holding this panel.
 	 * @param position  The position of this panel.
 	 */
-	public SplitPanel(PanelHolder panelHolder, int position) {
+	public SplitPanel(PanelNavigator navigator, PanelHolder panelHolder, int position) {
+		this.navigator = navigator;
 		this.panelHolder = panelHolder;
 		updatePosition(position);
 	}
@@ -72,7 +74,6 @@ public abstract class SplitPanel extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		navigator = ((ReaderActivity) getActivity()).navigator;
 		View v = inflater.inflate(R.layout.panel_split, container,
 				false);
 		created = false;

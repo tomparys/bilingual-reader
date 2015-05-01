@@ -42,6 +42,7 @@ import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.helper.BookPanelOnTouchListener;
 import cz.metaverse.android.bilingualreader.helper.PanelViewState;
 import cz.metaverse.android.bilingualreader.manager.PanelHolder;
+import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
 import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 
 /**
@@ -69,11 +70,12 @@ public class BookPanel extends SplitPanel {
 
 	/**
 	 * Constructor for our BookPanel.
+	 * @param navigator  The Governor of our application.
 	 * @param panelHolder  PanelHolder instance that's holding our panel.
 	 * @param position  Position of this panel.
 	 */
-	public BookPanel(PanelHolder panelHolder, int position) {
-		super(panelHolder, position); // Invokes changePosition(position)
+	public BookPanel(PanelNavigator navigator, PanelHolder panelHolder, int position) {
+		super(navigator, panelHolder, position); // Invokes changePosition(position)
 		Log.d(LOG, "New BookPanel (note. constructor)");
 	}
 
