@@ -74,6 +74,7 @@ public class BookPanel extends SplitPanel {
 	 */
 	public BookPanel(PanelHolder panelHolder, int position) {
 		super(panelHolder, position); // Invokes changePosition(position)
+		Log.d(LOG, "New BookPanel (note. constructor)");
 	}
 
 

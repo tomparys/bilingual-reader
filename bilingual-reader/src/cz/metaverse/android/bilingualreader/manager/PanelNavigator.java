@@ -167,7 +167,7 @@ public class PanelNavigator {
 	 * @param weight
 	 */
 	public void changePanelsWeight(float weight) {
-		if (panelHolder[0].getPanel() != null && panelHolder[1].getPanel() != null) {
+		if (panelHolder[0].hasOpenPanel() && panelHolder[1].hasOpenPanel()) {
 
 			panelHolder[0].changePanelWeight(1 - weight);
 			panelHolder[1].changePanelWeight(weight);
@@ -196,7 +196,7 @@ public class PanelNavigator {
 	 */
 	public void removePanels() {
 		for (PanelHolder ph : panelHolder) {
-			if (ph.getPanel() != null) {
+			if (ph.hasOpenPanel()) {
 				activity.removePanelWithoutClosing(ph.getPanel());
 			}
 		}
@@ -208,7 +208,7 @@ public class PanelNavigator {
 	 */
 	public void reAddPanels() {
 		for (PanelHolder ph : panelHolder) {
-			if (ph.getPanel() != null) {
+			if (ph.hasOpenPanel()) {
 				activity.addPanel(ph.getPanel());
 			}
 		}

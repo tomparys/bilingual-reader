@@ -65,6 +65,10 @@ public class PanelHolder {
 	public void updatePosition(int position) {
 		pos = position;
 
+		if (book != null) {
+			book.changeDirName(position + "");
+		}
+
 		if (panel != null) {
 			panel.updatePosition(position);
 		}
@@ -92,6 +96,10 @@ public class PanelHolder {
 
 	public SplitPanel getPanel() {
 		return panel;
+	}
+
+	public boolean hasOpenPanel() {
+		return panel != null;
 	}
 
 	/**
@@ -138,25 +146,14 @@ public class PanelHolder {
 			// Remove the panel
 			activity.removePanel(panel);
 
-			// If this is the 1st panel (index=0), move the 2nd panel to the first position in the variables
-			// No longer needed -> just switch the Holder instances in the PanelNavigator array
-			// and update indexes/pos + changeDirName for the book, like following:
-			navigator.switchPanels();
-					// TODO: This method should call changePanelPosition()
+			// If this is the 1st panel (pos=0), and the sister panel holder has an open panel,
+			// switch panel holder instances so that it is now first.
+			if (pos == 0 && sisterPanelHolder.hasOpenPanel()) {
+				navigator.switchPanels();
+			}
 
 			book = null;
 			panel = null;
-		}
-	}
-
-	public void changePanelPosition(int newPosition) {
-		if (book != null) {
-			book.changeDirName(newPosition + "");
-		}
-
-		if (panel != null) {
-			// Update the panel key
-			panel.updatePosition(newPosition);
 		}
 	}
 
@@ -192,14 +189,16 @@ public class PanelHolder {
 		activity.addPanel(p);
 
 		// Detach and re-attach the panel that is after the newly changed one.
-		if (pos == 0) {
+		if (pos == 0 && sisterPanelHolder.hasOpenPanel()) {
 			sisterPanelHolder.reAttachPanel();
 		}
 	}
 
 	public void reAttachPanel() {
-		activity.detachPanel(panel);
-		activity.attachPanel(panel);
+		if (panel != null) {
+			activity.detachPanel(panel);
+			activity.attachPanel(panel);
+		}
 	}
 
 	/**
@@ -256,7 +255,7 @@ public class PanelHolder {
 	 */
 	public SelectionWebView getSisterWebView() {
 		// TODO streamline this by keeping link to WebView in a field?
-		if (sisterPanelHolder.panel != null && sisterPanelHolder.panel instanceof BookPanel) {
+		if (sisterPanelHolder.hasOpenPanel() && sisterPanelHolder.panel instanceof BookPanel) {
 			return ((BookPanel) sisterPanelHolder.panel).getWebView();
 		}
 		return null;

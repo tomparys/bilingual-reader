@@ -783,6 +783,8 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 * @param p SplitPanel instance
 	 */
 	public void addPanel(SplitPanel p) {
+		Log.d(LOG, "addPanel");
+
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 		fragmentTransaction.add(R.id.PanelsLayout, p, p.getTag());
 		fragmentTransaction.commit();
@@ -795,6 +797,8 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 * @param p
 	 */
 	public void attachPanel(SplitPanel p) {
+		Log.d(LOG, "attachPanel");
+
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 		fragmentTransaction.attach(p);
 		fragmentTransaction.commit();
@@ -810,6 +814,8 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 * @param p
 	 */
 	public void detachPanel(SplitPanel p) {
+		Log.d(LOG, "detachPanel");
+
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 		fragmentTransaction.detach(p);
 		fragmentTransaction.commit();
@@ -825,6 +831,8 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 * @param p
 	 */
 	public void removePanelWithoutClosing(SplitPanel p) {
+		Log.d(LOG, "removePanelWithoutClosing");
+
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 		fragmentTransaction.remove(p);
 		fragmentTransaction.commit();
@@ -840,6 +848,8 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 * @param p
 	 */
 	public void removePanel(SplitPanel p) {
+		Log.d(LOG, "removePanel");
+
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 		fragmentTransaction.remove(p);
 		fragmentTransaction.commit();
