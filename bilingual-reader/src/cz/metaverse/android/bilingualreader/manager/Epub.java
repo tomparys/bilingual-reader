@@ -61,7 +61,7 @@ import cz.metaverse.android.bilingualreader.R;
  * 	It can read the contents of epub ebooks, read individual pages, write into them, and much more.
  *
  */
-public class EpubManipulator {
+public class Epub {
 
 	private static final String LOG = "EpubManipulator";
 
@@ -95,7 +95,7 @@ public class EpubManipulator {
 	 * @param theContext 	Base context of the encapsulating activity
 	 * @throws Exception
 	 */
-	public EpubManipulator(String fileName, String destFolder,
+	public Epub(String fileName, String destFolder,
 			Context theContext) throws Exception {
 
 		List<String> spineElements;
@@ -154,7 +154,7 @@ public class EpubManipulator {
 	 *
 	 * TODO unify with the first initializator.
 	 */
-	public EpubManipulator(String fileName, String folder, int spineIndex,
+	public Epub(String fileName, String folder, int spineIndex,
 			int language, Context theContext) throws Exception {
 		List<String> spineElements;
 		List<SpineReference> spineList;

@@ -29,7 +29,7 @@ public class PanelHolder {
 	// Position of the panel (0 = up, 1 = down)
 	private int position;
 
-	private EpubManipulator book;
+	private Epub book;
 
 	// Whether or not to extract the audio from this panel and show it in the sister panel.
 	private boolean extractAudioFromThisPanel;
@@ -271,7 +271,7 @@ public class PanelHolder {
 	//		Book
 	// ============================================================================================
 
-	public EpubManipulator getBook() {
+	public Epub getBook() {
 		return book;
 	}
 
@@ -286,7 +286,7 @@ public class PanelHolder {
 				book.destroy();
 			}
 
-			book = new EpubManipulator(path, "" + position, activity);
+			book = new Epub(path, "" + position, activity);
 			changePanel(new BookPanel(governor, this, position));
 			setBookPage(book.getSpineElementPath(0));
 
@@ -603,13 +603,13 @@ public class PanelHolder {
 		// Try loading the already extracted book
 		if (path != null) {
 			try {
-				book = new EpubManipulator(path, name, current, lang, activity);
+				book = new Epub(path, name, current, lang, activity);
 				book.goToPage(current);
 			} catch (Exception e1) {
 
 				// Exception: Retry with re-extracting the book
 				try {
-					book = new EpubManipulator(path, position + "", activity);
+					book = new Epub(path, position + "", activity);
 					book.goToPage(current);
 				} catch (Exception e2) {
 					ok = false;
@@ -619,7 +619,7 @@ public class PanelHolder {
 			} catch (Error e) {
 				// Exception: Retry with re-extracting the book
 				try {
-					book = new EpubManipulator(path, position + "", activity);
+					book = new Epub(path, position + "", activity);
 					book.goToPage(current);
 				} catch (Exception e2) {
 					ok = false;
