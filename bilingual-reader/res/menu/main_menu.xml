@@ -52,6 +52,12 @@
         android:visible="true">
     </item>
     <item
+        android:id="@+id/fullscreen_menu_item"
+        android:showAsAction="ifRoom"
+        android:title="@string/Fullscreen"
+        android:visible="true">
+    </item>
+    <item
         android:id="@+id/style_menu_item"
         android:showAsAction="ifRoom"
         android:title="@string/Change_Style"

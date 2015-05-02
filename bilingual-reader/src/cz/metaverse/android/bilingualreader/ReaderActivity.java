@@ -26,9 +26,11 @@ package cz.metaverse.android.bilingualreader;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -670,6 +672,29 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			} catch (Exception e) {
 				errorMessage(getString(R.string.error_cannotChangeSizes));
 			}
+			return true;
+
+		// Fullscreen
+		case R.id.fullscreen_menu_item:
+			// Switch to fullscreen
+			switchFullscreen();
+
+			// Build an info dialog.
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(getString(R.string.Fullscreen));
+
+			// Add OK and Cancel buttons
+			builder.setPositiveButton(getString(R.string.OK), null);
+			builder.setNegativeButton(getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int id) {
+					switchFullscreen();
+				}
+			});
+
+			// Create the dialog
+			builder.setMessage(R.string.fullscreen_dialog_info_notice);
+			builder.create().show();
 			return true;
 
 		// Sync Scroll

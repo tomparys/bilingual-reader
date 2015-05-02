@@ -224,6 +224,7 @@
     <string name="Hide_Panel_2">Hide Panel 2</string>
     <string name="Close_Panel_1">Close Panel 1</string>
     <string name="Close_Panel_2">Close Panel 2</string>
+    
     <string name="close_panel_info_notice"><big><b>The More You Know</b></big>
         \nYou don\'t have to close the panel, you can temporarily hide it by double tapping in it,
         <i>holding that second tap,</i> and swiping left or right! (Up or down in landscape mode.)
@@ -235,7 +236,11 @@
     <string name="panel_size_dialog_info_notice"><big><b>The More You Know</b></big>
         \nYou can change panel size by double tapping anywhere on the text in the panels, <i>holding that second tap,</i> and swiping
         up or down! (Left or right in landscape mode.)</string>
+    <string name="fullscreen_dialog_info_notice"><big><b>The More You Know</b></big>
+        \nYou can switch to and from the fullscreen mode by single tapping anywhere on the text in the panels!</string>
+        
     <string name="Cannot_hide_the_only_open_panel">Can\'t hide the only opened panel.</string>
+    <string name="Fullscreen">Fullscreen</string>
          
 
 </resources>
