@@ -38,7 +38,7 @@ import android.widget.RelativeLayout;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.manager.PanelHolder;
-import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
+import cz.metaverse.android.bilingualreader.manager.Governor;
 
 /**
  *
@@ -48,7 +48,7 @@ import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
  */
 public abstract class SplitPanel extends Fragment {
 
-	protected PanelNavigator navigator;
+	protected Governor governor;
 	protected PanelHolder panelHolder;
 	protected int panelPosition;
 
@@ -61,12 +61,12 @@ public abstract class SplitPanel extends Fragment {
 
 	/**
 	 * Constructor - let's get the important info filled.
-	 * @param navigator  The Governor of our application.
+	 * @param governor  The Governor of our application.
 	 * @param panelHolder  The PanelHolder instance holding this panel.
 	 * @param position  The position of this panel.
 	 */
-	public SplitPanel(PanelNavigator navigator, PanelHolder panelHolder, int position) {
-		this.navigator = navigator;
+	public SplitPanel(Governor governor, PanelHolder panelHolder, int position) {
+		this.governor = governor;
 		this.panelHolder = panelHolder;
 		updatePosition(position);
 	}
@@ -106,7 +106,7 @@ public abstract class SplitPanel extends Fragment {
 	protected void closeView() {
 		panelHolder.closePanel();
 		// If one of the panels gets closed, user no longer reads bilingual ebook in a bilingual mode.
-		navigator.setReadingBilingualEbook(false);
+		governor.setReadingBilingualEbook(false);
 	}
 
 	// Change the weight of the general layout

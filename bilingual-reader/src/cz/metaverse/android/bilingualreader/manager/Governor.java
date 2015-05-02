@@ -40,7 +40,7 @@ import cz.metaverse.android.bilingualreader.panel.BookPanel;
  * Manages synchronized reading.
  *
  */
-public class PanelNavigator {
+public class Governor {
 
 	/* Static */
 	private static final String LOG = "hugo";
@@ -50,7 +50,7 @@ public class PanelNavigator {
 	public static final int N_PANELS = 2;
 
 	// A static instance of this class for the Singleton pattern herein employed.
-	private static PanelNavigator panelNavigatorInstance;
+	private static Governor governorInstance;
 
 	/* Dynamic */
 	private ReaderActivity activity;
@@ -74,20 +74,20 @@ public class PanelNavigator {
 	 * Singleton-pattern getter static method.
 	 * @param activity	The ReaderActivity instance that's asking for an instance.
 	 */
-	public static PanelNavigator getSingleton(ReaderActivity activity) {
-		if (panelNavigatorInstance == null) {
-			panelNavigatorInstance = new PanelNavigator(activity);
+	public static Governor getSingleton(ReaderActivity activity) {
+		if (governorInstance == null) {
+			governorInstance = new Governor(activity);
 		}
 
-		panelNavigatorInstance.setActivity(activity);
-		return panelNavigatorInstance;
+		governorInstance.setActivity(activity);
+		return governorInstance;
 	}
 
 	/**
 	 * Private constructor for the singleton pattern.
 	 * @param a  The ReaderActivity from which this is launched
 	 */
-	private PanelNavigator(ReaderActivity activity) {
+	private Governor(ReaderActivity activity) {
 		panelHolder = new PanelHolder[] {
 				new PanelHolder(0, activity, this), new PanelHolder(1, activity, this)};
 		panelHolder[0].setSisterPanelHolder(panelHolder[1]);

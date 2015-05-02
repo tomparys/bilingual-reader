@@ -49,7 +49,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.manager.PanelHolder;
-import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
+import cz.metaverse.android.bilingualreader.manager.Governor;
 
 /**
  *
@@ -75,12 +75,12 @@ public class AudioPanel extends SplitPanel {
 
 	/**
 	 * Constructor - let's get the important info filled.
-	 * @param navigator  The Governor of our application.
+	 * @param governor  The Governor of our application.
 	 * @param panelHolder  The PanelHolder instance holding this panel.
 	 * @param position  The position of this panel.
 	 */
-	public AudioPanel(PanelNavigator navigator, PanelHolder panelHolder, int position) {
-		super(navigator, panelHolder, position);
+	public AudioPanel(Governor governor, PanelHolder panelHolder, int position) {
+		super(governor, panelHolder, position);
 	}
 
 
@@ -249,7 +249,7 @@ public class AudioPanel extends SplitPanel {
 						/ ((ReaderActivity) getActivity()).getHeight();
 				if (weight > 0.5f)
 					weight = 0.5f;
-				navigator.changePanelsWeight(1 - weight);
+				governor.changePanelsWeight(1 - weight);
 
 				// 1 file: show the player only and able it
 				if (songs.length == 1) {
@@ -258,7 +258,7 @@ public class AudioPanel extends SplitPanel {
 				}
 			} else {
 				// Landscape case: fifty-fifty
-				navigator.changePanelsWeight(0.5f);
+				governor.changePanelsWeight(0.5f);
 			}
 
 			updateButtons();

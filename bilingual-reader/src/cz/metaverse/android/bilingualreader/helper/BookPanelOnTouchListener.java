@@ -16,7 +16,7 @@ import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
 import cz.metaverse.android.bilingualreader.manager.PanelHolder;
-import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
+import cz.metaverse.android.bilingualreader.manager.Governor;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
 import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 
@@ -92,7 +92,7 @@ public class BookPanelOnTouchListener
 
 	/* Variables for interconnectivity with the outside world. */
 	private ReaderActivity activity;
-	private PanelNavigator navigator;
+	private Governor governor;
 	private PanelHolder panelHolder;
 	private BookPanel bookPanel;
 	private SelectionWebView webView;
@@ -125,12 +125,12 @@ public class BookPanelOnTouchListener
 	private int doubleTapSwipe_orientation;
 
 
-	public BookPanelOnTouchListener(ReaderActivity readerActivity, PanelNavigator navigator,
+	public BookPanelOnTouchListener(ReaderActivity readerActivity, Governor governor,
 			PanelHolder panelHolder, BookPanel bookPanel, SelectionWebView webView, int position) {
 
 		// Interconnectivity.
 		this.activity = readerActivity;
-		this.navigator = navigator;
+		this.governor = governor;
 		this.panelHolder = panelHolder;
 		this.bookPanel = bookPanel;
 		this.webView = webView;
@@ -216,7 +216,7 @@ public class BookPanelOnTouchListener
 				}
 
 				// Change relative panel size on the fly.
-				navigator.changePanelsWeight(newPanelsWeight);
+				governor.changePanelsWeight(newPanelsWeight);
 
 				//Log.v(LOG, "[" + panelPosition + "] doubleTapSwipe " + newPanelsWeight);
 				//+ " = (" + event.getRawY() + " - " + contentViewTop + ") / " + (height - contentViewTop));
@@ -277,7 +277,7 @@ public class BookPanelOnTouchListener
 
 
 		// If ScrollSync is active:
-		if (navigator.isScrollSync()) {
+		if (governor.isScrollSync()) {
 			// The user laid finger in this WebView and may start scrolling it.
 			//  Therefore send resumeScrollSync to both WebViews, the one that was active in User Scrolling
 			//   will compute new offset and send it to the other one.
@@ -285,7 +285,7 @@ public class BookPanelOnTouchListener
 			webView.resumeScrollSync();
 			webView.setUserIsScrolling(true);
 
-			BookPanel otherBookPanel = activity.navigator.getSisterBookPanel(panelPosition);
+			BookPanel otherBookPanel = activity.governor.getSisterBookPanel(panelPosition);
 			if (otherBookPanel != null) {
 				otherBookPanel.getWebView().resumeScrollSync();
 				otherBookPanel.getWebView().setUserIsScrolling(false);
@@ -322,7 +322,7 @@ public class BookPanelOnTouchListener
 			// Evaluate if the scroll section that has just ended constitutes some gesture.
 			handleScrollEnd(e2);
 
-			if (navigator.isScrollSync() && webView.isUserScrolling()) {
+			if (governor.isScrollSync() && webView.isUserScrolling()) {
 				// Pause ScrollSync, user is setting a scrolling offset.
 				webView.pauseScrollSync();
 			}

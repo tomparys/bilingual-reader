@@ -20,7 +20,7 @@ public class PanelHolder {
 
 	/* Interactivity with the outside */
 	private ReaderActivity activity;
-	private PanelNavigator navigator;
+	private Governor governor;
 	private PanelHolder sisterPanelHolder;
 
 	/* Holding variables */
@@ -44,12 +44,12 @@ public class PanelHolder {
 	 * Constructor
 	 * @param position  Position of the panel (0 - top, 1 - bottom).
 	 * @param activity  ReaderActivity instance.
-	 * @param navigator  The Governor of our application.
+	 * @param governor  The Governor of our application.
 	 */
-	public PanelHolder(int position, ReaderActivity activity, PanelNavigator navigator) {
+	public PanelHolder(int position, ReaderActivity activity, Governor governor) {
 		this.position = position;
 		this.activity = activity;
-		this.navigator = navigator;
+		this.governor = governor;
 	}
 
 	public void setActivity(ReaderActivity activity) {
@@ -129,7 +129,7 @@ public class PanelHolder {
 				// setBookPage(books[index].getCurrentPageURL(), index);*/
 			} else {
 				// Make this panel into a BookView with the opened book instead of closing it.
-				BookPanel v = new BookPanel(navigator, this, position);
+				BookPanel v = new BookPanel(governor, this, position);
 				changePanel(v);
 				v.loadPage(book.getCurrentPageURL());
 			}
@@ -156,7 +156,7 @@ public class PanelHolder {
 			// If this is the 1st panel (pos=0), and the sister panel holder has an open panel,
 			// switch panel holder instances so that it is now first.
 			if (position == 0 && sisterPanelHolder.hasOpenPanel()) {
-				navigator.switchPanels();
+				governor.switchPanels();
 			}
 		}
 	}
@@ -287,12 +287,12 @@ public class PanelHolder {
 			}
 
 			book = new EpubManipulator(path, "" + position, activity);
-			changePanel(new BookPanel(navigator, this, position));
+			changePanel(new BookPanel(governor, this, position));
 			setBookPage(book.getSpineElementPath(0));
 
 			// If we opened a new book, we automatically cancelled the reading of a bilingual book,
 			// because at least one panel now does now contain a different book.
-			navigator.setReadingBilingualEbook(false);
+			governor.setReadingBilingualEbook(false);
 
 			// Save the state to shared preferences
 			SharedPreferences.Editor editor = activity.getPreferences(Context.MODE_PRIVATE).edit();
@@ -354,7 +354,7 @@ public class PanelHolder {
 
 		// If this panel isn't yet open or isn't instance of BookView, open it and make it BookView.
 		if (panel == null || !(panel instanceof BookPanel)) {
-			changePanel(new BookPanel(navigator, this, position));
+			changePanel(new BookPanel(governor, this, position));
 		}
 
 		// Set state and load appropriate page.
@@ -364,7 +364,7 @@ public class PanelHolder {
 		// If the panel is indeed now displaying *notes* or *metadata*
 		// save his index as the last panel that opened notes.
 		if (enumState == BookPanelState.notes || enumState == BookPanelState.metadata) {
-			navigator.notesDisplayedLastIn = this;
+			governor.notesDisplayedLastIn = this;
 		}
 	}
 
@@ -377,7 +377,7 @@ public class PanelHolder {
 		try {
 			setBookPage(book.goToNextChapter());
 
-			if (navigator.isChapterSync()) {
+			if (governor.isChapterSync()) {
 				if (sisterPanelHolder.book != null) {
 					sisterPanelHolder.setBookPage(sisterPanelHolder.book.goToNextChapter());
 				}
@@ -395,7 +395,7 @@ public class PanelHolder {
 		try {
 			setBookPage(book.goToPreviousChapter());
 
-			if (navigator.isChapterSync()) {
+			if (governor.isChapterSync()) {
 				if (sisterPanelHolder.book != null) {
 					sisterPanelHolder.setBookPage(sisterPanelHolder.book.goToPreviousChapter());
 				}
@@ -437,14 +437,14 @@ public class PanelHolder {
 	 * @return true if metadata are available, false otherwise
 	 */
 	public boolean displayMetadata() {
-		navigator.notesDisplayedLastIn = this;
+		governor.notesDisplayedLastIn = this;
 
 		if (book != null) {
 			// Use the existing BookPanel to display metadata or open a new one if needed.
 			BookPanel bookPanel = getBookPanel();
 			if (bookPanel == null) {
 				// Open a new BookPanel to display metadata
-				bookPanel = new BookPanel(navigator, this, position);
+				bookPanel = new BookPanel(governor, this, position);
 				changePanel(bookPanel);
 			}
 
@@ -492,7 +492,7 @@ public class PanelHolder {
 	public boolean extractAudio() {
 		if (book.getAudio().length > 0) {
 			extractAudioFromThisPanel = true;
-			AudioPanel a = new AudioPanel(navigator, this, position);
+			AudioPanel a = new AudioPanel(governor, this, position);
 			a.setAudioList(book.getAudio());
 			sisterPanelHolder.changePanel(a);
 			return true;
@@ -646,9 +646,9 @@ public class PanelHolder {
 	private SplitPanel newPanelByClassName(String className) {
 		// TODO: update if a new SplitPanel's inherited class is created
 		if (className.equals(BookPanel.class.getName()))
-			return new BookPanel(navigator, this, position);
+			return new BookPanel(governor, this, position);
 		if (className.equals(AudioPanel.class.getName()))
-			return new AudioPanel(navigator, this, position);
+			return new AudioPanel(governor, this, position);
 		return null;
 	}
 

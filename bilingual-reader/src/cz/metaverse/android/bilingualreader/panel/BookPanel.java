@@ -42,7 +42,7 @@ import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.helper.BookPanelOnTouchListener;
 import cz.metaverse.android.bilingualreader.helper.BookPanelState;
 import cz.metaverse.android.bilingualreader.manager.PanelHolder;
-import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
+import cz.metaverse.android.bilingualreader.manager.Governor;
 import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 
 /**
@@ -71,12 +71,12 @@ public class BookPanel extends SplitPanel {
 
 	/**
 	 * Constructor for our BookPanel.
-	 * @param navigator  The Governor of our application.
+	 * @param governor  The Governor of our application.
 	 * @param panelHolder  PanelHolder instance that's holding our panel.
 	 * @param position  Position of this panel.
 	 */
-	public BookPanel(PanelNavigator navigator, PanelHolder panelHolder, int position) {
-		super(navigator, panelHolder, position); // Invokes changePosition(position)
+	public BookPanel(Governor governor, PanelHolder panelHolder, int position) {
+		super(governor, panelHolder, position); // Invokes changePosition(position)
 		Log.d(LOG, "New BookPanel (note. constructor)");
 	}
 
@@ -106,7 +106,7 @@ public class BookPanel extends SplitPanel {
 		// Enable JavaScript for cool things to happen!
 		webView.getSettings().setJavaScriptEnabled(true);
 
-		onTouchListener = new BookPanelOnTouchListener(activity, navigator, panelHolder, this, webView, panelPosition);
+		onTouchListener = new BookPanelOnTouchListener(activity, governor, panelHolder, this, webView, panelPosition);
 		webView.setOnTouchListener(onTouchListener);
 
 		// Set long-click listener:
@@ -116,7 +116,7 @@ public class BookPanel extends SplitPanel {
 			public boolean onLongClick(View v) {
 				// Create a message and a method that will serve as its target.
 				// The target method will look for URL in the messages data,
-				//  and if there is one, it dispatches it to the PanelsNavigator
+				//  and if there is one, it dispatches it to the Governor
 				//  to open it as a Note in the other panel.
 				Message msg = new Message();
 				msg.setTarget(new Handler() {
@@ -146,8 +146,9 @@ public class BookPanel extends SplitPanel {
 		webView.setWebViewClient(new WebViewClient() {
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
-				// Set book page through the navigator if possible.
+				// Set book page through the governor if possible.
 				try {
+					// TODO block fullscreen switch
 					panelHolder.setBookPage(url);
 				} catch (Exception e) {
 					errorMessage(getString(R.string.error_LoadPage));
@@ -279,9 +280,9 @@ public class BookPanel extends SplitPanel {
 		}
 
 		// If this is one of the BookPanelStates that get closed by pressing the back button,
-		// inform navigator of that fact so it can close it properly.
+		// inform governor of that fact so it can close it properly.
 		if (enumState == BookPanelState.notes || enumState == BookPanelState.metadata) {
-			navigator.notesDisplayedLastIn = panelHolder;
+			governor.notesDisplayedLastIn = panelHolder;
 		}
 
 		String page = preferences.getString("displayedPage"+panelPosition, "");

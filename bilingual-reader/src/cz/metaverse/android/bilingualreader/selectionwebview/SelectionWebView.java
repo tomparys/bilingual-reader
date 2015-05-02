@@ -18,7 +18,7 @@ import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.helper.BookPanelState;
 import cz.metaverse.android.bilingualreader.helper.ScrollSyncMethod;
 import cz.metaverse.android.bilingualreader.manager.PanelHolder;
-import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
+import cz.metaverse.android.bilingualreader.manager.Governor;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
 
 /**
@@ -32,7 +32,7 @@ public class SelectionWebView extends WebView {
 	private static final String LOG = "SelectionWebView";
 
 	private ReaderActivity readerActivity;
-	private PanelNavigator navigator;
+	private Governor governor;
 	private PanelHolder panelHolder;
 
 	/* For setting custom Contextual Action Bar (CAB) */
@@ -66,7 +66,7 @@ public class SelectionWebView extends WebView {
 	public SelectionWebView(Context rActivity, AttributeSet attributeSet) {
 		super(rActivity, attributeSet);
 		this.readerActivity = (ReaderActivity) rActivity;
-		navigator = readerActivity.navigator;
+		governor = readerActivity.governor;
 
 		WebSettings webviewSettings = getSettings();
 		webviewSettings.setJavaScriptEnabled(true);
@@ -246,7 +246,7 @@ public class SelectionWebView extends WebView {
 		}
 
 		// If Scroll Sync is active, the user is scrolling this WebView and his scrolling is not paused.
-		if (navigator.isScrollSync() && userIsScrolling && !userScrollingPaused) {
+		if (governor.isScrollSync() && userIsScrolling && !userScrollingPaused) {
 
 			// If maxScrollY is positive.
 			int computedMaxScrollY = computeMaxScrollY();
@@ -441,14 +441,14 @@ public class SelectionWebView extends WebView {
 	 */
 	public void setUserIsScrolling(boolean isScrolling) {
 
-		if (!navigator.isScrollSync() || !isScrolling) {
+		if (!governor.isScrollSync() || !isScrolling) {
 			// If ScrollSync isn't active, or if we want to disable user scrolling:
 			userIsScrolling = false;
 		}
 		else {
 			// If ScrollSync is active and we want to activate user scrolling:
-			BookPanel thisPanel = navigator.getBookPanel(panelPosition);
-			BookPanel sisterPanel = navigator.getSisterBookPanel(panelPosition);
+			BookPanel thisPanel = governor.getBookPanel(panelPosition);
+			BookPanel sisterPanel = governor.getSisterBookPanel(panelPosition);
 
 			if (thisPanel != null && thisPanel.enumState == BookPanelState.books
 					&& sisterPanel != null && sisterPanel.enumState == BookPanelState.books) {

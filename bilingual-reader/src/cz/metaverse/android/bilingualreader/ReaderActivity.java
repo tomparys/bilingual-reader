@@ -49,7 +49,7 @@ import cz.metaverse.android.bilingualreader.dialog.ChangeCSSDialog;
 import cz.metaverse.android.bilingualreader.dialog.LanguageChooserDialog;
 import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
 import cz.metaverse.android.bilingualreader.dialog.SettingsDialog;
-import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
+import cz.metaverse.android.bilingualreader.manager.Governor;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
 import cz.metaverse.android.bilingualreader.sync.ParagraphPositions;
 
@@ -63,7 +63,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 
 	private static final String LOG = "hugo";
 
-	public PanelNavigator navigator;
+	public Governor governor;
 	protected int bookSelector;
 	protected int panelCount;
 	protected String[] cssSettings;
@@ -134,7 +134,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		getActionBar().setHomeButtonEnabled(true);
 
 		// Find the Book buttons that we will be updating with the names of the displayed books
-		drawerBookButton = new Button[PanelNavigator.N_PANELS];
+		drawerBookButton = new Button[Governor.N_PANELS];
 		drawerBookButton[0] = (Button) findViewById(R.id.drawer_book_title_1_button);
 		drawerBookButton[1] = (Button) findViewById(R.id.drawer_book_title_2_button);
 
@@ -144,14 +144,14 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			restoreBookNamesInDrawer(drawerBookButtonText);
 		}
 		if (drawerBookButtonText == null) {
-			drawerBookButtonText = new String[PanelNavigator.N_PANELS];
+			drawerBookButtonText = new String[Governor.N_PANELS];
 		}
 
 		/* end of Navigation Drawer setup */
 
 
 		// Setup logic variables
-		navigator = PanelNavigator.getSingleton(this);
+		governor = Governor.getSingleton(this);
 
 		panelCount = 0;
 		if (savedInstanceState != null) {
@@ -173,10 +173,10 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			// Load the persistent state from previous runs of the application,
 			// because this is the application is just starting.
 			SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-			loadStateOfNavigator(preferences);
+			loadGovernorState(preferences);
 
 			// Load panels.
-			navigator.loadPanels(preferences);
+			governor.loadPanels(preferences);
 		}
 
 		// If there are no panels, start FileChooser.
@@ -214,7 +214,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		// This is *not* possible to move to onDestroy, because FragmentManager refuses to do
 		//  anything after onSaveInstanceState, because it might cause potential problems when recreating
 		//  the Activity from the saved state.
-		//navigator.removePanels();
+		//governor.removePanels();
 
 		super.onSaveInstanceState(outState);
 	}
@@ -235,7 +235,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			// Load panels and books into them from before if necessary,
 			// if not, just re-adds the panels to view.
 			SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-			navigator.loadPanels(preferences);
+			governor.loadPanels(preferences);
 		}
 
 		// Invalidate options menu, because at the start the ebooks weren't loaded
@@ -255,7 +255,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		// Save state in case the app gets killed.
 		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 		Editor editor = preferences.edit();
-		saveStateOfNavigator(editor);
+		saveGovernorState(editor);
 		editor.commit();
 	}
 
@@ -267,7 +267,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		// If no panels present, load them from memory, if there were any before.
 		if (panelCount == 0) {
 			SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-			navigator.loadPanels(preferences);
+			governor.loadPanels(preferences);
 		}
 
 		// If we have just returned from the FileChooserActivity.
@@ -277,7 +277,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 				Log.d(LOG, "Loading book to panel " + bookSelector);
 
 				String path = data.getStringExtra(getString(R.string.bpath));
-				navigator.getPanelHolder(bookSelector).openBook(path);
+				governor.getPanelHolder(bookSelector).openBook(path);
 
 				Log.d(LOG, "Loaded book to panel " + bookSelector);
 			}
@@ -291,7 +291,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	public void onBackPressed() {
 		// See if there is some PanelViewState.notes or PanelViewState.metadata panel to be closed,
 		// if so, close it. If not, moveTaskToBack().
-		if (!navigator.closeLastOpenedNotes()) {
+		if (!governor.closeLastOpenedNotes()) {
 			moveTaskToBack(true);
 		}
 	}
@@ -398,7 +398,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 
 		// Book title 1 - open Table of Contents
 		case R.id.drawer_book_title_1_button:
-			if (!navigator.getPanelHolder(0).displayToC()) {
+			if (!governor.getPanelHolder(0).displayToC()) {
 				errorMessage(getString(R.string.error_tocNotFound));
 			}
 			break;
@@ -414,9 +414,9 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		// Book title 2 - open Table of Contents
 		case R.id.drawer_book_title_2_button:
 			// If two books are open or if we're reading a bilingual book
-			if (!navigator.exactlyOneBookOpen() || navigator.isReadingBilingualEbook()) {
+			if (!governor.exactlyOneBookOpen() || governor.isReadingBilingualEbook()) {
 				// Open ToC of the second book
-				if (!navigator.getPanelHolder(1).displayToC()) {
+				if (!governor.getPanelHolder(1).displayToC()) {
 					errorMessage(getString(R.string.error_tocNotFound));
 				}
 			} else {
@@ -487,7 +487,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 * Restores the names of the books after a runtime change re-creates the Activity
 	 */
 	private void restoreBookNamesInDrawer(String[] drawerBookButtonText) {
-		for (int i = 0; i < PanelNavigator.N_PANELS; i++) {
+		for (int i = 0; i < Governor.N_PANELS; i++) {
 			if (drawerBookButtonText[i] != null) {
 				setBookNameInDrawer(i, drawerBookButtonText[i]);
 			}
@@ -536,7 +536,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		if (navigator.exactlyOneBookOpen()) {
+		if (governor.exactlyOneBookOpen()) {
 
 			// Exactly one book open
 			menu.findItem(R.id.sync_scroll_menu_item).setVisible(false);
@@ -566,7 +566,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			menu.findItem(R.id.audio_1_menu_item).setVisible(true);
 			menu.findItem(R.id.audio_2_menu_item).setVisible(true);
 
-			if (navigator.isReadingBilingualEbook()) {
+			if (governor.isReadingBilingualEbook()) {
 				// Bilingual ebook open in both panels has only 1 ToC and 1 metadata.
 				menu.findItem(R.id.bilingual_ebook_1_menu_item).setVisible(false);
 				menu.findItem(R.id.bilingual_ebook_2_menu_item).setVisible(false);
@@ -590,7 +590,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			menu.findItem(R.id.bilingual_ebook_menu_item).setVisible(false);
 		}
 
-		if (navigator.canExtractAudio()) {
+		if (governor.canExtractAudio()) {
 			menu.findItem(R.id.audio_menu_item).setVisible(true);
 		} else {
 			menu.findItem(R.id.audio_menu_item).setVisible(false);
@@ -642,22 +642,22 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			Toast.makeText(this, "Computing paragraph positions.", Toast.LENGTH_SHORT).show();
 
 			// Get position of each paragraph for proper synchronized scrolling.
-			for (int panel = 0; panel < PanelNavigator.N_PANELS; panel++) {
+			for (int panel = 0; panel < Governor.N_PANELS; panel++) {
 				ParagraphPositions ppInstance = ParagraphPositions.instance(panel);
 				if (!ppInstance.isActive()) {
-					ppInstance.start(navigator.getBookPanel(panel),
-							navigator.getBookPanel(panel).getViewedPage());
+					ppInstance.start(governor.getBookPanel(panel),
+							governor.getBookPanel(panel).getViewedPage());
 				}
 			}
 			return true;
 
 		// Sync Chapters
 		case R.id.sync_chapters_menu_item:
-			boolean sync = navigator.flipChapterSync();
+			boolean sync = governor.flipChapterSync();
 			if (!sync) {
 				errorMessage(getString(R.string.error_onlyOneBookOpen));
 			}
-			if (navigator.isChapterSync()) {
+			if (governor.isChapterSync()) {
 				Toast.makeText(this, getString(R.string.activated_sync_chapters), Toast.LENGTH_SHORT).show();
 			} else {
 				Toast.makeText(this, getString(R.string.deactivated_sync_chapters), Toast.LENGTH_SHORT).show();
@@ -667,7 +667,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 
 		// Bilingual ebook
 		case R.id.bilingual_ebook_menu_item:
-			if (navigator.exactlyOneBookOpen() || navigator.isReadingBilingualEbook()) {
+			if (governor.exactlyOneBookOpen() || governor.isReadingBilingualEbook()) {
 				if (openBilingualBook(0)) {
 					invalidateOptionsMenu();
 				}
@@ -681,7 +681,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			return true;
 
 		case R.id.bilingual_ebook_2_menu_item:
-			if (!navigator.exactlyOneBookOpen()) {
+			if (!governor.exactlyOneBookOpen()) {
 				if (openBilingualBook(1)) {
 					invalidateOptionsMenu();
 				}
@@ -692,36 +692,36 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 
 		// Display metadata of the book
 		case R.id.metadata_menu_item:
-			if (navigator.exactlyOneBookOpen() == true || navigator.isReadingBilingualEbook() == true) {
-				navigator.getPanelHolder(0).displayMetadata();
+			if (governor.exactlyOneBookOpen() == true || governor.isReadingBilingualEbook() == true) {
+				governor.getPanelHolder(0).displayMetadata();
 			} else {
 			}
 			return true;
 
 		case R.id.metadata_1_menu_item:
-			if (!navigator.getPanelHolder(0).displayMetadata())
+			if (!governor.getPanelHolder(0).displayMetadata())
 				errorMessage(getString(R.string.error_metadataNotFound));
 			return true;
 
 		case R.id.metadata_2_menu_item:
-			if (!navigator.getPanelHolder(1).displayMetadata())
+			if (!governor.getPanelHolder(1).displayMetadata())
 				errorMessage(getString(R.string.error_metadataNotFound));
 			return true;
 
 		// Table of contents
 		case R.id.table_of_contents_menu_item:
-			if (navigator.exactlyOneBookOpen() == true || navigator.isReadingBilingualEbook() == true) {
-				navigator.getPanelHolder(0).displayToC();
+			if (governor.exactlyOneBookOpen() == true || governor.isReadingBilingualEbook() == true) {
+				governor.getPanelHolder(0).displayToC();
 			}
 			return true;
 
 		case R.id.table_of_contents_1_menu_item:
-			if (!navigator.getPanelHolder(0).displayToC())
+			if (!governor.getPanelHolder(0).displayToC())
 				errorMessage(getString(R.string.error_tocNotFound));
 			return true;
 
 		case R.id.table_of_contents_2_menu_item:
-			if (!navigator.getPanelHolder(1).displayToC())
+			if (!governor.getPanelHolder(1).displayToC())
 				errorMessage(getString(R.string.error_tocNotFound));
 			return true;
 
@@ -729,7 +729,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		case R.id.style_menu_item:
 			try {
 				// Display the style dialog.
-				if (navigator.exactlyOneBookOpen() == true) {
+				if (governor.exactlyOneBookOpen() == true) {
 					DialogFragment newFragment = new ChangeCSSDialog();
 					newFragment.show(getFragmentManager(), "");
 					bookSelector = 0;
@@ -763,20 +763,20 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 
 		// Audio shenanigans.
 		case R.id.audio_menu_item:
-			if (navigator.exactlyOneBookOpen() == true) {
-				if (!navigator.getPanelHolder(0).extractAudio()) {
+			if (governor.exactlyOneBookOpen() == true) {
+				if (!governor.getPanelHolder(0).extractAudio()) {
 					errorMessage(getString(R.string.no_audio));
 				}
 			}
 			return true;
 
 		case R.id.audio_1_menu_item:
-			if (!navigator.getPanelHolder(0).extractAudio())
+			if (!governor.getPanelHolder(0).extractAudio())
 				errorMessage(getString(R.string.no_audio));
 			return true;
 
 		case R.id.audio_2_menu_item:
-			if (!navigator.getPanelHolder(1).extractAudio())
+			if (!governor.getPanelHolder(1).extractAudio())
 				errorMessage(getString(R.string.no_audio));
 			return true;
 
@@ -897,8 +897,8 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 */
 	public boolean anyBilingualEbook() {
 		String[] languages;
-		for (int i = 0; i < PanelNavigator.N_PANELS; i++) {
-			languages = navigator.getPanelHolder(i).getLanguagesInABook();
+		for (int i = 0; i < Governor.N_PANELS; i++) {
+			languages = governor.getPanelHolder(i).getLanguagesInABook();
 
 			// If there are two or more languages, it is a multilingual ebook.
 			if (languages != null && languages.length >= 2) {
@@ -918,7 +918,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	public boolean openBilingualBook(int book) {
 
 		String[] languages;
-		languages = navigator.getPanelHolder(book).getLanguagesInABook();
+		languages = governor.getPanelHolder(book).getLanguagesInABook();
 
 		// If there are just two languages, start parallel text mode with them.
 		if (languages.length == 2) {
@@ -949,7 +949,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 * @param second	second language to show
 	 */
 	public void startParallelText(int book, int first, int second) {
-		navigator.activateBilingualEbook(book, first, second);
+		governor.activateBilingualEbook(book, first, second);
 	}
 
 
@@ -959,7 +959,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 * Activate the CSS settings after they have been filled in.
 	 */
 	public void setCSS() {
-		navigator.getPanelHolder(bookSelector).changeCSS(cssSettings);
+		governor.getPanelHolder(bookSelector).changeCSS(cssSettings);
 	}
 
 	public void setBackColor(String my_backColor) {
@@ -1001,7 +1001,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 * @param weight	weight of the first panel (0 to 1)
 	 */
 	public void changePanelsWeight(float weight) {
-		navigator.changePanelsWeight(weight);
+		governor.changePanelsWeight(weight);
 	}
 
 	/**
@@ -1023,15 +1023,15 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	/**
 	 * Save state of the application.
 	 */
-	protected void saveStateOfNavigator(Editor editor) {
-		navigator.saveState(editor);
+	protected void saveGovernorState(Editor editor) {
+		governor.saveState(editor);
 	}
 
 	/**
 	 * Load state of the application from before.
 	 */
-	protected void loadStateOfNavigator(SharedPreferences preferences) {
-		if (!navigator.loadState(preferences))
+	protected void loadGovernorState(SharedPreferences preferences) {
+		if (!governor.loadState(preferences))
 			errorMessage(getString(R.string.error_cannotLoadState));
 	}
 
