@@ -358,7 +358,7 @@ public class BookPanelOnTouchListener
 		// If this scroll has never been multi-touch or doubleTapSwipe:
 		if (!scrollIsOrWasMultitouch && !isDoubleTapSwipe) {
 			// If the WebView is displaying a book (no sense in switching chapters of metadata or Toc):
-			if (bookPanel.enumState == PanelViewState.books) {
+			if (bookPanel.enumState == BookPanelState.books) {
 
 				// Single touch scroll on a book - evaluate if the user wants to change chapters.
 				if (diffX > quarterWidth && absDiffX > absDiffY) {

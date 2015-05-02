@@ -15,7 +15,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
-import cz.metaverse.android.bilingualreader.helper.PanelViewState;
+import cz.metaverse.android.bilingualreader.helper.BookPanelState;
 import cz.metaverse.android.bilingualreader.helper.ScrollSyncMethod;
 import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
@@ -450,8 +450,8 @@ public class SelectionWebView extends WebView {
 			BookPanel thisPanel = navigator.getBookPanel(panelPosition);
 			BookPanel sisterPanel = navigator.getSisterBookPanel(panelPosition);
 
-			if (thisPanel != null && thisPanel.enumState == PanelViewState.books
-					&& sisterPanel != null && sisterPanel.enumState == PanelViewState.books) {
+			if (thisPanel != null && thisPanel.enumState == BookPanelState.books
+					&& sisterPanel != null && sisterPanel.enumState == BookPanelState.books) {
 
 				// If both opened panels are showing books, we can start user scrolling.
 				userIsScrolling = true;

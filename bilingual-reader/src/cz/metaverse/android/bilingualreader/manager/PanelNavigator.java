@@ -29,7 +29,7 @@ import android.content.SharedPreferences.Editor;
 import android.util.Log;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
-import cz.metaverse.android.bilingualreader.helper.PanelViewState;
+import cz.metaverse.android.bilingualreader.helper.BookPanelState;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
 
 /**
@@ -150,8 +150,8 @@ public class PanelNavigator {
 	public boolean closeLastOpenedNotes() {
 		if (notesDisplayedLastIn != null) {
 			BookPanel bookPanel = notesDisplayedLastIn.getBookPanel();
-			if (bookPanel != null && (bookPanel.enumState == PanelViewState.notes
-					|| bookPanel.enumState == PanelViewState.metadata)) {
+			if (bookPanel != null && (bookPanel.enumState == BookPanelState.notes
+					|| bookPanel.enumState == BookPanelState.metadata)) {
 
 				notesDisplayedLastIn.closePanel();
 				notesDisplayedLastIn = notesDisplayedLastIn.getSisterPanelHolder();

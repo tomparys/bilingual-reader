@@ -29,6 +29,6 @@ package cz.metaverse.android.bilingualreader.helper;
  * Enum that is used to describe the state of the book-viewing panels.
  *
  */
-public enum PanelViewState {
+public enum BookPanelState {
 	books, notes, metadata, empty
 }

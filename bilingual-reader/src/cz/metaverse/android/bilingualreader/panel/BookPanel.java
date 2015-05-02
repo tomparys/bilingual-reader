@@ -40,7 +40,7 @@ import android.webkit.WebViewClient;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.helper.BookPanelOnTouchListener;
-import cz.metaverse.android.bilingualreader.helper.PanelViewState;
+import cz.metaverse.android.bilingualreader.helper.BookPanelState;
 import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 import cz.metaverse.android.bilingualreader.manager.PanelNavigator;
 import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
@@ -57,7 +57,7 @@ public class BookPanel extends SplitPanel {
 	private ReaderActivity activity;
 
 	// Information about the content
-	public PanelViewState enumState = PanelViewState.books;
+	public BookPanelState enumState = BookPanelState.books;
 	protected String displayedPage;
 	protected String displayedData;
 
@@ -157,7 +157,7 @@ public class BookPanel extends SplitPanel {
 		});
 
 		// Load the page.
-		if (enumState == PanelViewState.metadata) {
+		if (enumState == BookPanelState.metadata) {
 			loadData(displayedData, displayedPage);
 		} else {
 			loadPage(displayedPage);
@@ -254,7 +254,7 @@ public class BookPanel extends SplitPanel {
 		if (displayedPage != null) {
 			editor.putString("displayedPage"+panelPosition, displayedPage);
 		}
-		if (enumState == PanelViewState.metadata) {
+		if (enumState == BookPanelState.metadata) {
 			editor.putString("displayedData"+panelPosition, displayedData);
 		}
 
@@ -273,20 +273,20 @@ public class BookPanel extends SplitPanel {
 	{
 		super.loadState(preferences);
 		try {
-			enumState = PanelViewState.valueOf(preferences.getString("state"+panelPosition, PanelViewState.books.name()));
+			enumState = BookPanelState.valueOf(preferences.getString("state"+panelPosition, BookPanelState.books.name()));
 		} catch (IllegalArgumentException e) {
-			enumState = PanelViewState.books;
+			enumState = BookPanelState.books;
 		}
 
 		// If this is one of the BookPanelStates that get closed by pressing the back button,
 		// inform navigator of that fact so it can close it properly.
-		if (enumState == PanelViewState.notes || enumState == PanelViewState.metadata) {
+		if (enumState == BookPanelState.notes || enumState == BookPanelState.metadata) {
 			navigator.notesDisplayedLastIn = panelHolder;
 		}
 
 		String page = preferences.getString("displayedPage"+panelPosition, "");
 
-		if (enumState == PanelViewState.metadata) {
+		if (enumState == BookPanelState.metadata) {
 			loadData(preferences.getString("displayedData"+panelPosition, ""), page);
 		} else {
 			loadPage(page);

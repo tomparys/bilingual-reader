@@ -8,7 +8,7 @@ import android.content.SharedPreferences.Editor;
 import android.util.Log;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
-import cz.metaverse.android.bilingualreader.helper.PanelViewState;
+import cz.metaverse.android.bilingualreader.helper.BookPanelState;
 import cz.metaverse.android.bilingualreader.panel.AudioPanel;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
@@ -120,11 +120,11 @@ public class PanelHolder {
 		// If this panel isn't a BookView or if this panel's enumState isn't *books*,
 		// BUT there is a book (EpubManipulator) opened for this panel
 		if (book != null && (!(panel instanceof BookPanel) // TODO this is wrong!
-				|| (((BookPanel) panel).enumState != PanelViewState.books))) {
+				|| (((BookPanel) panel).enumState != BookPanelState.books))) {
 			if (panel instanceof BookPanel) {
 				// Change the content of the BookPanel back to the book.
 				BookPanel bookPanel = getBookPanel();
-				bookPanel.enumState = PanelViewState.books;
+				bookPanel.enumState = BookPanelState.books;
 				bookPanel.loadPage(book.getCurrentPageURL());
 				// setBookPage(books[index].getCurrentPageURL(), index);*/
 			} else {
@@ -337,19 +337,19 @@ public class PanelHolder {
 	 */
 	public void loadPageIntoView(String pathOfPage) {
 		// Default - set panel state to *notes*.
-		PanelViewState enumState = PanelViewState.notes;
+		BookPanelState enumState = BookPanelState.notes;
 
 		// Only if the page is contained in the opened book in this panel,
 		// set enumState to *books*
 		if (book != null) {
 			if ((pathOfPage.equals(book.getCurrentPageURL())) || (book.getPageIndex(pathOfPage) >= 0)) {
-				enumState = PanelViewState.books;
+				enumState = BookPanelState.books;
 			}
 		}
 
 		// If this panel has no opened book, set enumState to *empty*
 		if (book == null) {
-			enumState = PanelViewState.empty;
+			enumState = BookPanelState.empty;
 		}
 
 		// If this panel isn't yet open or isn't instance of BookView, open it and make it BookView.
@@ -363,7 +363,7 @@ public class PanelHolder {
 
 		// If the panel is indeed now displaying *notes* or *metadata*
 		// save his index as the last panel that opened notes.
-		if (enumState == PanelViewState.notes || enumState == PanelViewState.metadata) {
+		if (enumState == BookPanelState.notes || enumState == BookPanelState.metadata) {
 			navigator.notesDisplayedLastIn = this;
 		}
 	}
@@ -449,7 +449,7 @@ public class PanelHolder {
 			}
 
 			bookPanel.loadData(book.metadata(), book.tableOfContents());
-			bookPanel.enumState = PanelViewState.metadata;
+			bookPanel.enumState = BookPanelState.metadata;
 
 			return true;
 		} else {
