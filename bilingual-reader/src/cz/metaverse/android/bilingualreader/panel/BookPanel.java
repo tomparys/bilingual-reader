@@ -122,6 +122,24 @@ public class BookPanel extends SplitPanel {
 		onTouchListener = new BookPanelOnTouchListener(activity, governor, panelHolder, this, webView, panelPosition);
 		webView.setOnTouchListener(onTouchListener);
 
+		// Set a custom WebViewClient that has overwritten method for loading URLs.
+		webView.setWebViewClient(new WebViewClient() {
+			@Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				// Set book page through the governor if possible.
+				try {
+					// Inform our onTouchListener to ignore this click, since it was ment
+					// to click on this URL link.
+					onTouchListener.setJustClickedOnUrlLink();
+
+					panelHolder.setBookPage(url);
+				} catch (Exception e) {
+					errorMessage(getString(R.string.error_LoadPage));
+				}
+				return true;
+			}
+		});
+
 		// Set long-click listener:
 		//  If the user long-clicks on any URL link we open it in the other panel.
 		webView.setOnLongClickListener(new OnLongClickListener() {
@@ -152,24 +170,6 @@ public class BookPanel extends SplitPanel {
 				webView.requestFocusNodeHref(msg);
 
 				return false;
-			}
-		});
-
-		// Set a custom WebViewClient that has overwritten method for loading URLs.
-		webView.setWebViewClient(new WebViewClient() {
-			@Override
-			public boolean shouldOverrideUrlLoading(WebView view, String url) {
-				// Set book page through the governor if possible.
-				try {
-					// Inform our onTouchListener to ignore this click, since it was ment
-					// to click on this URL link.
-					onTouchListener.setJustClickedOnUrlLink();
-
-					panelHolder.setBookPage(url);
-				} catch (Exception e) {
-					errorMessage(getString(R.string.error_LoadPage));
-				}
-				return true;
 			}
 		});
 
