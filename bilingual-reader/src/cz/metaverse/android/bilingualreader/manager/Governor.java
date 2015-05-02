@@ -74,12 +74,15 @@ public class Governor {
 	 * Singleton-pattern getter static method.
 	 * @param activity	The ReaderActivity instance that's asking for an instance.
 	 */
-	public static Governor getSingleton(ReaderActivity activity) {
+	public static Governor loadAndGetSingleton(ReaderActivity activity, SharedPreferences preferences) {
 		if (governorInstance == null) {
 			governorInstance = new Governor(activity);
 		}
 
 		governorInstance.setActivity(activity);
+
+		governorInstance.loadState(preferences);
+
 		return governorInstance;
 	}
 
@@ -88,10 +91,7 @@ public class Governor {
 	 * @param a  The ReaderActivity from which this is launched
 	 */
 	private Governor(ReaderActivity activity) {
-		panelHolder = new PanelHolder[] {
-				new PanelHolder(0, activity, this), new PanelHolder(1, activity, this)};
-		panelHolder[0].setSisterPanelHolder(panelHolder[1]);
-		panelHolder[1].setSisterPanelHolder(panelHolder[0]);
+		preparePanelHolders();
 
 		// Activity is set right after the constructor in the getSingleton() method, no need to do it here.
 	}
@@ -103,8 +103,31 @@ public class Governor {
 		this.activity = activity;
 
 		for (PanelHolder ph : panelHolder) {
-			ph.setActivity(activity);
+			if (ph != null) {
+				ph.setActivity(activity);
+			}
 		}
+	}
+
+	/**
+	 * Creates and saves two PanelHolders for basic operation of our application.
+	 * Invoked upon creation or if Android system closed one of the instances to free memory.
+	 */
+	private void preparePanelHolders() {
+		panelHolder = new PanelHolder[] {
+				new PanelHolder(0, activity, this),
+				new PanelHolder(1, activity, this)};
+		panelHolder[0].setSisterPanelHolder(panelHolder[1]);
+		panelHolder[1].setSisterPanelHolder(panelHolder[0]);
+	}
+
+	/**
+	 * Checks whether there are any problems with this instance, if for example the Android system
+	 * didn't close any important fields that would result in NullPointerExceptions.
+	 * @return true if everything appears to be sound
+	 */
+	private boolean selfCheck() {
+		return panelHolder != null && panelHolder[0] != null && panelHolder[1] != null;
 	}
 
 
@@ -318,13 +341,19 @@ public class Governor {
 	/**
 	 * If necessary, recreates the panels from last time based on saved preferences,
 	 *  and displays them.
-	 * @param preferences
+	 * @param preferences SharedPreferences to load from.
+	 * @return Number of now existing panels.
 	 */
-	public void loadPanels(SharedPreferences preferences) {
+	public int loadPanels(SharedPreferences preferences) {
 		Log.d(LOG, "loadPanels");
+
+		int panelCount = 0;
+
 		for (PanelHolder ph : panelHolder) {
-			ph.loadPanel(preferences);
+			panelCount += ph.loadPanel(preferences);
 		}
+
+		return panelCount;
 	}
 
 	/**
@@ -350,6 +379,11 @@ public class Governor {
 		chapterSync = preferences.getBoolean(getS(R.string.sync), false);
 		readingBilingualEbook = preferences.getBoolean(getS(R.string.readingBilingualEbookBool), false);
 		boolean ok = true;
+
+		// Check if everything is as it should, if not recreate it.
+		if (!selfCheck()) {
+			preparePanelHolders();
+		}
 
 		for (PanelHolder ph : panelHolder) {
 			if (!ph.loadState(preferences)) {

@@ -28,6 +28,7 @@ import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,8 @@ import cz.metaverse.android.bilingualreader.manager.Governor;
  *
  */
 public abstract class SplitPanel extends Fragment {
+
+	private static final String LOG = "SplitPanel";
 
 	protected Governor governor;
 	protected PanelHolder panelHolder;
@@ -69,6 +72,18 @@ public abstract class SplitPanel extends Fragment {
 		this.governor = governor;
 		this.panelHolder = panelHolder;
 		updatePosition(position);
+	}
+
+	/**
+	 * Checks whether there are any problems with this instance, if for example the Android system
+	 * didn't close any important fields that would result in NullPointerExceptions.
+	 * @return true if everything appears to be sound
+	 */
+	public boolean selfCheck() {
+		boolean ok = closeButton != null;
+
+		Log.d(LOG, "SplitPanel selfCheck - " + ok);
+		return ok;
 	}
 
 

@@ -34,6 +34,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -62,6 +63,9 @@ import cz.metaverse.android.bilingualreader.manager.Governor;
  *
  */
 public class AudioPanel extends SplitPanel {
+
+	private static final String LOG = "AudioPanel";
+
 	String[][] audio;
 	ListView list;
 	private MediaPlayer player;
@@ -81,6 +85,20 @@ public class AudioPanel extends SplitPanel {
 	 */
 	public AudioPanel(Governor governor, PanelHolder panelHolder, int position) {
 		super(governor, panelHolder, position);
+	}
+
+	/**
+	 * Checks whether there are any problems with this instance, if for example the Android system
+	 * didn't close any important fields that would result in NullPointerExceptions.
+	 * @return true if everything appears to be sound
+	 */
+	@Override
+	public boolean selfCheck() {
+		boolean ok = super.selfCheck() && rew != null && playpause != null && progressBar != null
+				&& progressHandler != null;
+
+		Log.d(LOG, "AudioPanel selfCheck - " + ok);
+		return ok;
 	}
 
 

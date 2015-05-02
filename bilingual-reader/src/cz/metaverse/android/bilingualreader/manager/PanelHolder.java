@@ -499,12 +499,13 @@ public class PanelHolder {
 	 * If necessary, recreates the panels from last time based on saved preferences,
 	 *  and displays them.
 	 * @param preferences
+	 * @return 1 if this panel now exists, 0 if it doesn't
 	 */
-	public void loadPanel(SharedPreferences preferences) {
+	public int loadPanel(SharedPreferences preferences) {
 		Log.d(LOG, "loadPanel");
 
-		// Only load the panel if it isn't already up and ready.
-		if (panel == null) {
+		// If the panel doesn't exist or if it doesn't appear to be ok, recreate it.
+		if (panel == null || !panel.selfCheck()) {
 			panel = newPanelByClassName(preferences.getString(getS(R.string.ViewType) + position, ""));
 			if (panel != null) {
 				panel.updatePosition(position);
@@ -514,12 +515,14 @@ public class PanelHolder {
 				}
 				panel.loadState(preferences);
 			}
+
+			// If panel is now properly setup, display it.
+			if (panel != null) {
+				activity.addPanel(panel);
+			}
 		}
 
-		// If panel is properly setup, display it.
-		if (panel != null) {
-			activity.addPanel(panel);
-		}
+		return panel != null ? 1 : 0;
 	}
 
 	/**
@@ -582,39 +585,43 @@ public class PanelHolder {
 		String path = preferences.getString(getS(R.string.pathBook) + position, null);
 		extractAudioFromThisPanel = preferences.getBoolean(getS(R.string.exAudio) + position, false);
 
-		// Try loading the already extracted book
-		if (path != null) {
-			try {
-				book = new Epub(path, name, current, lang, activity);
-				book.goToPage(current);
-			} catch (Exception e1) {
-
-				// Exception: Retry with re-extracting the book
+		// Load the book if it doesn't exist or didn't pass through a selfCheck.
+		if (book == null || !book.selfCheck()) {
+			if (path != null) {
 				try {
-					book = new Epub(path, position + "", activity);
+					// Try loading the already extracted book
+					book = new Epub(path, name, current, lang, activity);
 					book.goToPage(current);
-				} catch (Exception e2) {
-					ok = false;
-				} catch (Error e3) {
-					ok = false;
-				}
-			} catch (Error e) {
-				// Exception: Retry with re-extracting the book
-				try {
-					book = new Epub(path, position + "", activity);
-					book.goToPage(current);
-				} catch (Exception e2) {
-					ok = false;
-				} catch (Error e3) {
-					ok = false;
-				}
-			}
+				} catch (Exception e1) {
 
-			if (book != null) {
-				activity.setBookNameInDrawer(position, book.getTitle());
+					// Exception: Retry with re-extracting the book
+					try {
+						book = new Epub(path, position + "", activity);
+						book.goToPage(current);
+					} catch (Exception e2) {
+						ok = false;
+					} catch (Error e3) {
+						ok = false;
+					}
+				} catch (Error e) {
+					// Exception: Retry with re-extracting the book
+					try {
+						book = new Epub(path, position + "", activity);
+						book.goToPage(current);
+					} catch (Exception e2) {
+						ok = false;
+					} catch (Error e3) {
+						ok = false;
+					}
+				}
+
+				if (book != null) {
+					activity.setBookNameInDrawer(position, book.getTitle());
+				}
+			} else {
+				book = null;
 			}
-		} else
-			book = null;
+		}
 
 		return ok;
 	}

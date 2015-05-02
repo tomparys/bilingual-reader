@@ -191,6 +191,20 @@ public class Epub {
 	}
 
 	/**
+	 * Checks whether there are any problems with this instance, if for example the Android system
+	 * didn't close any important fields that would result in NullPointerExceptions.
+	 * @return true if everything appears to be sound
+	 */
+	public boolean selfCheck() {
+		boolean ok = title != null && currentPage != null && spineElementPaths != null
+				&& spineElementPaths.length > 0 && decompressedFolder != null && decompressedFolder != null
+				&& metadata != null && fileName != null;
+
+		Log.d(LOG, "Epub selfCheck - " + ok);
+		return ok;
+	}
+
+	/**
 	 * Set the current language we read in this book.
 	 * @param lang	index of the language in the epub
 	 * @throws Exception

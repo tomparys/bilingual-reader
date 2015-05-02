@@ -151,14 +151,9 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		/* end of Navigation Drawer setup */
 
 
-		// Setup logic variables
-		governor = Governor.getSingleton(this);
-
-		panelCount = 0;
 		if (savedInstanceState != null) {
 			// When trying to use "getString(R.string.nonPersistentState_panelCount)" as key, the value is
 			//  just NOT retrieved. The same if the key is too long, e.g. "nonPersistentState_panelCount".
-			panelCount = savedInstanceState.getInt("nps_panelCount", 0);
 			fullscreenMode = savedInstanceState.getBoolean("nps_fullscreenMode", false);
 			cssSettings = savedInstanceState.getStringArray("nps_cssSettings");
 		}
@@ -171,26 +166,6 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		// Fullscreen: Reactivate if it was active before.
 		if (fullscreenMode) {
 			activateFullscreen();
-		}
-
-
-		// Load persistent state and create panels from before if needed. If the Activity is just being
-		// recreated because of runtime configuration change, no need to do anything.
-		if (savedInstanceState == null) {
-			// Load the persistent state from previous runs of the application,
-			// because this is the application is just starting.
-			SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-			loadGovernorState(preferences);
-
-			// Load panels.
-			governor.loadPanels(preferences);
-		}
-
-		// If there are no panels, start FileChooser.
-		if (panelCount == 0) {
-			bookSelector = 0;
-			Intent goToChooser = new Intent(this, FileChooserActivity.class);
-			startActivityForResult(goToChooser, ACTIVITY_RESULT_FILE_CHOOSER);
 		}
 	}
 
@@ -208,7 +183,6 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		// Save non-persistent state:
 		//  When trying to use "getString(R.string.nonPersistentState_panelCount)" as key, the value is
 		//  just NOT retrieved. The same if the key is too long, e.g. "nonPersistentState_panelCount".
-		outState.putInt("nps_panelCount", panelCount);
 		outState.putBoolean("nps_fullscreenMode", fullscreenMode);
 		outState.putStringArray("nps_cssSettings", cssSettings);
 		outState.putStringArray("nps_drawerBookButtonText", drawerBookButtonText);
@@ -237,13 +211,17 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 
 		super.onResume();
 
-		// If panelCount is zero, we can be sure we're getting focus back,
-		// 	because otherwise FileChooser intent would have been launched in onCreate.
+		// Setup logic variables
+		// Load persistent state and create panels from before if needed.
+		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+		governor = Governor.loadAndGetSingleton(this, preferences);
+		panelCount = governor.loadPanels(preferences);
+
+		// If there are no panels, start FileChooser.
 		if (panelCount == 0) {
-			// Load panels and books into them from before if necessary,
-			// if not, just re-adds the panels to view.
-			SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-			governor.loadPanels(preferences);
+			bookSelector = 0;
+			Intent goToChooser = new Intent(this, FileChooserActivity.class);
+			startActivityForResult(goToChooser, ACTIVITY_RESULT_FILE_CHOOSER);
 		}
 
 		// Invalidate options menu, because at the start the ebooks weren't loaded
@@ -263,7 +241,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		// Save state in case the app gets killed.
 		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 		Editor editor = preferences.edit();
-		saveGovernorState(editor);
+		governor.saveState(editor);
 		editor.commit();
 	}
 
@@ -1029,21 +1007,6 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	public int getWidth() {
 		LinearLayout main = (LinearLayout) findViewById(R.id.PanelsLayout);
 		return main.getWidth();
-	}
-
-	/**
-	 * Save state of the application.
-	 */
-	protected void saveGovernorState(Editor editor) {
-		governor.saveState(editor);
-	}
-
-	/**
-	 * Load state of the application from before.
-	 */
-	protected void loadGovernorState(SharedPreferences preferences) {
-		if (!governor.loadState(preferences))
-			errorMessage(getString(R.string.error_cannotLoadState));
 	}
 
 	/**
