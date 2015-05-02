@@ -1,23 +1,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/change_size_menu_item"
-        android:showAsAction="always"
-        android:icon="@android:drawable/ic_menu_crop"
-        android:title="@string/Change_Size"
-        android:visible="true">
-    </item>
-    <item
         android:id="@+id/sync_scroll_menu_item"
-        android:showAsAction="always"
         android:icon="@android:drawable/ic_menu_view"
+        android:showAsAction="always"
         android:title="@string/Sync_Scroll"
         android:visible="true">
     </item>
     <item
         android:id="@+id/sync_chapters_menu_item"
-        android:showAsAction="always"
         android:icon="@android:drawable/ic_menu_set_as"
+        android:showAsAction="always"
         android:title="@string/Sync_Chapters"
         android:visible="true">
     </item>
@@ -50,6 +43,13 @@
                 android:title="@string/Book_2"
                 android:visible="false"/>
         </menu>
+    </item>
+    <item
+        android:id="@+id/change_size_menu_item"
+        android:icon="@android:drawable/ic_menu_crop"
+        android:showAsAction="ifRoom"
+        android:title="@string/Change_Size"
+        android:visible="true">
     </item>
     <item
         android:id="@+id/style_menu_item"
@@ -99,5 +99,5 @@
                 android:visible="false"/>
         </menu>
     </item>
-    
+
 </menu>
