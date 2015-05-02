@@ -370,7 +370,7 @@ public class Governor {
 	 * @return Number of now existing panels.
 	 */
 	public int loadPanels(SharedPreferences preferences) {
-		Log.d(LOG, "loadPanels");
+		Log.d(LOG, "Governor.loadPanels");
 
 		int panelCount = 0;
 

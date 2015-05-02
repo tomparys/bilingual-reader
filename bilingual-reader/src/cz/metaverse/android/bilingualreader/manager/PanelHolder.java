@@ -522,10 +522,12 @@ public class PanelHolder {
 	 * @return 1 if this panel now exists, 0 if it doesn't
 	 */
 	public int loadPanel(SharedPreferences preferences) {
-		Log.d(LOG, "loadPanel");
+		Log.d(LOG, "PanelHolder.loadPanel");
 
 		// If the panel doesn't exist or if it doesn't appear to be ok, recreate it.
 		if (panel == null || !panel.selfCheck()) {
+			Log.d(LOG, "PanelHolder.loadPanel - creating panel from memory");
+
 			panel = newPanelByClassName(preferences.getString(getS(R.string.ViewType) + position, ""));
 			if (panel != null) {
 				panel.updatePosition(position);
@@ -535,11 +537,11 @@ public class PanelHolder {
 				}
 				panel.loadState(preferences);
 			}
+		}
 
-			// If panel is now properly setup, display it.
-			if (panel != null) {
-				activity.addPanel(panel);
-			}
+		// If panel is properly setup but not displayed, display it!
+		if (panel != null && !panel.isAdded()) {
+			activity.addPanel(panel);
 		}
 
 		return panel != null ? 1 : 0;

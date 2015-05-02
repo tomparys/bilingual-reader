@@ -187,6 +187,17 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		panelCount = governor.loadPanels(preferences);
 	}
 
+	/**
+	 * Saves the Governor and panels states into persistent memory.
+	 */
+	private void saveGovernorAndPanels() {
+		// Save state in case the app gets killed.
+		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+		Editor editor = preferences.edit();
+		governor.saveState(editor);
+		editor.commit();
+	}
+
 
 	/**
 	 * Called before placing the activity in a background state, such as
@@ -223,7 +234,6 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	@Override
 	protected void onResume() {
 		Log.d(LOG, "onResume");
-
 		super.onResume();
 
 		// If we have just loaded Governor in onCreate or onActivityResult, do nothing this time.
@@ -254,13 +264,10 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 */
 	@Override
 	protected void onPause() {
+		Log.d(LOG, "onPause");
 		super.onPause();
 
-		// Save state in case the app gets killed.
-		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-		Editor editor = preferences.edit();
-		governor.saveState(editor);
-		editor.commit();
+		saveGovernorAndPanels();
 	}
 
 	/**
@@ -454,11 +461,11 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			if (governor.isOnlyOnePanelOpen()) {
 				// Can't hide the only open panel.
 				Toast.makeText(this, R.string.Cannot_hide_the_only_open_panel, Toast.LENGTH_SHORT).show();
-			
+
 			} else if (governor.isAnyPanelHidden()) {
 				// Reappear (un-hide) the hidden panel.
 				governor.reappearPanel();
-			
+
 			} else {
 				// Open a HidePanelDialog.
 				new CloseOrHidePanelDialog(governor, false)
@@ -479,8 +486,6 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		// Exit
 		case R.id.drawer_exit_button:
 			finish();
-			// TODO DEBUG remove - no need to exit like this.
-			System.exit(0);
 			break;
 		}
 
