@@ -86,6 +86,8 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	// Used exclusively for debugging purposes (e.g. Displaying toasts without context)
 	public static Context debugContext;	// TODO remove when no longer needed
 
+	private boolean doNotLoadGovernorThisTimeInOnResume;
+
 
 	/**
 	 * Called when the application gets started.
@@ -167,7 +169,23 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		if (fullscreenMode) {
 			activateFullscreen();
 		}
+
+		// Load the Governor and panels from persistent state if needed.
+		loadGovernorAndPanelsIfNeeded();
+		doNotLoadGovernorThisTimeInOnResume = true;
 	}
+
+	/**
+	 * Loads the Governor and panels from persistent state memory if needed.
+	 */
+	private void loadGovernorAndPanelsIfNeeded() {
+		// Setup logic variables
+		// Load persistent state and create panels from before if needed.
+		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+		governor = Governor.loadAndGetSingleton(this, preferences);
+		panelCount = governor.loadPanels(preferences);
+	}
+
 
 	/**
 	 * Called before placing the activity in a background state, such as
@@ -187,16 +205,12 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		outState.putStringArray("nps_cssSettings", cssSettings);
 		outState.putStringArray("nps_drawerBookButtonText", drawerBookButtonText);
 
-		// --- Removing panels is no longer necessary, because they are being retained through
-		//	   the recreation of the Activity. Leaving just in case.
-		// Remove current panels from view (they still exist, they just won't be attached
-		//  to the FragmentManager and therefore won't be displayed.
-		// They will be readded in in onResume() or they will be recreated and readded
-		//  in onCreate() after a runtime configuration change.
+		// In case it is ever needed, this is the best place to remove panels FragmentManager
+		//  (i.e. remove them from view) before the activity gets destroyed and recreated.
+		//  Just test for isFinishing() to see if it will get recreated.
 		// This is *not* possible to move to onDestroy, because FragmentManager refuses to do
-		//  anything after onSaveInstanceState, because it might cause potential problems when recreating
+		//  anything after onSaveInstanceState, since it might cause potential problems when recreating
 		//  the Activity from the saved state.
-		//governor.removePanels();
 
 		super.onSaveInstanceState(outState);
 	}
@@ -211,11 +225,13 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 
 		super.onResume();
 
-		// Setup logic variables
-		// Load persistent state and create panels from before if needed.
-		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-		governor = Governor.loadAndGetSingleton(this, preferences);
-		panelCount = governor.loadPanels(preferences);
+		// If we have just loaded Governor in onCreate or onActivityResult, do nothing this time.
+		if (doNotLoadGovernorThisTimeInOnResume) {
+			doNotLoadGovernorThisTimeInOnResume = false;
+		} else {
+			// Load the Governor and panels from persistent state if needed.
+			loadGovernorAndPanelsIfNeeded();
+		}
 
 		// If there are no panels, start FileChooser.
 		if (panelCount == 0) {
@@ -238,6 +254,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	@Override
 	protected void onPause() {
 		super.onPause();
+
 		// Save state in case the app gets killed.
 		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 		Editor editor = preferences.edit();
@@ -250,11 +267,11 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// If no panels present, load them from memory, if there were any before.
-		if (panelCount == 0) {
-			SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-			governor.loadPanels(preferences);
-		}
+		Log.d(LOG, "onActivityResult");
+
+		// Load the Governor and panels from persistent state if needed.
+		loadGovernorAndPanelsIfNeeded();
+		doNotLoadGovernorThisTimeInOnResume = true;
 
 		// If we have just returned from the FileChooserActivity.
 		if (requestCode == ACTIVITY_RESULT_FILE_CHOOSER) {

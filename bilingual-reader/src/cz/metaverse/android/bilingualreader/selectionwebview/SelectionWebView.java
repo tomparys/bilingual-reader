@@ -96,7 +96,8 @@ public class SelectionWebView extends WebView {
 	 * Set the holder and position of the panel this WebView belongs to.
 	 */
 	public void setPanelHolderAndPosition(PanelHolder panelHolder, int position) {
-		Log.d(LOG, "setPanelHolderAndPosition");
+		//Log.d(LOG, "setPanelHolderAndPosition");
+
 		this.panelHolder = panelHolder;
 		panelPosition = position;
 	}

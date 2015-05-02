@@ -107,7 +107,7 @@ public class BookPanel extends SplitPanel {
 	@SuppressLint("SetJavaScriptEnabled") // Our opensource application has literally nothing to hide.
 	@Override
 	public void onActivityCreated(Bundle saved) {
-		Log.d(LOG, "BookPanel onActivityCreated");
+		//Log.d(LOG, "BookPanel onActivityCreated");
 		super.onActivityCreated(saved);
 
 		// Our panels are designed to work strictly with our ReaderActivity.
@@ -180,7 +180,7 @@ public class BookPanel extends SplitPanel {
 			loadPage(displayedPage);
 		}
 
-		Log.d(LOG, "BookPanel onActivityCreated finished");
+		//Log.d(LOG, "BookPanel onActivityCreated finished");
 	}
 
 	/**
