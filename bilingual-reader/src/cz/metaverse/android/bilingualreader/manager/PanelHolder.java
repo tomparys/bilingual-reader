@@ -295,6 +295,7 @@ public class PanelHolder {
 	 * @param page  Page to be set
 	 */
 	public void setBookPage(String page) {
+		Log.d(LOG, "setBookPage: " + page);
 
 		if (book != null) {
 			book.goToPage(page);
@@ -321,10 +322,11 @@ public class PanelHolder {
 		// Default - set panel state to *notes*.
 		BookPanelState enumState = BookPanelState.notes;
 
-		// Only if the page is contained in the opened book in this panel,
-		// set enumState to *books*
+		// If the page is contained in the opened book in this panel, set enumState to *books*
 		if (book != null) {
-			if ((pathOfPage.equals(book.getCurrentPageURL())) || (book.getPageIndex(pathOfPage) >= 0)) {
+			// Split the #... part from the URL so we can get a match.
+			String cleanPath = pathOfPage.split("#", 2)[0];
+			if ((cleanPath.equals(book.getCurrentPageURL())) || (book.getPageIndex(cleanPath) >= 0)) {
 				enumState = BookPanelState.books;
 			}
 		}
