@@ -24,14 +24,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?android:attr/selectableItemBackground"
+                android:ellipsize="end"
                 android:gravity="start|center_vertical"
+                android:maxLines="2"
                 android:onClick="onDrawerButtonClicked"
                 android:paddingBottom="8dp"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
                 android:paddingTop="8dp"
-		        android:ellipsize="end"
-		        android:maxLines="2"
                 android:text="@string/Panel_1_empty"
                 android:textSize="18sp" />
 
@@ -62,14 +62,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?android:attr/selectableItemBackground"
+                android:ellipsize="end"
                 android:gravity="start|center_vertical"
+                android:maxLines="2"
                 android:onClick="onDrawerButtonClicked"
                 android:paddingBottom="8dp"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
                 android:paddingTop="8dp"
-		        android:ellipsize="end"
-		        android:maxLines="2"
                 android:text="@string/Panel_2_empty"
                 android:textSize="18sp" />
 
@@ -130,26 +130,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="1dp"
                 android:background="?android:attr/dividerVertical" />
+
+            <!-- Exit button when in landscape -->
+
+            <include layout="@layout/merge_drawer_exit_button_in_scrollview" />
         </LinearLayout>
     </ScrollView>
 
-    <!-- Exit button -->
+    <!-- Exit button when in portrait -->
 
-    <View
-        android:layout_width="wrap_content"
-        android:layout_height="1dp"
-        android:background="?android:attr/dividerVertical" />
-
-    <Button
-        android:id="@+id/drawer_exit_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:gravity="start|center_vertical"
-        android:onClick="onDrawerButtonClicked"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp"
-        android:text="@string/Exit"
-        android:textSize="18sp" />
+    <include layout="@layout/merge_drawer_exit_button_below_scrollview" />
 
 </LinearLayout>
