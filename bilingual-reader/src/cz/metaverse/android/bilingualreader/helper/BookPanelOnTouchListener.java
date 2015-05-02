@@ -96,6 +96,7 @@ public class BookPanelOnTouchListener
 	private PanelHolder panelHolder;
 	private BookPanel bookPanel;
 	private SelectionWebView webView;
+	private int panelPosition;
 
 	/* Pre-calculated dimensions. */
 	protected int screenWidth;
@@ -125,7 +126,7 @@ public class BookPanelOnTouchListener
 
 
 	public BookPanelOnTouchListener(ReaderActivity readerActivity, PanelNavigator navigator,
-			PanelHolder panelHolder, BookPanel bookPanel, SelectionWebView webView) {
+			PanelHolder panelHolder, BookPanel bookPanel, SelectionWebView webView, int position) {
 
 		// Interconnectivity.
 		this.activity = readerActivity;
@@ -133,6 +134,7 @@ public class BookPanelOnTouchListener
 		this.panelHolder = panelHolder;
 		this.bookPanel = bookPanel;
 		this.webView = webView;
+		this.panelPosition = position;
 
 		// Instantiate the gesture detector.
 		gestureDetector = new GestureDetectorCompat(activity, this);
@@ -144,6 +146,13 @@ public class BookPanelOnTouchListener
 		screenHeight = metrics.heightPixels;
 		quarterWidth = (int) (screenWidth * 0.25);
 		quarterHeight = (int) (screenHeight * 0.25);
+	}
+
+	/**
+	 * Update the position of the panel.
+	 */
+	public void updatePanelPosition(int position) {
+		panelPosition = position;
 	}
 
 
@@ -209,7 +218,7 @@ public class BookPanelOnTouchListener
 				// Change relative panel size on the fly.
 				navigator.changePanelsWeight(newPanelsWeight);
 
-				//Log.v(LOG, "[" + bookPanel.getIndex() + "] doubleTapSwipe " + newPanelsWeight);
+				//Log.v(LOG, "[" + panelPosition + "] doubleTapSwipe " + newPanelsWeight);
 				//+ " = (" + event.getRawY() + " - " + contentViewTop + ") / " + (height - contentViewTop));
 			}
 		}
@@ -220,7 +229,7 @@ public class BookPanelOnTouchListener
 		 * Don't forget to mirror any changes made here in the onScroll() method as well, to be safe.
 		 */
 		if(MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_UP) {
-			Log.d(LOG, "[" + bookPanel.getIndex() + "] OnTouchListener --> onTouch ACTION_UP");
+			Log.d(LOG, "[" + panelPosition + "] OnTouchListener --> onTouch ACTION_UP");
 
 			// Only if it's not DoubleTapSwipe, that is handled separately.
 			if (!isDoubleTapSwipe) {
@@ -244,7 +253,7 @@ public class BookPanelOnTouchListener
 	 */
 	@Override
 	public boolean onDown(MotionEvent event) {
-		Log.d(LOG, "[" + bookPanel.getIndex() + "] onDown"); //: " + event.toString());
+		Log.d(LOG, "[" + panelPosition + "] onDown"); //: " + event.toString());
 
 		/*
 		 * Reset all variables from handling of the last touch gesture
@@ -276,7 +285,7 @@ public class BookPanelOnTouchListener
 			webView.resumeScrollSync();
 			webView.setUserIsScrolling(true);
 
-			BookPanel otherBookPanel = activity.navigator.getSisterBookPanel(bookPanel.getIndex());
+			BookPanel otherBookPanel = activity.navigator.getSisterBookPanel(panelPosition);
 			if (otherBookPanel != null) {
 				otherBookPanel.getWebView().resumeScrollSync();
 				otherBookPanel.getWebView().setUserIsScrolling(false);
@@ -292,7 +301,7 @@ public class BookPanelOnTouchListener
 
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-		Log.d(LOG, "[" + bookPanel.getIndex() + "] onFling"); //: " + event1.toString()+event2.toString());
+		Log.d(LOG, "[" + panelPosition + "] onFling"); //: " + event1.toString()+event2.toString());
 
 		// Evaluation of the end of the scroll is handled directly in onTouch for consistent results.
 
@@ -304,11 +313,11 @@ public class BookPanelOnTouchListener
 	 */
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		//Log.d(LOG, "[" + bookPanel.getIndex() + "] onScroll"); //: " + e2.toString());
+		//Log.d(LOG, "[" + panelPosition + "] onScroll"); //: " + e2.toString());
 
 		/* Change from single to a Multi-touch event */
 		if (e2.getPointerCount() > 1 && !scrollIsOrWasMultitouch) {
-			Log.d(LOG, "[" + bookPanel.getIndex() + "] onScroll: Change from single to a Multitouch event");
+			Log.d(LOG, "[" + panelPosition + "] onScroll: Change from single to a Multitouch event");
 
 			// Evaluate if the scroll section that has just ended constitutes some gesture.
 			handleScrollEnd(e2);
@@ -326,7 +335,7 @@ public class BookPanelOnTouchListener
 		/* Change from multi to a Single-touch event */
 		else if (e2.getPointerCount() <= 1 && scrollIsOrWasMultitouch) {
 			// Do nothing.
-			Log.d(LOG, "[" + bookPanel.getIndex() + "] onScroll: Change from multi to a Singletouch event detected - doing nothing.");
+			Log.d(LOG, "[" + panelPosition + "] onScroll: Change from multi to a Singletouch event detected - doing nothing.");
 		}
 
 		// Evaluation of the end of the scroll is handled directly in onTouch for consistent results,
@@ -378,7 +387,7 @@ public class BookPanelOnTouchListener
 
 	@Override
 	public boolean onDoubleTap(MotionEvent event) {
-		Log.d(LOG, "[" + bookPanel.getIndex() + "] onDoubleTap"); //: " + event.toString());
+		Log.d(LOG, "[" + panelPosition + "] onDoubleTap"); //: " + event.toString());
 
 		doubleTapOriginX = event.getX();
 		doubleTapOriginY = event.getY();
@@ -393,7 +402,7 @@ public class BookPanelOnTouchListener
 	 */
 	@Override
 	public boolean onDoubleTapEvent(MotionEvent event) {
-		//Log.v(LOG, "[" + bookPanel.getIndex() + "] onDoubleTapEvent"); //: " + event.toString());
+		//Log.v(LOG, "[" + panelPosition + "] onDoubleTapEvent"); //: " + event.toString());
 
 		// This cannot be moved to onDoubleTap, because another onDown comes after it that wipes it out.
 		if (!isDoubleTapSwipe) {
@@ -447,7 +456,7 @@ public class BookPanelOnTouchListener
 	 */
 	@Override
 	public boolean onSingleTapConfirmed(MotionEvent event) {
-		Log.d(LOG,"[" + bookPanel.getIndex() + "] onSingleTapConfirmed"); //: " + event.toString());
+		Log.d(LOG,"[" + panelPosition + "] onSingleTapConfirmed"); //: " + event.toString());
 
 		if (!webView.inSelectionActionMode()) {
 			activity.switchFullscreen();
@@ -457,18 +466,18 @@ public class BookPanelOnTouchListener
 
 	@Override
 	public boolean onSingleTapUp(MotionEvent event) {
-		Log.d(LOG,"[" + bookPanel.getIndex() + "] onSingleTapUp"); //: " + event.toString());
+		Log.d(LOG,"[" + panelPosition + "] onSingleTapUp"); //: " + event.toString());
 		return true;
 	}
 
 	@Override
 	public void onLongPress(MotionEvent event) {
-		Log.d(LOG, "[" + bookPanel.getIndex() + "] onLongPress"); //: " + event.toString());
+		Log.d(LOG, "[" + panelPosition + "] onLongPress"); //: " + event.toString());
 	}
 
 	@Override
 	public void onShowPress(MotionEvent event) {
-		Log.d(LOG, "[" + bookPanel.getIndex() + "] onShowPress"); //: " + event.toString());
+		Log.d(LOG, "[" + panelPosition + "] onShowPress"); //: " + event.toString());
 	}
 
 }

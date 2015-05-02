@@ -46,7 +46,7 @@ public class SelectionWebView extends WebView {
 
 	/* Scroll Sync */
 	private ScrollSyncMethod scrollSyncMethod = ScrollSyncMethod.percentual_withOffset;
-	private Integer panelPos;
+	private Integer panelPosition;
 	private boolean userIsScrolling = false;
 	// When user is still interacting with this WebView, but the sync scrolling is temporarily paused.
 	private boolean userScrollingPaused = false;
@@ -98,14 +98,14 @@ public class SelectionWebView extends WebView {
 	public void setPanelHolderAndPosition(PanelHolder panelHolder, int position) {
 		Log.d(LOG, "setPanelHolderAndPosition");
 		this.panelHolder = panelHolder;
-		panelPos = position;
+		panelPosition = position;
 	}
 
 	/**
 	 * Update the position of the panel this WebView belongs to.
 	 */
 	public void updatePanelPosition(int pos) {
-		panelPos = pos;
+		panelPosition = pos;
 	}
 
 	/**
@@ -264,7 +264,7 @@ public class SelectionWebView extends WebView {
 					case percentual_withOffset:
 						// Because the position equation isn't symmetrical,
 						// we have to compute them differently for each panel:
-						if (panelPos == 0) {
+						if (panelPosition == 0) {
 							scrollValue = (getScrollY() - scrollSyncOffset)
 									* sisterWV.computeMaxScrollY() / computedMaxScrollY;
 						} else {
@@ -354,7 +354,7 @@ public class SelectionWebView extends WebView {
 			case percentual_withOffset:
 				// Because the position equation isn't symmetrical,
 				// we have to compute offset differently in each panel:
-				if (panelPos == 0) {
+				if (panelPosition == 0) {
 					scrollSyncOffset += getScrollY() - scrollYwhenPaused;
 				} else {
 					// If maxScrollY is positive.
@@ -447,8 +447,8 @@ public class SelectionWebView extends WebView {
 		}
 		else {
 			// If ScrollSync is active and we want to activate user scrolling:
-			BookPanel thisPanel = navigator.getBookPanel(panelPos);
-			BookPanel sisterPanel = navigator.getSisterBookPanel(panelPos);
+			BookPanel thisPanel = navigator.getBookPanel(panelPosition);
+			BookPanel sisterPanel = navigator.getSisterBookPanel(panelPosition);
 
 			if (thisPanel != null && thisPanel.enumState == PanelViewState.books
 					&& sisterPanel != null && sisterPanel.enumState == PanelViewState.books) {

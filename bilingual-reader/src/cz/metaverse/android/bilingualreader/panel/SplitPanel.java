@@ -50,7 +50,7 @@ public abstract class SplitPanel extends Fragment {
 
 	protected PanelNavigator navigator;
 	protected PanelHolder panelHolder;
-	protected int index;
+	protected int panelPosition;
 
 	private RelativeLayout splitPanelLayout;
 	protected RelativeLayout contentBoxLayout;
@@ -124,11 +124,11 @@ public abstract class SplitPanel extends Fragment {
 	}
 
 	public int getIndex() {
-		return index;
+		return panelPosition;
 	}
 
 	public void updatePosition(int value) {
-		index = value;
+		panelPosition = value;
 	}
 
 	public void errorMessage(String message) {
@@ -137,11 +137,11 @@ public abstract class SplitPanel extends Fragment {
 
 	// Saves the weight of this SplitPanel during saveState
 	public void saveState(Editor editor) {
-		editor.putFloat("weight" + index, weight);
+		editor.putFloat("weight" + panelPosition, weight);
 	}
 
 	// Restores the weight of this SplitPanel during saveState
 	public void loadState(SharedPreferences preferences) {
-		changeWeight(preferences.getFloat("weight" + index, 0.5f));
+		changeWeight(preferences.getFloat("weight" + panelPosition, 0.5f));
 	}
 }

@@ -64,8 +64,9 @@ public class BookPanel extends SplitPanel {
 	// Position within the page loaded from before
 	protected Integer loadPositionX, loadPositionY;
 
-	// Our customized WebView
+	// Our customized WebView and its onTouchListener
 	protected SelectionWebView webView;
+	private BookPanelOnTouchListener onTouchListener;
 
 
 	/**
@@ -101,14 +102,11 @@ public class BookPanel extends SplitPanel {
 
 		// Find our customized web view that will server as our viewport
 		webView = (SelectionWebView) getView().findViewById(R.id.Viewport);
-		webView.setPanelHolderAndPosition(panelHolder, index);
+		webView.setPanelHolderAndPosition(panelHolder, panelPosition);
 		// Enable JavaScript for cool things to happen!
 		webView.getSettings().setJavaScriptEnabled(true);
 
-		// Set our custom complex OnTouchListener class that will handle
-		// the multitude of supported touch and multi-touch gestures for our BookPanel.
-		BookPanelOnTouchListener onTouchListener =
-				new BookPanelOnTouchListener(activity, navigator, panelHolder, this, webView);
+		onTouchListener = new BookPanelOnTouchListener(activity, navigator, panelHolder, this, webView, panelPosition);
 		webView.setOnTouchListener(onTouchListener);
 
 		// Set long-click listener:
@@ -183,15 +181,16 @@ public class BookPanel extends SplitPanel {
 	}
 
 	/**
-	 * Set the new index for the panel.
+	 * Update the position of the panel.
 	 */
 	@Override
-	public void updatePosition(int pos) {
-		super.updatePosition(pos);
+	public void updatePosition(int position) {
+		super.updatePosition(position);
 
 		// Pass the new index onto classes that work with it.
 		if (webView != null) {
-			webView.updatePanelPosition(pos);
+			webView.updatePanelPosition(position);
+			onTouchListener.updatePanelPosition(position);
 		}
 	}
 
@@ -250,19 +249,19 @@ public class BookPanel extends SplitPanel {
 	public void saveState(Editor editor) {
 		super.saveState(editor);
 		if (enumState != null) {
-			editor.putString("state"+index, enumState.name());
+			editor.putString("state"+panelPosition, enumState.name());
 		}
 		if (displayedPage != null) {
-			editor.putString("displayedPage"+index, displayedPage);
+			editor.putString("displayedPage"+panelPosition, displayedPage);
 		}
 		if (enumState == PanelViewState.metadata) {
-			editor.putString("displayedData"+index, displayedData);
+			editor.putString("displayedData"+panelPosition, displayedData);
 		}
 
 		// Save the position within the page.
 		if (webView != null) {
-			editor.putInt("positionX"+index, webView.getScrollX());
-			editor.putInt("positionY"+index, webView.getScrollY());
+			editor.putInt("positionX"+panelPosition, webView.getScrollX());
+			editor.putInt("positionY"+panelPosition, webView.getScrollY());
 		}
 	}
 
@@ -274,7 +273,7 @@ public class BookPanel extends SplitPanel {
 	{
 		super.loadState(preferences);
 		try {
-			enumState = PanelViewState.valueOf(preferences.getString("state"+index, PanelViewState.books.name()));
+			enumState = PanelViewState.valueOf(preferences.getString("state"+panelPosition, PanelViewState.books.name()));
 		} catch (IllegalArgumentException e) {
 			enumState = PanelViewState.books;
 		}
@@ -285,17 +284,17 @@ public class BookPanel extends SplitPanel {
 			navigator.notesDisplayedLastIn = panelHolder;
 		}
 
-		String page = preferences.getString("displayedPage"+index, "");
+		String page = preferences.getString("displayedPage"+panelPosition, "");
 
 		if (enumState == PanelViewState.metadata) {
-			loadData(preferences.getString("displayedData"+index, ""), page);
+			loadData(preferences.getString("displayedData"+panelPosition, ""), page);
 		} else {
 			loadPage(page);
 		}
 
 		// Load the position within the page from before to be used when webView is instantiated.
-		loadPositionX = preferences.getInt("positionX"+index, 0);
-		loadPositionY = preferences.getInt("positionY"+index, 0);
+		loadPositionX = preferences.getInt("positionX"+panelPosition, 0);
+		loadPositionY = preferences.getInt("positionY"+panelPosition, 0);
 	}
 
 }

@@ -27,7 +27,7 @@ public class PanelHolder {
 	private SplitPanel panel;
 
 	// Position of the panel (0 = up, 1 = down)
-	private int pos;
+	private int position;
 
 	private EpubManipulator book;
 
@@ -47,7 +47,7 @@ public class PanelHolder {
 	 * @param navigator  The Governor of our application.
 	 */
 	public PanelHolder(int position, ReaderActivity activity, PanelNavigator navigator) {
-		this.pos = position;
+		this.position = position;
 		this.activity = activity;
 		this.navigator = navigator;
 	}
@@ -63,7 +63,7 @@ public class PanelHolder {
 	 * Inform this panelHolder that his position has changed.
 	 */
 	public void updatePosition(int position) {
-		pos = position;
+		this.position = position;
 
 		if (book != null) {
 			book.changeDirName(position + "");
@@ -129,7 +129,7 @@ public class PanelHolder {
 				// setBookPage(books[index].getCurrentPageURL(), index);*/
 			} else {
 				// Make this panel into a BookView with the opened book instead of closing it.
-				BookPanel v = new BookPanel(navigator, this, pos);
+				BookPanel v = new BookPanel(navigator, this, position);
 				changePanel(v);
 				v.loadPage(book.getCurrentPageURL());
 			}
@@ -147,7 +147,7 @@ public class PanelHolder {
 			activity.removePanel(panel);
 
 			// Remove the displayed name of the book in the navigation drawer of our main activity.
-			activity.setBookNameInDrawer(pos, null);
+			activity.setBookNameInDrawer(position, null);
 
 			// Dereference the panel and its book before we switch panels.
 			book = null;
@@ -155,7 +155,7 @@ public class PanelHolder {
 
 			// If this is the 1st panel (pos=0), and the sister panel holder has an open panel,
 			// switch panel holder instances so that it is now first.
-			if (pos == 0 && sisterPanelHolder.hasOpenPanel()) {
+			if (position == 0 && sisterPanelHolder.hasOpenPanel()) {
 				navigator.switchPanels();
 			}
 		}
@@ -188,12 +188,12 @@ public class PanelHolder {
 			activity.removePanelWithoutClosing(p);
 		}
 
-		p.updatePosition(pos);
+		p.updatePosition(position);
 		panel = p;
 		activity.addPanel(p);
 
 		// Detach and re-attach the panel that is after the newly changed one.
-		if (pos == 0 && sisterPanelHolder.hasOpenPanel()) {
+		if (position == 0 && sisterPanelHolder.hasOpenPanel()) {
 			sisterPanelHolder.reAttachPanel();
 		}
 	}
@@ -286,8 +286,8 @@ public class PanelHolder {
 				book.destroy();
 			}
 
-			book = new EpubManipulator(path, "" + pos, activity);
-			changePanel(new BookPanel(navigator, this, pos));
+			book = new EpubManipulator(path, "" + position, activity);
+			changePanel(new BookPanel(navigator, this, position));
 			setBookPage(book.getSpineElementPath(0));
 
 			// If we opened a new book, we automatically cancelled the reading of a bilingual book,
@@ -300,7 +300,7 @@ public class PanelHolder {
 			editor.commit();
 
 			// Display the name of the book in the navigation drawer of our main activity.
-			activity.setBookNameInDrawer(pos, book.getTitle());
+			activity.setBookNameInDrawer(position, book.getTitle());
 
 			return true;
 		} catch (Exception e) {
@@ -354,7 +354,7 @@ public class PanelHolder {
 
 		// If this panel isn't yet open or isn't instance of BookView, open it and make it BookView.
 		if (panel == null || !(panel instanceof BookPanel)) {
-			changePanel(new BookPanel(navigator, this, pos));
+			changePanel(new BookPanel(navigator, this, position));
 		}
 
 		// Set state and load appropriate page.
@@ -444,7 +444,7 @@ public class PanelHolder {
 			BookPanel bookPanel = getBookPanel();
 			if (bookPanel == null) {
 				// Open a new BookPanel to display metadata
-				bookPanel = new BookPanel(navigator, this, pos);
+				bookPanel = new BookPanel(navigator, this, position);
 				changePanel(bookPanel);
 			}
 
@@ -492,7 +492,7 @@ public class PanelHolder {
 	public boolean extractAudio() {
 		if (book.getAudio().length > 0) {
 			extractAudioFromThisPanel = true;
-			AudioPanel a = new AudioPanel(navigator, this, pos);
+			AudioPanel a = new AudioPanel(navigator, this, position);
 			a.setAudioList(book.getAudio());
 			sisterPanelHolder.changePanel(a);
 			return true;
@@ -523,9 +523,9 @@ public class PanelHolder {
 
 		// Only load the panel if it isn't already up and ready.
 		if (panel == null) {
-			panel = newPanelByClassName(preferences.getString(getS(R.string.ViewType) + pos, ""));
+			panel = newPanelByClassName(preferences.getString(getS(R.string.ViewType) + position, ""));
 			if (panel != null) {
-				panel.updatePosition(pos);
+				panel.updatePosition(position);
 				if (panel instanceof AudioPanel) {
 					((AudioPanel) panel).setAudioList(
 							sisterPanelHolder.book.getAudio());
@@ -549,30 +549,30 @@ public class PanelHolder {
 		// Save the book
 		if (book != null) {
 			// Save data about the book and position in it
-			editor.putInt(getS(R.string.CurrentPageBook) + pos, book.getCurrentSpineElementIndex());
-			editor.putInt(getS(R.string.LanguageBook) + pos, book.getCurrentLanguage());
-			editor.putString(getS(R.string.nameEpub) + pos, book.getDecompressedFolder());
-			editor.putString(getS(R.string.pathBook) + pos, book.getFileName());
-			editor.putBoolean(getS(R.string.exAudio) + pos, extractAudioFromThisPanel);
+			editor.putInt(getS(R.string.CurrentPageBook) + position, book.getCurrentSpineElementIndex());
+			editor.putInt(getS(R.string.LanguageBook) + position, book.getCurrentLanguage());
+			editor.putString(getS(R.string.nameEpub) + position, book.getDecompressedFolder());
+			editor.putString(getS(R.string.pathBook) + position, book.getFileName());
+			editor.putBoolean(getS(R.string.exAudio) + position, extractAudioFromThisPanel);
 
 			// Close the book
 			try {
 				book.closeFileInputStream();
 			} catch (IOException e) {
-				Log.e(getS(R.string.error_CannotCloseStream), getS(R.string.Book_Stream) + (pos + 1));
+				Log.e(getS(R.string.error_CannotCloseStream), getS(R.string.Book_Stream) + (position + 1));
 				e.printStackTrace();
 			}
 		} else {
 			// Put null values for this panel if no book is open for it
-			editor.putInt(getS(R.string.CurrentPageBook) + pos, 0);
-			editor.putInt(getS(R.string.LanguageBook) + pos, 0);
-			editor.putString(getS(R.string.nameEpub) + pos, null);
-			editor.putString(getS(R.string.pathBook) + pos, null);
+			editor.putInt(getS(R.string.CurrentPageBook) + position, 0);
+			editor.putInt(getS(R.string.LanguageBook) + position, 0);
+			editor.putString(getS(R.string.nameEpub) + position, null);
+			editor.putString(getS(R.string.pathBook) + position, null);
 		}
 
 		// Save views
 		if (panel != null) {
-			editor.putString(getS(R.string.ViewType) + pos, panel.getClass().getName());
+			editor.putString(getS(R.string.ViewType) + position, panel.getClass().getName());
 
 			panel.saveState(editor);
 
@@ -581,7 +581,7 @@ public class PanelHolder {
 			//activity.removePanelWithoutClosing(splitViews[i]);
 		}
 		else {
-			editor.putString(getS(R.string.ViewType) + pos, "");
+			editor.putString(getS(R.string.ViewType) + position, "");
 		}
 	}
 
@@ -594,11 +594,11 @@ public class PanelHolder {
 		boolean ok = true;
 		// Load the panel and its book
 		// Data about the book in the panel
-		int current = preferences.getInt(getS(R.string.CurrentPageBook) + pos, 0);
-		int lang = preferences.getInt(getS(R.string.LanguageBook) + pos, 0);
-		String name = preferences.getString(getS(R.string.nameEpub) + pos, null);
-		String path = preferences.getString(getS(R.string.pathBook) + pos, null);
-		extractAudioFromThisPanel = preferences.getBoolean(getS(R.string.exAudio) + pos, false);
+		int current = preferences.getInt(getS(R.string.CurrentPageBook) + position, 0);
+		int lang = preferences.getInt(getS(R.string.LanguageBook) + position, 0);
+		String name = preferences.getString(getS(R.string.nameEpub) + position, null);
+		String path = preferences.getString(getS(R.string.pathBook) + position, null);
+		extractAudioFromThisPanel = preferences.getBoolean(getS(R.string.exAudio) + position, false);
 
 		// Try loading the already extracted book
 		if (path != null) {
@@ -609,7 +609,7 @@ public class PanelHolder {
 
 				// Exception: Retry with re-extracting the book
 				try {
-					book = new EpubManipulator(path, pos + "", activity);
+					book = new EpubManipulator(path, position + "", activity);
 					book.goToPage(current);
 				} catch (Exception e2) {
 					ok = false;
@@ -619,7 +619,7 @@ public class PanelHolder {
 			} catch (Error e) {
 				// Exception: Retry with re-extracting the book
 				try {
-					book = new EpubManipulator(path, pos + "", activity);
+					book = new EpubManipulator(path, position + "", activity);
 					book.goToPage(current);
 				} catch (Exception e2) {
 					ok = false;
@@ -629,7 +629,7 @@ public class PanelHolder {
 			}
 
 			if (book != null) {
-				activity.setBookNameInDrawer(pos, book.getTitle());
+				activity.setBookNameInDrawer(position, book.getTitle());
 			}
 		} else
 			book = null;
@@ -646,9 +646,9 @@ public class PanelHolder {
 	private SplitPanel newPanelByClassName(String className) {
 		// TODO: update if a new SplitPanel's inherited class is created
 		if (className.equals(BookPanel.class.getName()))
-			return new BookPanel(navigator, this, pos);
+			return new BookPanel(navigator, this, position);
 		if (className.equals(AudioPanel.class.getName()))
-			return new AudioPanel(navigator, this, pos);
+			return new AudioPanel(navigator, this, position);
 		return null;
 	}
 

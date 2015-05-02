@@ -320,9 +320,9 @@ public class AudioPanel extends SplitPanel {
 		super.saveState(editor);
 
 		if (player != null) {
-			editor.putBoolean(index + "isPlaying", player.isPlaying());
-			editor.putInt(index + "current", player.getCurrentPosition());
-			editor.putString(index + "actualSong", actuallyPlaying);
+			editor.putBoolean(panelPosition + "isPlaying", player.isPlaying());
+			editor.putInt(panelPosition + "current", player.getCurrentPosition());
+			editor.putString(panelPosition + "actualSong", actuallyPlaying);
 			stop();
 		}
 	}
@@ -330,7 +330,7 @@ public class AudioPanel extends SplitPanel {
 	@Override
 	public void loadState(SharedPreferences preferences) {
 		super.loadState(preferences);
-		actuallyPlaying = preferences.getString(index + "actualSong", null);
+		actuallyPlaying = preferences.getString(panelPosition + "actualSong", null);
 		setAudioList(audio);
 
 		if (actuallyPlaying != null) {
@@ -339,9 +339,9 @@ public class AudioPanel extends SplitPanel {
 			try {
 				player.setDataSource(actuallyPlaying);
 				player.prepare();
-				if (preferences.getBoolean(index + "isPlaying", false))
+				if (preferences.getBoolean(panelPosition + "isPlaying", false))
 					player.start();
-				player.seekTo(preferences.getInt(index + "current", 0));
+				player.seekTo(preferences.getInt(panelPosition + "current", 0));
 			} catch (Exception e) {
 				// TODO error message
 			}
