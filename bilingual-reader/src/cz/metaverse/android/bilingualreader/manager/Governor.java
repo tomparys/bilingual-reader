@@ -76,15 +76,18 @@ public class Governor {
 	/**
 	 * Singleton-pattern getter static method.
 	 * @param activity	The ReaderActivity instance that's asking for an instance.
+	 * @param preferences  SharedPreferences instance from which to load data
+	 * @param creatingActivity  Whether or not the activity is just being created.
 	 */
-	public static Governor loadAndGetSingleton(ReaderActivity activity, SharedPreferences preferences) {
+	public static Governor loadAndGetSingleton(ReaderActivity activity, SharedPreferences preferences,
+			boolean creatingActivity) {
 		if (governorInstance == null) {
 			governorInstance = new Governor(activity);
 		}
 
 		governorInstance.setActivity(activity);
 
-		governorInstance.loadState(preferences);
+		governorInstance.loadState(preferences, creatingActivity);
 
 		return governorInstance;
 	}
@@ -397,10 +400,11 @@ public class Governor {
 
 	/**
 	 * Load the state of the app after it is reopened.
-	 * @param preferences	SharedPreferences instance
+	 * @param preferences  SharedPreferences instance
+	 * @param creatingActivity  Whether or not the activity is just being created.
 	 * @return				successfulness
 	 */
-	public boolean loadState(SharedPreferences preferences) {
+	public boolean loadState(SharedPreferences preferences, boolean creatingActivity) {
 		chapterSync = preferences.getBoolean(getS(R.string.sync), false);
 		readingBilingualEbook = preferences.getBoolean(getS(R.string.readingBilingualEbookBool), false);
 		boolean ok = true;
@@ -411,7 +415,7 @@ public class Governor {
 		}
 
 		for (PanelHolder ph : panelHolder) {
-			if (!ph.loadState(preferences)) {
+			if (!ph.loadState(preferences, creatingActivity)) {
 				ok = false;
 			}
 		}

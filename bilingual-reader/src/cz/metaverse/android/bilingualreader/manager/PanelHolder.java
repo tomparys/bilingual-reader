@@ -594,10 +594,11 @@ public class PanelHolder {
 
 	/**
 	 * Load the state of the app after it is reopened.
-	 * @param preferences	SharedPreferences instance
-	 * @return				successfulness
+	 * @param preferences  SharedPreferences instance
+	 * @param creatingActivity  Whether or not the activity is just being created.
+	 * @return  successfulness
 	 */
-	public boolean loadState(SharedPreferences preferences) {
+	public boolean loadState(SharedPreferences preferences, boolean creatingActivity) {
 		boolean ok = true;
 		// Load the panel and its book
 		// Data about the book in the panel
@@ -642,6 +643,12 @@ public class PanelHolder {
 				}
 			} else {
 				book = null;
+			}
+		} else {
+			// If the book instance still exists, but we're recreating the activity,
+			// render the book names into the drawer again.
+			if (creatingActivity && book != null) {
+				activity.setBookNameInDrawer(position, book.getTitle());
 			}
 		}
 

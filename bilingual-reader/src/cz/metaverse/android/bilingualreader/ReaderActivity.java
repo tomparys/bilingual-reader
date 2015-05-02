@@ -172,18 +172,19 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		}
 
 		// Load the Governor and panels from persistent state if needed.
-		loadGovernorAndPanelsIfNeeded();
+		loadGovernorAndPanelsIfNeeded(true);
 		doNotLoadGovernorThisTimeInOnResume = true;
 	}
 
 	/**
 	 * Loads the Governor and panels from persistent state memory if needed.
+	 * @param creatingActivity  Whether or not the acitivity is just being created.
 	 */
-	private void loadGovernorAndPanelsIfNeeded() {
+	private void loadGovernorAndPanelsIfNeeded(boolean creatingActivity) {
 		// Setup logic variables
 		// Load persistent state and create panels from before if needed.
 		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-		governor = Governor.loadAndGetSingleton(this, preferences);
+		governor = Governor.loadAndGetSingleton(this, preferences, creatingActivity);
 		panelCount = governor.loadPanels(preferences);
 	}
 
@@ -241,7 +242,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			doNotLoadGovernorThisTimeInOnResume = false;
 		} else {
 			// Load the Governor and panels from persistent state if needed.
-			loadGovernorAndPanelsIfNeeded();
+			loadGovernorAndPanelsIfNeeded(false);
 		}
 
 		// If there are no panels, start FileChooser.
@@ -278,7 +279,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		Log.d(LOG, "onActivityResult");
 
 		// Load the Governor and panels from persistent state if needed.
-		loadGovernorAndPanelsIfNeeded();
+		loadGovernorAndPanelsIfNeeded(false);
 		doNotLoadGovernorThisTimeInOnResume = true;
 
 		// If we have just returned from the FileChooserActivity.
