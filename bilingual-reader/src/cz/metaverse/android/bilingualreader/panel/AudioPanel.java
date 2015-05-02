@@ -49,8 +49,8 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
-import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 import cz.metaverse.android.bilingualreader.manager.Governor;
+import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 
 /**
  *
@@ -324,12 +324,6 @@ public class AudioPanel extends SplitPanel {
 			player = null;
 		}
 		progressHandler.removeCallbacks(update);
-	}
-
-	@Override
-	protected void closeView() {
-		stop();
-		super.closeView();
 	}
 
 	@Override

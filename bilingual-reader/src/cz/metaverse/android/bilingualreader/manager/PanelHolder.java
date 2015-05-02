@@ -140,8 +140,9 @@ public class PanelHolder {
 				changePanel(v);
 				v.loadPage(book.getCurrentPageURL());
 			}
-		} else // all other cases
-		{
+		}
+		// all other cases
+		else {
 			// Remove the epub ebook
 			if (book != null)
 				try {
@@ -159,6 +160,9 @@ public class PanelHolder {
 			// Dereference the panel and its book before we switch panels.
 			book = null;
 			panel = null;
+
+			// If one of the panels gets closed, user no longer reads bilingual ebook in a bilingual mode.
+			governor.setReadingBilingualEbook(false);
 
 			// If this is the 1st panel (pos=0), and the sister panel holder has an open panel,
 			// switch panel holder instances so that it is now first.

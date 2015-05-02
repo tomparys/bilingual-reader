@@ -11,11 +11,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".BookPanel" >
 
-    <RelativeLayout
-        android:id="@+id/ViewportLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-
         <cz.metaverse.android.bilingualreader.sync.ParagraphPositionsWebView
             android:id="@+id/ParagraphPositionsViewport"
             android:layout_width="match_parent"
@@ -36,17 +31,5 @@
             android:layout_alignParentTop="true"
             android:padding="0dp"
             android:visibility="visible" />
-
-        <Button
-            android:id="@+id/CloseButton"
-            android:layout_width="@dimen/close_button_dimen"
-            android:layout_height="@dimen/close_button_dimen"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/button_close"
-            android:padding="@dimen/all_margin"
-            android:textColorHint="@color/dark_grey"
-            android:textColorLink="@color/dark_grey" />
-    </RelativeLayout>
 
 </RelativeLayout>

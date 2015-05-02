@@ -33,13 +33,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.R;
-import cz.metaverse.android.bilingualreader.manager.PanelHolder;
+import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.manager.Governor;
+import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 
 /**
  *
@@ -57,7 +56,6 @@ public abstract class SplitPanel extends Fragment {
 
 	private RelativeLayout splitPanelLayout;
 	protected RelativeLayout contentBoxLayout;
-	protected Button closeButton;
 	protected float weight = 0.5f; // weight of the generalLayout
 	protected boolean created; // tells whether the fragment has been created
 
@@ -80,7 +78,7 @@ public abstract class SplitPanel extends Fragment {
 	 * @return true if everything appears to be sound
 	 */
 	public boolean selfCheck() {
-		boolean ok = closeButton != null;
+		boolean ok = governor != null && panelHolder != null;
 
 		Log.d(LOG, "SplitPanel selfCheck - " + ok);
 		return ok;
@@ -105,23 +103,8 @@ public abstract class SplitPanel extends Fragment {
 
 		splitPanelLayout = (RelativeLayout) getView().findViewById(R.id.GeneralLayout);
 		contentBoxLayout = (RelativeLayout) getView().findViewById(R.id.Content);
-		closeButton = (Button) getView().findViewById(R.id.CloseButton);
 
 		changeWeight(weight);
-
-		// Set listener for the Close button
-		closeButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				closeView();
-			}
-		});
-	}
-
-	protected void closeView() {
-		panelHolder.closePanel();
-		// If one of the panels gets closed, user no longer reads bilingual ebook in a bilingual mode.
-		governor.setReadingBilingualEbook(false);
 	}
 
 	// Change the weight of the general layout
@@ -138,7 +121,7 @@ public abstract class SplitPanel extends Fragment {
 		return weight;
 	}
 
-	public int getIndex() {
+	public int getPosition() {
 		return panelPosition;
 	}
 
