@@ -74,7 +74,11 @@ public class PanelHolder {
 		this.position = position;
 
 		if (book != null) {
-			book.changeDirName(position + "");
+			try {
+				book.changeDirName(position + "");
+			} catch (Exception e) {
+				Log.e(LOG, "Exception in changeDirName while reopening a book: " + e.toString());
+			}
 		}
 
 		if (panel != null) {
@@ -299,6 +303,7 @@ public class PanelHolder {
 
 			return true;
 		} catch (Exception e) {
+			Log.e(LOG, "Exception while opening a book (path: " + path + "): " + e.toString());
 			return false;
 		}
 	}
@@ -460,7 +465,7 @@ public class PanelHolder {
 	 */
 	public boolean displayToC() {
 		if (book != null) {
-			Log.d(LOG, "Displaying ToC at " + book.tableOfContents());
+			//Log.d(LOG, "[" + position + "] Displaying ToC at " + book.tableOfContents());
 
 			setBookPage(book.tableOfContents());
 			return true;
@@ -555,7 +560,7 @@ public class PanelHolder {
 			editor.putString(getS(R.string.pathBook) + position, book.getFileName());
 			editor.putBoolean(getS(R.string.exAudio) + position, extractAudioFromThisPanel);
 
-			// Close the book
+			// Free unnecessary resources in the book instance.
 			try {
 				book.closeFileInputStream();
 			} catch (IOException e) {

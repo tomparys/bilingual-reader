@@ -57,13 +57,13 @@ import cz.metaverse.android.bilingualreader.R;
 
 /**
  *
- * EpubManipulator is a class that handless epub files themselves.
+ * Epub is a class that handless epub files themselves.
  * 	It can read the contents of epub ebooks, read individual pages, write into them, and much more.
  *
  */
 public class Epub {
 
-	private static final String LOG = "EpubManipulator";
+	private static final String LOG = "Epub";
 
 	private Book book;
 	private String title;
@@ -188,6 +188,7 @@ public class Epub {
 		goToPage(spineIndex);
 
 		metadata = generateMetadata();
+		createTableOfContentsFile();
 	}
 
 	/**
@@ -433,10 +434,10 @@ public class Epub {
 	}
 
 	/**
-	 * Change the decompressedFolder name
+	 * Move the book to a different directory.
 	 * @param newName	new name
 	 */
-	public void changeDirName(String newName) {
+	public void changeDirName(String newName) throws Exception {
 		Log.d(LOG, "EpubManipulator changeDirName");
 
 		// Rename the directory
@@ -450,7 +451,15 @@ public class Epub {
 			spineElementPaths[i] = spineElementPaths[i].replace("file://"
 					+ tempLocation + decompressedFolder, "file://" + tempLocation
 					+ newName);
+
 		decompressedFolder = newName;
+
+		// Recreate ToC because its links are now pointing to the old file locations.
+		if (book == null) {
+			this.fileInputStream = new FileInputStream(fileName);
+			this.book = (new EpubReader()).readEpub(fileInputStream);
+		}
+		createTableOfContentsFile();
 
 		// Reopen the current page
 		try {
@@ -683,6 +692,7 @@ public class Epub {
 	 * @return the path of the Toc.html file
 	 */
 	public String tableOfContents() {
+		Log.d(LOG, "tableOfContents [" + decompressedFolder + "] ");
 		return "File://" + tempLocation + decompressedFolder + "/Toc.html";
 	}
 
