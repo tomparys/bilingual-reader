@@ -105,6 +105,10 @@ public class PanelHolder {
 		return panel != null;
 	}
 
+	public void hidePanel() {
+		// TODO
+	}
+
 	/**
 	 * Close one of the panels.
 	 */

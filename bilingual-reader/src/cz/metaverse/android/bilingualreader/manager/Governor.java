@@ -166,6 +166,28 @@ public class Governor {
 	// ============================================================================================
 
 	/**
+	 * @return True if only one panel is currently opened.
+	 */
+	public boolean isOnlyOnePanelOpen() {
+		return !panelHolder[0].hasOpenPanel() || !panelHolder[1].hasOpenPanel();
+	}
+
+	/**
+	 * Is one of the panels currently hidden?
+	 */
+	public boolean isAnyPanelHidden() {
+		// TODO
+		return false;
+	}
+
+	/**
+	 * Reappear the currently hidden panel.
+	 */
+	public void reappearPanel() {
+		// TODO
+	}
+
+	/**
 	 * Closes the last opened Metadata/Table of Contents/other non-book content panel view.
 	 * @return
 	 */

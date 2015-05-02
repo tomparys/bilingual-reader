@@ -46,6 +46,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.dialog.ChangeCSSDialog;
+import cz.metaverse.android.bilingualreader.dialog.CloseOrHidePanelDialog;
 import cz.metaverse.android.bilingualreader.dialog.LanguageChooserDialog;
 import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
 import cz.metaverse.android.bilingualreader.dialog.SettingsDialog;
@@ -440,6 +441,29 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			Intent goToChooser2 = new Intent(ReaderActivity.this, FileChooserActivity.class);
 			goToChooser2.putExtra(getString(R.string.second), getString(R.string.time));
 			startActivityForResult(goToChooser2, ACTIVITY_RESULT_FILE_CHOOSER);
+			break;
+
+		// Close panel
+		case R.id.drawer_close_panel_button:
+			new CloseOrHidePanelDialog(governor, true)
+					.show(getFragmentManager(), "close_or_hide_panel_dialog");
+			break;
+
+		// Hide panel
+		case R.id.drawer_hide_panel_button:
+			if (governor.isOnlyOnePanelOpen()) {
+				// Can't hide the only open panel.
+				Toast.makeText(this, R.string.Cannot_hide_the_only_open_panel, Toast.LENGTH_SHORT).show();
+
+			} else if (governor.isAnyPanelHidden()) {
+				// Reappear (un-hide) the hidden panel.
+				governor.reappearPanel();
+
+			} else {
+				// Open a HidePanelDialog.
+				new CloseOrHidePanelDialog(governor, false)
+						.show(getFragmentManager(), "close_or_hide_panel_dialog");
+			}
 			break;
 
 		// SRS Database
