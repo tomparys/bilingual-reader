@@ -252,11 +252,12 @@ public class Governor {
 	 * @return Whether there is audio to be extracted in either of the opened books.
 	 */
 	public boolean canExtractAudio() {
-		for (PanelHolder ph : panelHolder) {
+		/*for (PanelHolder ph : panelHolder) {
 			if (ph.canExtractAudio()) {
 				return true;
 			}
-		}
+		}*/
+		// Functionality has been disabled.
 		return false;
 	}
 
