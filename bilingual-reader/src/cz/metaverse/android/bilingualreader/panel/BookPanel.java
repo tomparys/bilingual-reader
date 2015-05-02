@@ -41,8 +41,8 @@ import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.helper.BookPanelOnTouchListener;
 import cz.metaverse.android.bilingualreader.helper.BookPanelState;
-import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 import cz.metaverse.android.bilingualreader.manager.Governor;
+import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 
 /**
@@ -286,8 +286,9 @@ public class BookPanel extends SplitPanel {
 	 * Load state and content of the page.
 	 */
 	@Override
-	public void loadState(SharedPreferences preferences)
-	{
+	public void loadState(SharedPreferences preferences) {
+		Log.d(LOG, "BookPanel.loadState"); //loadPosX: " + loadPositionX + ", loadPosY: " + loadPositionY
+
 		super.loadState(preferences);
 		try {
 			enumState = BookPanelState.valueOf(preferences.getString("state"+panelPosition, BookPanelState.books.name()));

@@ -356,6 +356,7 @@ public class PanelHolder {
 
 		// If this panel isn't yet open or isn't instance of BookView, open it and make it BookView.
 		if (panel == null || !(panel instanceof BookPanel)) {
+			Log.d(LOG, "PanelHolder.loadPageIntoView -> changePanel(new BookPanel(..))");
 			changePanel(new BookPanel(governor, this, position));
 		}
 

@@ -62,7 +62,7 @@ public class Governor {
 	/* Sync */
 	private boolean scrollSync = true;
 	private boolean chapterSync;
-	private boolean readingBilingualEbook = false;
+	private boolean readingBilingualEbook;
 
 	/* For proper operation of the Back system button. */
 	public PanelHolder notesDisplayedLastIn;
