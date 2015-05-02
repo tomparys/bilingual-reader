@@ -159,6 +159,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			// When trying to use "getString(R.string.nonPersistentState_panelCount)" as key, the value is
 			//  just NOT retrieved. The same if the key is too long, e.g. "nonPersistentState_panelCount".
 			panelCount = savedInstanceState.getInt("nps_panelCount", 0);
+			fullscreenMode = savedInstanceState.getBoolean("nps_fullscreenMode", false);
 			cssSettings = savedInstanceState.getStringArray("nps_cssSettings");
 		}
 		if (cssSettings == null) {
@@ -166,6 +167,11 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		}
 
 		debugContext = getBaseContext();
+
+		// Fullscreen: Reactivate if it was active before.
+		if (fullscreenMode) {
+			activateFullscreen();
+		}
 
 
 		// Load persistent state and create panels from before if needed. If the Activity is just being
@@ -203,6 +209,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		//  When trying to use "getString(R.string.nonPersistentState_panelCount)" as key, the value is
 		//  just NOT retrieved. The same if the key is too long, e.g. "nonPersistentState_panelCount".
 		outState.putInt("nps_panelCount", panelCount);
+		outState.putBoolean("nps_fullscreenMode", fullscreenMode);
 		outState.putStringArray("nps_cssSettings", cssSettings);
 		outState.putStringArray("nps_drawerBookButtonText", drawerBookButtonText);
 
@@ -319,6 +326,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 */
 	@SuppressLint("InlinedApi") // Android versions not supporting Immersive Fullscreen ignore unsupported flags.
 	public void activateFullscreen() {
+
 		// Set basic fullscreen flags
 		int flags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION  // Hides the system navigation
 				| View.SYSTEM_UI_FLAG_FULLSCREEN;  // Hides the status bar
@@ -333,6 +341,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		}
 
 		// Hide action bar and activate fullscreen flags.
+		fullscreenMode = true;
 		getActionBar().hide();
 		decorView.setSystemUiVisibility(flags);
 	}
@@ -343,6 +352,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 * Deactivates full-screen mode - shows status bar, system navigation and the Action Bar.
 	 */
 	public void deactivateFullscreen() {
+		fullscreenMode = false;
 		getActionBar().show();
 		decorView.setSystemUiVisibility(0); // Seting no flags returns all to normal.
 	}
