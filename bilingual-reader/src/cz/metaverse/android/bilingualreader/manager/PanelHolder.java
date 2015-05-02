@@ -52,6 +52,9 @@ public class PanelHolder {
 		this.governor = governor;
 	}
 
+	/**
+	 * Update the PanelHolder with a link to the current ReaderActivity.
+	 */
 	public void setActivity(ReaderActivity activity) {
 		this.activity = activity;
 
@@ -205,26 +208,6 @@ public class PanelHolder {
 		}
 	}
 
-	/**
-	 * Removes the panels from the FragmentManager of the Activity. The panels will still exist,
-	 * but won't be displayed.
-	 */
-	public void removePanel() {
-		if (panel != null) {
-			activity.removePanelWithoutClosing(panel);
-		}
-	}
-
-	/**
-	 * Removes the panels from the FragmentManager of the Activity. The panels will still exist,
-	 * but won't be displayed.
-	 */
-	public void reAddPanels() {
-		if (panel != null) {
-			activity.addPanel(panel);
-		}
-	}
-
 
 
 	// ============================================================================================
@@ -258,7 +241,6 @@ public class PanelHolder {
 	 * Returns the other book panel's WebView, if it exists.
 	 */
 	public SelectionWebView getSisterWebView() {
-		// TODO streamline this by keeping link to WebView in a field?
 		if (sisterPanelHolder.hasOpenPanel() && sisterPanelHolder.panel instanceof BookPanel) {
 			return ((BookPanel) sisterPanelHolder.panel).getWebView();
 		}
@@ -578,7 +560,7 @@ public class PanelHolder {
 
 			// There is no need to remove panels upon losing focus.
 			// 	Leaving it here commented out from the original project in case it causes trouble.
-			//activity.removePanelWithoutClosing(splitViews[i]);
+			//activity.removePanelWithoutClosing(panel);
 		}
 		else {
 			editor.putString(getS(R.string.ViewType) + position, "");
@@ -661,7 +643,7 @@ public class PanelHolder {
 	/**
 	 * Shorthand for context.getResources().getString(id)
 	 */
-	public String getS(int id) {
+	private String getS(int id) {
 		return activity.getString(id);
 	}
 }

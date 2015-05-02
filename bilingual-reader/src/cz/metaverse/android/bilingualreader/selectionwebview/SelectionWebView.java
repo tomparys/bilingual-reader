@@ -447,8 +447,8 @@ public class SelectionWebView extends WebView {
 		}
 		else {
 			// If ScrollSync is active and we want to activate user scrolling:
-			BookPanel thisPanel = governor.getBookPanel(panelPosition);
-			BookPanel sisterPanel = governor.getSisterBookPanel(panelPosition);
+			BookPanel thisPanel = panelHolder.getBookPanel();
+			BookPanel sisterPanel = panelHolder.getSisterBookPanel();
 
 			if (thisPanel != null && thisPanel.enumState == BookPanelState.books
 					&& sisterPanel != null && sisterPanel.enumState == BookPanelState.books) {

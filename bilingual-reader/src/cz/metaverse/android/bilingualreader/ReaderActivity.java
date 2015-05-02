@@ -50,6 +50,7 @@ import cz.metaverse.android.bilingualreader.dialog.LanguageChooserDialog;
 import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
 import cz.metaverse.android.bilingualreader.dialog.SettingsDialog;
 import cz.metaverse.android.bilingualreader.manager.Governor;
+import cz.metaverse.android.bilingualreader.panel.BookPanel;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
 import cz.metaverse.android.bilingualreader.sync.ParagraphPositions;
 
@@ -645,8 +646,8 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			for (int panel = 0; panel < Governor.N_PANELS; panel++) {
 				ParagraphPositions ppInstance = ParagraphPositions.instance(panel);
 				if (!ppInstance.isActive()) {
-					ppInstance.start(governor.getBookPanel(panel),
-							governor.getBookPanel(panel).getViewedPage());
+					BookPanel bookPanel = governor.getPanelHolder(panel).getBookPanel();
+					ppInstance.start(bookPanel, bookPanel.getViewedPage());
 				}
 			}
 			return true;

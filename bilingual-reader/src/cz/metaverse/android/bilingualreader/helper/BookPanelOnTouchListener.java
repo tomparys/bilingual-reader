@@ -300,7 +300,7 @@ public class BookPanelOnTouchListener
 			webView.resumeScrollSync();
 			webView.setUserIsScrolling(true);
 
-			BookPanel otherBookPanel = activity.governor.getSisterBookPanel(panelPosition);
+			BookPanel otherBookPanel = panelHolder.getSisterBookPanel();
 			if (otherBookPanel != null) {
 				otherBookPanel.getWebView().resumeScrollSync();
 				otherBookPanel.getWebView().setUserIsScrolling(false);

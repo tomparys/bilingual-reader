@@ -96,6 +96,9 @@ public class Governor {
 		// Activity is set right after the constructor in the getSingleton() method, no need to do it here.
 	}
 
+	/**
+	 * Update the Governor with a link to the current ReaderActivity.
+	 */
 	private void setActivity(ReaderActivity activity) {
 		this.activity = activity;
 
@@ -133,10 +136,6 @@ public class Governor {
 		activity.switchBookNamesInDrawer();
 	}
 
-	public PanelHolder getSisterPanelHolder(int panel) {
-		return panelHolder[otherIndex(panel)];
-	}
-
 
 
 	// ============================================================================================
@@ -162,13 +161,6 @@ public class Governor {
 	}
 
 	/**
-	 * Given the index of one panel returns the index of the other.
-	 */
-	private static int otherIndex(int index) {
-		return (index + 1) % N_PANELS;
-	}
-
-	/**
 	 * Changes the screen area ratio between the two opened panels.
 	 * @param weight
 	 */
@@ -178,22 +170,6 @@ public class Governor {
 			panelHolder[0].changePanelWeight(1 - weight);
 			panelHolder[1].changePanelWeight(weight);
 		}
-	}
-
-	/**
-	 * If there is a BookPanel in the specified *panel*, it returns it, otherwise you get null.
-	 */
-	public BookPanel getBookPanel(int panel) {
-		if (0 <= panel && panel < N_PANELS && panelHolder[panel] != null) {
-
-			return panelHolder[panel].getBookPanel();
-		} else {
-			return null;
-		}
-	}
-
-	public BookPanel getSisterBookPanel(int panel) {
-		return getBookPanel(otherIndex(panel));
 	}
 
 	/**
@@ -209,15 +185,10 @@ public class Governor {
 	}
 
 	/**
-	 * Removes the panels from the FragmentManager of the Activity. The panels will still exist,
-	 * but won't be displayed.
+	 * Given the position of one panel returns the position of the other.
 	 */
-	public void reAddPanels() {
-		for (PanelHolder ph : panelHolder) {
-			if (ph.hasOpenPanel()) {
-				activity.addPanel(ph.getPanel());
-			}
-		}
+	private static int otherPosition(int position) {
+		return (position + 1) % N_PANELS;
 	}
 
 
@@ -232,18 +203,6 @@ public class Governor {
 	public boolean canExtractAudio() {
 		for (PanelHolder ph : panelHolder) {
 			if (ph.canExtractAudio()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * @return true if at least one book is open
-	 */
-	public boolean atLeastOneBookOpen() {
-		for (PanelHolder ph : panelHolder) {
-			if (ph.getBook() != null) {
 				return true;
 			}
 		}
@@ -319,13 +278,13 @@ public class Governor {
 				if (secondLanguage != -1) {
 					Log.d(LOG, "activateBilingualEbook - first and second language ready");
 
-					panelHolder[otherIndex(book)].openBook(
+					panelHolder[otherPosition(book)].openBook(
 							panelHolder[book].getBook().getFileName());
-					panelHolder[otherIndex(book)].getBook().goToPage(
+					panelHolder[otherPosition(book)].getBook().goToPage(
 							panelHolder[book].getBook().getCurrentSpineElementIndex());
-					panelHolder[otherIndex(book)].getBook().setLanguage(secondLanguage);
-					panelHolder[otherIndex(book)].setBookPage(
-							panelHolder[otherIndex(book)].getBook().getCurrentPageURL());
+					panelHolder[otherPosition(book)].getBook().setLanguage(secondLanguage);
+					panelHolder[otherPosition(book)].setBookPage(
+							panelHolder[otherPosition(book)].getBook().getCurrentPageURL());
 				}
 				panelHolder[book].getBook().setLanguage(firstLanguage);
 				panelHolder[book].setBookPage(panelHolder[book].getBook().getCurrentPageURL());
@@ -410,7 +369,7 @@ public class Governor {
 	/**
 	 * Shorthand for context.getResources().getString(id)
 	 */
-	public String getS(int id) {
+	private String getS(int id) {
 		return activity.getString(id);
 	}
 }
