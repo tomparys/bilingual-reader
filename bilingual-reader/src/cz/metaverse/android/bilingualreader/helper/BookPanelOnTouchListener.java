@@ -124,6 +124,8 @@ public class BookPanelOnTouchListener
 	private int doubleTapSwipe_viewHeight;
 	private int doubleTapSwipe_orientation;
 
+	private boolean justClickedOnUrlLink = false;
+
 
 	public BookPanelOnTouchListener(ReaderActivity readerActivity, Governor governor,
 			PanelHolder panelHolder, BookPanel bookPanel, SelectionWebView webView, int position) {
@@ -155,6 +157,19 @@ public class BookPanelOnTouchListener
 		panelPosition = position;
 	}
 
+	/**
+	 * Called when our custom WebViewClient that listens to our WebView detects that the user just
+	 * clicked on a URL link.
+	 * In that case we will ignore the next onSingleTapConfirmed, and won't switch to/from fullscreen.
+	 */
+	public void setJustClickedOnUrlLink() {
+		justClickedOnUrlLink = true;
+	}
+
+
+	// ============================================================================================
+	//		onTouch
+	// ============================================================================================
 
 	/**
 	 * The entry method for any touch-related event.
@@ -458,7 +473,12 @@ public class BookPanelOnTouchListener
 	public boolean onSingleTapConfirmed(MotionEvent event) {
 		Log.d(LOG,"[" + panelPosition + "] onSingleTapConfirmed"); //: " + event.toString());
 
-		if (!webView.inSelectionActionMode()) {
+		// The user just clicked on a URL link, therefore do nothing with this click.
+		if (justClickedOnUrlLink) {
+			justClickedOnUrlLink = false;
+		}
+		// If we aren't in selection mode, switch fullscreen modes.
+		else if (!webView.inSelectionActionMode()) {
 			activity.switchFullscreen();
 		}
 		return true;

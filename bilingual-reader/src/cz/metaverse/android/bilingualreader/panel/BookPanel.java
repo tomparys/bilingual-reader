@@ -148,7 +148,10 @@ public class BookPanel extends SplitPanel {
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 				// Set book page through the governor if possible.
 				try {
-					// TODO block fullscreen switch
+					// Inform our onTouchListener to ignore this click, since it was ment
+					// to click on this URL link.
+					onTouchListener.setJustClickedOnUrlLink();
+
 					panelHolder.setBookPage(url);
 				} catch (Exception e) {
 					errorMessage(getString(R.string.error_LoadPage));
