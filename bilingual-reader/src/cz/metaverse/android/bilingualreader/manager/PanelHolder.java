@@ -14,6 +14,11 @@ import cz.metaverse.android.bilingualreader.panel.BookPanel;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
 import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 
+/**
+ *
+ * PanelHolder is a class that manages and *holds* an instance of a panel of our application.
+ *
+ */
 public class PanelHolder {
 
 	private static final String LOG = "hugo";

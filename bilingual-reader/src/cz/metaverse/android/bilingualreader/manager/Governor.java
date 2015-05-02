@@ -34,10 +34,13 @@ import cz.metaverse.android.bilingualreader.panel.BookPanel;
 
 /**
  *
- * The main logical and data class of our application.
- * Manages the panels that display books or other content in our application.
- * Manages ebooks that are displayed in the panels.
- * Manages synchronized reading.
+ * The Main logical and data class that governs our application by the Grace of God Emperor of Code.
+ * The Louis XIV Sun King of classes, « L'application ? C'est moi. »
+ *
+ * - Functions as a central hub that connects data with Views the user sees and interacts with.
+ * - Delegates some of its work on two PanelHolder instances that work more closely with their panels.
+ * - Manages synchronized reading.
+ * - And much much more; a limited time offer for just $39.99, call now!
  *
  */
 public class Governor {
