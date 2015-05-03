@@ -12,7 +12,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.Window;
-import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
 import cz.metaverse.android.bilingualreader.manager.Governor;
@@ -393,7 +392,7 @@ public class BookPanelOnTouchListener
 		// Multi-touch scroll sideways:
 		if (scrollIsMultitouch) {
 			if (absDiffX > quarterWidth && absDiffX > absDiffY) {
-				// Hide panel -
+				// Hide or reappear panel -
 				//  If the swipe was over 1/4 of the screen wide, and more broad than high.
 				Toast.makeText(ReaderActivity.debugContext, "Hiding panel - by multitouch scroll.", Toast.LENGTH_SHORT).show();
 			}
@@ -457,8 +456,8 @@ public class BookPanelOnTouchListener
 						(absDiffY > quarterHeight && absDiffY > absDiffX
 								&& doubleTapSwipe_orientation != Configuration.ORIENTATION_PORTRAIT)) {
 
-					// Hide panel.
-					Toast.makeText(ReaderActivity.debugContext, "Hiding panel - by DoubleTap swipe.", Toast.LENGTH_SHORT).show();
+					// Hide or reappear panel.
+					panelHolder.hideOrReappearPanel();
 				}
 			}
 		}

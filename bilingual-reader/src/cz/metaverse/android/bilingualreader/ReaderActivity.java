@@ -77,6 +77,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	private ActionBarDrawerToggle actionBarDrawerToggle;
 	private Button[] drawerBookButton;
 	private String[] drawerBookButtonText;
+	private Button drawerHideOrReappearPanelButton;
 
 	// Request codes so we know from which Activity we have just returned.
 	public static final int ACTIVITY_RESULT_FILE_CHOOSER = 1;
@@ -143,6 +144,8 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		drawerBookButton = new Button[Governor.N_PANELS];
 		drawerBookButton[0] = (Button) findViewById(R.id.drawer_book_title_1_button);
 		drawerBookButton[1] = (Button) findViewById(R.id.drawer_book_title_2_button);
+
+		drawerHideOrReappearPanelButton = (Button) findViewById(R.id.drawer_hide_panel_button);
 
 		// Restore the buttons text after runtime change
 		if (savedInstanceState != null) {
@@ -459,7 +462,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 					.show(getFragmentManager(), "close_or_hide_panel_dialog");
 			break;
 
-		// Hide panel
+		// Hide panel / Reappear panel
 		case R.id.drawer_hide_panel_button:
 			if (governor.isOnlyOnePanelOpen()) {
 				// Can't hide the only open panel.
@@ -493,6 +496,17 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		}
 
 		navigationDrawerLayout.closeDrawer(Gravity.START);
+	}
+
+	/**
+	 * Changes the "Hide panel" button in the drawer to "Reappear panel" and back.
+	 */
+	public void setDrawerHideOrReappearPanelButton(boolean hide) {
+		if (hide) {
+			drawerHideOrReappearPanelButton.setText(R.string.Hide_panel);
+		} else {
+			drawerHideOrReappearPanelButton.setText(R.string.Reappear_panel);
+		}
 	}
 
 	/**
@@ -870,85 +884,96 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 * @param p SplitPanel instance
 	 */
 	public void addPanel(SplitPanel p) {
-		Log.d(LOG, "addPanel");
+		Log.d(LOG, "ReaderActivity.addPanel");
 
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 		fragmentTransaction.add(R.id.PanelsLayout, p, p.getTag());
 		fragmentTransaction.commit();
 
 		panelCount++;
-	}
-
-	/**
-	 * Re-attach a panel that has been detached previously.
-	 * @param p
-	 */
-	public void attachPanel(SplitPanel p) {
-		Log.d(LOG, "attachPanel");
-
-		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-		fragmentTransaction.attach(p);
-		fragmentTransaction.commit();
-
-		panelCount++;
 
 		// Rethinks what menu items to display
 		invalidateOptionsMenu();
 	}
 
 	/**
+	 * Remove panel, but don't close the application if no panel is left.
+	 */
+	public void removePanel(SplitPanel p) {
+		Log.d(LOG, "ReaderActivity.removePanelWithoutClosing");
+
+		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+		fragmentTransaction.remove(p);
+		fragmentTransaction.commit();
+
+		panelCount--;
+
+		// Rethinks what menu items to display
+		invalidateOptionsMenu();
+	}
+
+	/**
+	 * Remove panel and if there are no more, close the application.
+	 */
+	public void removePanelWithClosing(SplitPanel p) {
+		Log.d(LOG, "ReaderActivity.removePanel");
+
+		removePanel(p);
+
+		// Close the app if there are no panels left
+		if (panelCount <= 0) {
+			finish();
+		}
+	}
+
+	/**
 	 * Detach panel from view.
-	 * @param p
 	 */
 	public void detachPanel(SplitPanel p) {
-		Log.d(LOG, "detachPanel");
+		Log.d(LOG, "ReaderActivity.detachPanel");
 
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 		fragmentTransaction.detach(p);
 		fragmentTransaction.commit();
 
 		panelCount--;
-
-		// Rethinks what menu items to display
-		invalidateOptionsMenu();
 	}
 
 	/**
-	 * Remove panel, but don't close the application.
-	 * @param p
+	 * Re-attach a panel that has been detached previously.
 	 */
-	public void removePanelWithoutClosing(SplitPanel p) {
-		Log.d(LOG, "removePanelWithoutClosing");
+	public void attachPanel(SplitPanel p) {
+		Log.d(LOG, "ReaderActivity.attachPanel");
 
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-		fragmentTransaction.remove(p);
+		fragmentTransaction.attach(p);
 		fragmentTransaction.commit();
 
-		panelCount--;
-
-		// Rethinks what menu items to display
-		invalidateOptionsMenu();
+		panelCount++;
 	}
 
 	/**
-	 * Remove panel and if there are no more, end the application.
-	 * @param p
+	 * Hide panel from view.
 	 */
-	public void removePanel(SplitPanel p) {
-		Log.d(LOG, "removePanel");
+	public void hidePanel(SplitPanel p) {
+		Log.d(LOG, "ReaderActivity.hidePanel");
 
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-		fragmentTransaction.remove(p);
+		fragmentTransaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
+        fragmentTransaction.hide(p);
 		fragmentTransaction.commit();
-		panelCount--;
+	}
 
-		// Close the app if there are no panels left
-		if (panelCount <= 0) {
-			finish();
-		}
+	/**
+	 * Reappear panel after it has been hidden.
+	 */
+	public void showPanel(SplitPanel p) {
+		Log.d(LOG, "ReaderActivity.showPanel");
 
-		// Rethinks what menu items to display
-		invalidateOptionsMenu();
+		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+		fragmentTransaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
+        fragmentTransaction.show(p);
+		fragmentTransaction.commit();
 	}
 
 

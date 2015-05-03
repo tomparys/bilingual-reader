@@ -36,6 +36,8 @@ public class PanelHolder {
 
 	private Epub book;
 
+	private boolean isPanelHidden;
+
 	// Whether or not to extract the audio from this panel and show it in the sister panel.
 	private boolean extractAudioFromThisPanel;
 
@@ -66,6 +68,13 @@ public class PanelHolder {
 		// TODO Update activity further down the road?? Split/BookPanel?, WebView?, BookPanelOnTouchListener?
 	}
 
+
+	/**
+	 * Returns the position of this panel.
+	 */
+	public int getPosition() {
+		return position;
+	}
 
 	/**
 	 * Inform this panelHolder that his position has changed.
@@ -106,16 +115,56 @@ public class PanelHolder {
 	//		Panel
 	// ============================================================================================
 
+	/**
+	 * Returns the SplitPanel instance.
+	 */
 	public SplitPanel getPanel() {
 		return panel;
 	}
 
+	/**
+	 * Returns true if it has an opened panel.
+	 */
 	public boolean hasOpenPanel() {
 		return panel != null;
 	}
 
+	/**
+	 * If there is any hidden panel, reappears it, if not, hides this panel.
+	 */
+	public void hideOrReappearPanel() {
+		if (governor.hiddenPanel != null) {
+			governor.hiddenPanel.reappearPanel();
+		} else {
+			hidePanel();
+		}
+	}
+
+	/**
+	 * Hides this panel if the other panel is not hidden.
+	 */
 	public void hidePanel() {
-		// TODO
+		// No need to test for panel.isVisible(), because hiding it twice doesn't matter anyway.
+		if ((governor.hiddenPanel == null || governor.hiddenPanel == this) && panel != null) {
+			activity.hidePanel(panel);
+			governor.hiddenPanel = this;
+			isPanelHidden = true;
+
+			activity.setDrawerHideOrReappearPanelButton(false);
+		}
+	}
+
+	/**
+	 * Reappears this panel.
+	 */
+	public void reappearPanel() {
+		if (panel != null && panel.isHidden()) {
+			activity.showPanel(panel);
+			governor.hiddenPanel = null;
+			isPanelHidden = false;
+
+			activity.setDrawerHideOrReappearPanelButton(true);
+		}
 	}
 
 	/**
@@ -161,7 +210,7 @@ public class PanelHolder {
 					e.printStackTrace();
 				}
 			// Remove the panel
-			activity.removePanel(panel);
+			activity.removePanelWithClosing(panel);
 
 			// Remove the displayed name of the book in the navigation drawer of our main activity.
 			activity.setBookNameInDrawer(position, null);
@@ -198,14 +247,14 @@ public class PanelHolder {
 	 */
 	public void changePanel(SplitPanel p) {
 		if (panel != null) {
-			activity.removePanelWithoutClosing(panel);
+			activity.removePanel(panel);
 			p.changeWeight(panel.getWeight());
 		}
 
 		// If the given panel is already open, remove it.
 		// TODO ??????????????????????????? Why??
 		if (p.isAdded()) {
-			activity.removePanelWithoutClosing(p);
+			activity.removePanel(p);
 		}
 
 		p.updatePosition(position);
@@ -526,6 +575,7 @@ public class PanelHolder {
 				}
 				panel.loadState(preferences);
 			}
+
 		// If the panel exists and is sound, but we're (re)creating the activity.
 		} else if (creatingActivity) {
 			if (isBookPanel()) {

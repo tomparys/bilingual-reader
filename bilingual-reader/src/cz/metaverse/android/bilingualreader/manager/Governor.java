@@ -64,8 +64,13 @@ public class Governor {
 	private boolean chapterSync;
 	private boolean readingBilingualEbook;
 
-	/* For proper operation of the Back system button. */
+	/* State holding - these fields are public, because they serve to interconnect with other classes.
+	 * And because unnecessary getters and setters are costly on Android. */
+	// For proper operation of the Back system button.
 	public PanelHolder notesDisplayedLastIn;
+
+	// For hiding panels.
+	public PanelHolder hiddenPanel;
 
 
 
@@ -182,15 +187,16 @@ public class Governor {
 	 * Is one of the panels currently hidden?
 	 */
 	public boolean isAnyPanelHidden() {
-		// TODO
-		return false;
+		return hiddenPanel != null;
 	}
 
 	/**
 	 * Reappear the currently hidden panel.
 	 */
 	public void reappearPanel() {
-		// TODO
+		if (hiddenPanel != null) {
+			hiddenPanel.reappearPanel();
+		}
 	}
 
 	/**
@@ -230,7 +236,7 @@ public class Governor {
 	public void removePanels() {
 		for (PanelHolder ph : panelHolder) {
 			if (ph.hasOpenPanel()) {
-				activity.removePanelWithoutClosing(ph.getPanel());
+				activity.removePanel(ph.getPanel());
 			}
 		}
 	}
@@ -400,6 +406,17 @@ public class Governor {
 			panelCount += ph.loadPanel(preferences, creatingActivity);
 		}
 
+		if (creatingActivity) {
+			// Load if one of the panels was hidden, if so, hide it.
+			int hiddenPanelPosition = preferences.getInt(getS(R.string.HiddenPanelPosition), -1);
+			if (hiddenPanelPosition != -1) {
+				getPanelHolder(hiddenPanelPosition).hidePanel();
+			} else {
+				hiddenPanel = null;
+			}
+			Log.d(LOG, "Governor.loadPanels, hiddenPanelPosition: " + hiddenPanelPosition);
+		}
+
 		return panelCount;
 	}
 
@@ -411,6 +428,8 @@ public class Governor {
 
 		editor.putBoolean(getS(R.string.sync), chapterSync);
 		editor.putBoolean(getS(R.string.readingBilingualEbookBool), readingBilingualEbook);
+
+		editor.putInt(getS(R.string.HiddenPanelPosition), hiddenPanel != null ? hiddenPanel.getPosition() : -1);
 
 		for (PanelHolder ph : panelHolder) {
 			ph.saveState(editor);

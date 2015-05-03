@@ -163,6 +163,7 @@
     <string name="title_activity_tocview">TOCView</string>
     <string name="title_activity_data_view">DataView</string>
     <string name="ViewType">ViewType</string>
+    <string name="HiddenPanelPosition">HiddenPanelPosition</string>
     <string name="title_activity_audio_view">AudioView</string>
     <string name="Extract_Audio">Extract Audio</string>
     <string name="error_openaudiofile">Cannot open audio file</string>
@@ -245,6 +246,8 @@
     <string name="Scroll_Sync_Options">Scroll Synchronization Options</string>
     <string name="activated_scroll_sync">Activated Scroll synchronization.</string>
     <string name="deactivated_scroll_sync">Deactivated Scroll synchronization.</string>
+    <string name="Panel_hidden">Panel hidden.</string>
+    <string name="Reappear_panel">Reappear panel</string>
     
 
 </resources>
