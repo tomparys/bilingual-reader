@@ -33,7 +33,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,6 +41,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+import cz.metaverse.android.bilingualreader.helper.Func;
 
 /**
  *
@@ -97,23 +97,7 @@ public class FileChooserActivity extends Activity {
 
 		// Populate list of epubs if needed
 		if (epubs == null || epubs.size() == 0 || populateList) {
-			new FindEpubsTask(false).execute(getEpubSearchDirectory());
-		}
-	}
-
-	/**
-	 * @return Directory file where to search for epubs.
-	 */
-	private File getEpubSearchDirectory() {
-		// Opens the so far hard-coded directory where to look for epubs.
-		String root = Environment.getExternalStorageDirectory().toString();
-		File ebooksDir = new File(root+getString(R.string.epubs_search_directory));
-
-		if(ebooksDir.exists()) {
-			return ebooksDir;
-		} else {
-			// If the directory doesn't exist, return the root dir.
-			return Environment.getExternalStorageDirectory() ;
+			new FindEpubsTask(false).execute(Func.Paths.getEpubsSearchDir());
 		}
 	}
 
@@ -126,7 +110,6 @@ public class FileChooserActivity extends Activity {
 		names.add(fileName(newEpub));
 		arrayAdapter.notifyDataSetChanged();
 	}
-
 
 	/**
 	 * Returns file name of a file
@@ -144,7 +127,7 @@ public class FileChooserActivity extends Activity {
 		names.clear();
 		epubs.clear();
 
-		new FindEpubsTask(true).execute(getEpubSearchDirectory());
+		new FindEpubsTask(true).execute(Func.Paths.getEpubsSearchDir());
 	}
 
 	/**

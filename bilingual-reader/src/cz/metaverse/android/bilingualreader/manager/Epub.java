@@ -51,9 +51,9 @@ import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.domain.TableOfContents;
 import nl.siegmann.epublib.epub.EpubReader;
 import android.content.Context;
-import android.os.Environment;
 import android.util.Log;
 import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.helper.Func;
 
 /**
  *
@@ -85,8 +85,7 @@ public class Epub {
 
 	// Static variables
 	private static Context context;
-	private static String tempLocation = Environment.getExternalStorageDirectory()
-			+ "/BilingualReader/epubtemp/";
+	private static String tempLocation = Func.Paths.getEpubsUnpackDir();
 
 	/**
 	 * Initialize EpubManupulator with a book from given fileName.
