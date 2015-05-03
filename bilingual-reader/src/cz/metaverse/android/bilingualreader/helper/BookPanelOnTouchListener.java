@@ -3,9 +3,9 @@ package cz.metaverse.android.bilingualreader.helper;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MotionEventCompat;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -87,6 +87,36 @@ import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 public class BookPanelOnTouchListener
 		implements OnTouchListener, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
+	/*
+	 * Threshold constants for supported gestures.
+	 * All values are in device independent pixels (dp).
+	 *
+	 * For illustration, here are some numbers for typical screen *widths*:
+	 *  - 320dp: a typical phone screen (240x320 ldpi, 320x480 mdpi, 480x800 hdpi, etc).
+	 *  - 480dp: a phablet (480x800 mdpi).
+	 *  - 600dp: a 7” tablet (600x1024 mdpi).
+	 *  - 720dp: a 10” tablet (720x1280 mdpi, 800x1280 mdpi, etc).
+	 */
+	// Change Panel Size in Real Time threshold - both for up/down (portrait) and left/right (landscape mode)
+	private static final int THRESHOLD_SWIPE_UP_OR_DOWN_CHANGE_PANEL_SIZE = 20; // dp
+	private static final int THRESHOLD_SWIPE_LEFT_RIGHT_CHANGE_PANEL_SIZE = 20; // dp
+
+	// Switch chapter threshold - swipe left/right
+	private static final int THRESHOLD_SWIPE_LEFT_RIGHT_SWITCH_CHAPTER = 120; // dp
+
+	// Hide/reappear panel threshold - both for left/right (portrait) and up/down (landscape mode)
+	private static final int THRESHOLD_SWIPE_LEFT_RIGHT_HIDE_PANEL = 120; // dp
+	private static final int THRESHOLD_SWIPE_UP_OR_DOWN_HIDE_PANEL = 120; // dp
+
+	/* Threshold fiels - calculated pixel values from the dp constants above. */
+	private final int threshold_swipe_left_right_switch_chapter_px;
+	private final int threshold_swipe_left_right_hide_panel_px;
+	private final int threshold_swipe_up_or_down_hide_panel_px;
+	private final int threshold_swipe_up_or_down_change_panel_size_px;
+	private final int threshold_swipe_left_right_change_panel_size_px;
+
+
+	/* Logging */
 	protected static final String LOG = "alfons";
 
 	/* Variables for interconnectivity with the outside world. */
@@ -97,23 +127,17 @@ public class BookPanelOnTouchListener
 	private SelectionWebView webView;
 	private int panelPosition;
 
-	/* Pre-calculated dimensions. */
-	protected int screenWidth;
-	protected int screenHeight;
-	protected int quarterWidth;
-	protected int quarterHeight;
-
 	/*
 	 * Fields for touch/gesture events.
 	 */
 	protected GestureDetectorCompat gestureDetector;
 
-	/* For scrolling gesture events. */
+	// For scrolling gesture events.
 	protected boolean scrollIsOrWasMultitouch;
 	protected float scrollOriginX;
 	protected float scrollOriginY;
 
-	/* For DoubleTapEvent gestures. */
+	// For DoubleTapEvent gestures.
 	private boolean isDoubleTapSwipe;
 	private float doubleTapOriginX;
 	private float doubleTapOriginY;
@@ -123,6 +147,7 @@ public class BookPanelOnTouchListener
 	private int doubleTapSwipe_viewHeight;
 	private int doubleTapSwipe_orientation;
 
+	// For fullscreen.
 	private boolean justClickedOnUrlLink = false;
 
 
@@ -141,12 +166,19 @@ public class BookPanelOnTouchListener
 		gestureDetector = new GestureDetectorCompat(activity, this);
 		gestureDetector.setOnDoubleTapListener(this);
 
-		// Get the screen size.
-		DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
-		screenWidth = metrics.widthPixels;
-		screenHeight = metrics.heightPixels;
-		quarterWidth = (int) (screenWidth * 0.25);
-		quarterHeight = (int) (screenHeight * 0.25);
+		/* Compute the threshold limits in pixels */
+		Resources r = activity.getResources();
+
+		// Change Panel Size in Real Time threshold - both for up/down (portrait) and left/right (landscape mode)
+		threshold_swipe_up_or_down_change_panel_size_px = Func.dpToPix(r, THRESHOLD_SWIPE_UP_OR_DOWN_CHANGE_PANEL_SIZE);
+		threshold_swipe_left_right_change_panel_size_px = Func.dpToPix(r, THRESHOLD_SWIPE_LEFT_RIGHT_CHANGE_PANEL_SIZE);
+
+		// Switch chapter threshold - swipe left/right
+		threshold_swipe_left_right_switch_chapter_px = Func.dpToPix(r, THRESHOLD_SWIPE_LEFT_RIGHT_SWITCH_CHAPTER);
+
+		// Hide/reappear panel threshold - both for left/right (portrait) and up/down (landscape mode)
+		threshold_swipe_left_right_hide_panel_px = Func.dpToPix(r, THRESHOLD_SWIPE_LEFT_RIGHT_HIDE_PANEL);
+		threshold_swipe_up_or_down_hide_panel_px = Func.dpToPix(r, THRESHOLD_SWIPE_UP_OR_DOWN_HIDE_PANEL);
 	}
 
 	/**
@@ -190,15 +222,15 @@ public class BookPanelOnTouchListener
 			float absDiffX = Math.abs(doubleTapOriginX - event.getX());
 			float absDiffY = Math.abs(doubleTapOriginY - event.getY());
 
-			// If the swipe was over 1/8 of the screen high and it was higher than wider.
+			// If the swipe was over predefined threshold value high and it was higher than wider,
+			// or if the swipe was over predefined threshold value wide and it was wider than higher.
 			if (doubleTapSwipeEscapedBounds ||
 					// Bounds for PORTRAIT orientation.
-					(absDiffY * 2 > quarterHeight && absDiffY > absDiffX
+					(absDiffY > threshold_swipe_up_or_down_change_panel_size_px && absDiffY > absDiffX
 							&& doubleTapSwipe_orientation == Configuration.ORIENTATION_PORTRAIT) ||
 					// Bounds for LANDSCAPE orientation.
-					(absDiffX * 2 > quarterWidth && absDiffX > absDiffY
+					(absDiffX > threshold_swipe_left_right_change_panel_size_px && absDiffX > absDiffY
 							&& doubleTapSwipe_orientation != Configuration.ORIENTATION_PORTRAIT)) {
-
 
 				if (!doubleTapSwipeEscapedBounds) {
 					// This is the first time doubleTapSwipe escaped it's bounds
@@ -375,12 +407,12 @@ public class BookPanelOnTouchListener
 			if (bookPanel.enumState == BookPanelState.books) {
 
 				// Single touch scroll on a book - evaluate if the user wants to change chapters.
-				if (diffX > quarterWidth && absDiffX > absDiffY) {
-					// Next chapter - If the swipe was to the right, over 1/4 of the screen wide,
+				if (diffX > threshold_swipe_left_right_switch_chapter_px && absDiffX > absDiffY) {
+					// Next chapter - If the swipe was to the right, over the predefined threshold,
 					//  and more broad than high.
 					panelHolder.changeChapter(true);
-				} else if (diffX < -quarterWidth && absDiffX > absDiffY) {
-					// Previous chapter - If the swipe was to the left, over 1/4 of the screen wide,
+				} else if (diffX < -threshold_swipe_left_right_switch_chapter_px && absDiffX > absDiffY) {
+					// Previous chapter - If the swipe was to the left, over the predefined threshold,
 					//  and more broad than high.
 					panelHolder.changeChapter(false);
 				}
@@ -449,11 +481,11 @@ public class BookPanelOnTouchListener
 				float absDiffX = Math.abs(doubleTapOriginX - event.getX());
 				float absDiffY = Math.abs(doubleTapOriginY - event.getY());
 
-						// PORTRAIT: If the swipe was over 1/4 of the screen wide and it was wider than higher.
-				if (	(absDiffX > quarterWidth && absDiffX > absDiffY
+						// PORTRAIT: If the swipe was over the threshold wide and it was wider than higher.
+				if (	(absDiffX > threshold_swipe_left_right_hide_panel_px && absDiffX > absDiffY
 								&& doubleTapSwipe_orientation == Configuration.ORIENTATION_PORTRAIT) ||
-						// LANDSCAPE: If the swipe was over 1/4 of the screen high and it was higher than wider.
-						(absDiffY > quarterHeight && absDiffY > absDiffX
+						// LANDSCAPE: If the swipe was over the threshold high and it was higher than wider.
+						(absDiffY > threshold_swipe_up_or_down_hide_panel_px && absDiffY > absDiffX
 								&& doubleTapSwipe_orientation != Configuration.ORIENTATION_PORTRAIT)) {
 
 					// Hide or reappear panel.

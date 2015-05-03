@@ -2,7 +2,9 @@ package cz.metaverse.android.bilingualreader.helper;
 
 import java.io.File;
 
+import android.content.res.Resources;
 import android.os.Environment;
+import android.util.TypedValue;
 
 /**
  *
@@ -53,6 +55,18 @@ public class Func {
 		public static String getSRSExportDir() {
 			return Environment.getExternalStorageDirectory() + EPUBS_SRS_EXPORT_DIR;
 		}
+	}
+
+
+	/**
+	 * Converts device independent pixels (dp) to pixels (px).
+	 * @param resources  Context.getResources() result.
+	 * @param deviceIndependentPixels  Length in dp's
+	 * @return  Length in pixels
+	 */
+	public static int dpToPix(Resources resources, int deviceIndependentPixels) {
+		return Math.round(TypedValue.applyDimension(
+				TypedValue.COMPLEX_UNIT_DIP, deviceIndependentPixels, resources.getDisplayMetrics()));
 	}
 
 }
