@@ -289,12 +289,9 @@ public class Governor {
 		chapterSync = value;
 	}
 
-	public void setScrollSync(boolean value) {
-		scrollSync = value;
-	}
-
 	/**
 	 * Flips the state of SynchronizedChapters (active -> inactive, inactive -> active).
+	 * @return If the change will be active right now or not (if only one book is open, sync does not work).
 	 */
 	public boolean flipChapterSync() {
 		if (exactlyOneBookOpen()) {
@@ -309,6 +306,22 @@ public class Governor {
 	 */
 	public boolean isScrollSync() {
 		return scrollSync;
+	}
+
+	public void setScrollSync(boolean value) {
+		scrollSync = value;
+	}
+
+	/**
+	 * Flips the state of ScrollSync (active -> inactive, inactive -> active).
+	 * @return If the change will be active right now or not (if only one book is open, sync does not work).
+	 */
+	public boolean flipScrollSync() {
+		if (exactlyOneBookOpen()) {
+			return false;
+		}
+		scrollSync = !scrollSync;
+		return true;
 	}
 
 

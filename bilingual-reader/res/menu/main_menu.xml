@@ -1,10 +1,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/sync_scroll_menu_item"
+        android:id="@+id/scroll_sync_menu_item"
+        android:icon="@android:drawable/ic_menu_crop"
+        android:showAsAction="always"
+        android:title="@string/De_activate_scroll_sync"
+        android:visible="true">
+    </item>
+    <item
+        android:id="@+id/scroll_sync_options_menu_item"
         android:icon="@android:drawable/ic_menu_view"
         android:showAsAction="always"
-        android:title="@string/Sync_Scroll"
+        android:title="@string/Scroll_Sync_Options"
         android:visible="true">
     </item>
     <item

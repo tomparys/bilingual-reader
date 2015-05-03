@@ -241,6 +241,10 @@
         
     <string name="Cannot_hide_the_only_open_panel">Can\'t hide the only opened panel.</string>
     <string name="Fullscreen">Fullscreen</string>
-         
+    <string name="De_activate_scroll_sync">De/activate Scroll Synchronization</string>
+    <string name="Scroll_Sync_Options">Scroll Synchronization Options</string>
+    <string name="activated_scroll_sync">Activated Scroll synchronization.</string>
+    <string name="deactivated_scroll_sync">Deactivated Scroll synchronization.</string>
+    
 
 </resources>

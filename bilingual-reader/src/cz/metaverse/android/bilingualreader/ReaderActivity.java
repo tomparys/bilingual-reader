@@ -577,7 +577,8 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		if (governor.exactlyOneBookOpen()) {
 
 			// Exactly one book open
-			menu.findItem(R.id.sync_scroll_menu_item).setVisible(false);
+			menu.findItem(R.id.scroll_sync_menu_item).setVisible(false);
+			menu.findItem(R.id.scroll_sync_options_menu_item).setVisible(false);
 			menu.findItem(R.id.sync_chapters_menu_item).setVisible(false);
 
 			// Submenus
@@ -595,7 +596,8 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		} else {
 
 			// Two books open
-			menu.findItem(R.id.sync_scroll_menu_item).setVisible(true);
+			menu.findItem(R.id.scroll_sync_menu_item).setVisible(true);
+			menu.findItem(R.id.scroll_sync_options_menu_item).setVisible(true);
 			menu.findItem(R.id.sync_chapters_menu_item).setVisible(true);
 
 			// Submenus
@@ -697,8 +699,20 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			builder.create().show();
 			return true;
 
-		// Sync Scroll
-		case R.id.sync_scroll_menu_item:
+		// Toggle Scroll Sync
+		case R.id.scroll_sync_menu_item:
+			if (!governor.flipScrollSync()) {
+				errorMessage(getString(R.string.error_onlyOneBookOpen));
+			}
+			if (governor.isScrollSync()) {
+				Toast.makeText(this, getString(R.string.activated_scroll_sync), Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(this, getString(R.string.deactivated_scroll_sync), Toast.LENGTH_SHORT).show();
+			}
+			return true;
+
+		// Scroll Sync Options
+		case R.id.scroll_sync_options_menu_item:
 			// TODO Make use of the information, not just compute it.
 			Toast.makeText(this, "Computing paragraph positions.", Toast.LENGTH_SHORT).show();
 
@@ -714,8 +728,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 
 		// Sync Chapters
 		case R.id.sync_chapters_menu_item:
-			boolean sync = governor.flipChapterSync();
-			if (!sync) {
+			if (!governor.flipChapterSync()) {
 				errorMessage(getString(R.string.error_onlyOneBookOpen));
 			}
 			if (governor.isChapterSync()) {
@@ -723,7 +736,6 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			} else {
 				Toast.makeText(this, getString(R.string.deactivated_sync_chapters), Toast.LENGTH_SHORT).show();
 			}
-
 			return true;
 
 		// Bilingual ebook
