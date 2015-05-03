@@ -52,7 +52,7 @@ import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
  */
 public class BookPanel extends SplitPanel {
 
-	private static final String LOG = "hugo";
+	private static final String LOG = "BookPanel";
 
 	private ReaderActivity activity;
 
@@ -77,7 +77,7 @@ public class BookPanel extends SplitPanel {
 	 */
 	public BookPanel(Governor governor, PanelHolder panelHolder, int position) {
 		super(governor, panelHolder, position); // Invokes changePosition(position)
-		Log.d(LOG, "New BookPanel (note. constructor)");
+		Log.d(LOG, "BookPanel.new BookPanel (note. constructor)");
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class BookPanel extends SplitPanel {
 	public boolean selfCheck() {
 		boolean ok = super.selfCheck() && webView != null && onTouchListener != null && enumState != null;
 
-		Log.d(LOG, "BookPanel selfCheck - " + ok);
+		Log.d(LOG, "BookPanel.selfCheck - " + ok);
 		return ok;
 	}
 

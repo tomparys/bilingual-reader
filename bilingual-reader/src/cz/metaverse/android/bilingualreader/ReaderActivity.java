@@ -65,7 +65,7 @@ import cz.metaverse.android.bilingualreader.sync.ParagraphPositions;
  */
 public class ReaderActivity extends Activity implements View.OnSystemUiVisibilityChangeListener {
 
-	private static final String LOG = "hugo";
+	private static final String LOG = "ReaderActivity";
 
 	public Governor governor;
 	protected int bookSelector;
@@ -239,7 +239,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 */
 	@Override
 	protected void onResume() {
-		Log.d(LOG, "onResume");
+		Log.d(LOG, "ReaderActivity.onResume");
 		super.onResume();
 
 		// If we have just loaded Governor in onCreate or onActivityResult, do nothing this time.
@@ -261,7 +261,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		// and we didn't know whether they had bilingual support.
 		invalidateOptionsMenu();
 
-		Log.d(LOG, "onResume finished");
+		Log.d(LOG, "ReaderActivity.onResume finished");
 	}
 
 	/**
@@ -270,7 +270,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 */
 	@Override
 	protected void onPause() {
-		Log.d(LOG, "onPause");
+		Log.d(LOG, "ReaderActivity.onPause");
 		super.onPause();
 
 		saveGovernorAndPanels();
@@ -281,7 +281,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.d(LOG, "onActivityResult");
+		Log.d(LOG, "ReaderActivity.onActivityResult");
 
 		// Load the Governor and panels from persistent state if needed.
 		loadGovernorAndPanelsIfNeeded(false);
@@ -291,12 +291,12 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		if (requestCode == ACTIVITY_RESULT_FILE_CHOOSER) {
 			// Open the selected book in a given panel if all went well.
 			if (resultCode == Activity.RESULT_OK) {
-				Log.d(LOG, "Loading book to panel " + bookSelector);
+				Log.d(LOG, "ReaderActivity.Loading book to panel " + bookSelector);
 
 				String path = data.getStringExtra(getString(R.string.bpath));
 				governor.getPanelHolder(bookSelector).openBook(path);
 
-				Log.d(LOG, "Loaded book to panel " + bookSelector);
+				Log.d(LOG, "ReaderActivity.Loaded book to panel " + bookSelector);
 			}
 		}
 	}

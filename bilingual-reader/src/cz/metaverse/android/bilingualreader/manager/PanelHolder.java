@@ -22,7 +22,7 @@ import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
  */
 public class PanelHolder {
 
-	private static final String LOG = "hugo";
+	private static final String LOG = "PanelHolder";
 
 	/* Interactivity with the outside */
 	private ReaderActivity activity;

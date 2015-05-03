@@ -46,7 +46,7 @@ import cz.metaverse.android.bilingualreader.panel.BookPanel;
 public class Governor {
 
 	/* Static */
-	private static final String LOG = "hugo";
+	private static final String LOG = "Governor";
 
 	// The magic number - the number of panels of our application.
 	// Do NOT change this number, the application is not built for it.
