@@ -17,9 +17,12 @@ public class Func {
 	 *
 	 */
 	public static class Paths {
+
 		private static final String EPUBS_SEARCH_DIR = "/_Tom/dip"; // TODO Change
 
-		private static final String EPUBS_UNPACK_DIR = "/BilingualReader/epubtemp/";
+		private static final String EPUBS_UNPACK_DIR = "/BilingualReader/epubtemp/"; // Trailing / needed
+
+		private static final String EPUBS_SRS_EXPORT_DIR = "/BilingualReader/SRS-export";
 
 
 		/**
@@ -48,7 +51,7 @@ public class Func {
 		 * @return Directory where the application exports SRS entries.
 		 */
 		public static String getSRSExportDir() {
-			return null;
+			return Environment.getExternalStorageDirectory() + EPUBS_SRS_EXPORT_DIR;
 		}
 	}
 

@@ -4,6 +4,7 @@ import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import cz.metaverse.android.bilingualreader.db.SRSDatabaseTable;
 import cz.metaverse.android.bilingualreader.dialog.AddToSRSDialog;
+import cz.metaverse.android.bilingualreader.dialog.ExportSRSDialog;
 
 
 /**
@@ -161,10 +163,24 @@ public class SRSDatabaseActivity extends ListActivity
 			reloadData();
 			return true;
 
+		// Export
+		case R.id.export_menu_item:
+			new ExportSRSDialog(this).show(getFragmentManager(), "export_srs_dialog");
+			return true;
+
 		default:
 			return super.onOptionsItemSelected(item);
 
 		}
+	}
+
+	/**
+	 * Launch a prepared Intent.
+	 * Here, because if we launch an Intent from a Dialog that was launched by another Dialog,
+	 *  Android craps its pants.
+	 */
+	public void openShareIntent(Intent shareIntent) {
+		startActivity(Intent.createChooser(shareIntent, getString(R.string.Share)));
 	}
 
 

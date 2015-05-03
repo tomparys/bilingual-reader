@@ -23,5 +23,9 @@
         android:id="@+id/sort_by_last_added_menu_item"
         android:showAsAction="ifRoom"
         android:title="@string/Sort_by_last_added"/>
+    <item
+        android:id="@+id/export_menu_item"
+        android:showAsAction="ifRoom"
+        android:title="@string/Export"/>
 
 </menu>

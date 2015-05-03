@@ -1,5 +1,14 @@
 package cz.metaverse.android.bilingualreader.db;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -8,6 +17,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.text.TextUtils;
 import android.util.Log;
+import cz.metaverse.android.bilingualreader.helper.Func;
 
 /**
  *
@@ -24,7 +34,7 @@ public class SRSDatabaseTable {
 	private static SRSDatabaseTable srsDatabaseTableInstance;
 
 	// Logging tag
-	private static final String LOG = "SRSDatabase";
+	private static final String LOG = "SRSDatabaseTable";
 
 	// The columns of the SRS table
 	public static final String COL_WORD = "WORD";
@@ -246,6 +256,70 @@ public class SRSDatabaseTable {
 			String[] whereArgs = new String[] {"" + id};
 
 			return getWritableDatabase().delete(VIRTUAL_TABLE_NAME, where, whereArgs);
+		}
+	}
+
+
+	// ============================================================================================
+	//		Export
+	// ============================================================================================
+
+	public File export(Cursor data, char separator, boolean enclose) {
+		// If there are some data to export
+		if (data != null && data.moveToFirst()) {
+			Log.d(LOG, "SRSDatabaseTable.export - separator: " + separator + ", enclose: " + enclose);
+
+			// Create the destination directory in case it doesn't exist yet.
+			String destinationDir = Func.Paths.getSRSExportDir();
+			File destinationDirectory = new File(destinationDir);
+			destinationDirectory.mkdir();
+
+			// Compute the new filename.
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss", Locale.US);
+			String datetime = sdf.format(Calendar.getInstance().getTime());
+			String filePath = destinationDir + "/SRS_" + datetime + ".csv";
+			File file = new File(filePath);
+
+			try {
+				file.createNewFile();
+				FileOutputStream fileOutputStream = new FileOutputStream(file);
+				OutputStreamWriter outWriter = new OutputStreamWriter(fileOutputStream);
+
+				// Write data, line by line
+				do {
+					if (enclose) outWriter.append("\"");
+					outWriter.append(data.getString(1));
+					if (enclose) outWriter.append("\"");
+
+					outWriter.append(separator);
+
+					if (enclose) outWriter.append("\"");
+					outWriter.append(data.getString(2));
+					if (enclose) outWriter.append("\"");
+
+					outWriter.append("\n");
+				}
+				while (data.moveToNext());
+
+				data.close();
+				outWriter.close();
+				fileOutputStream.close();
+			}
+			catch (FileNotFoundException e) {
+				Log.d(LOG, "SRSDatabaseTable.export - encountered an FileNotFoundException.");
+				return null;
+			}
+			catch (IOException e) {
+				Log.d(LOG, "SRSDatabaseTable.export - encountered an IOException.");
+				return null;
+			}
+
+			return file;
+		}
+		else {
+			// No data to export.
+			Log.d(LOG, "SRSDatabaseTable.export - no data to export.");
+			return null;
 		}
 	}
 }

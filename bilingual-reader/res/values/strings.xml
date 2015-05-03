@@ -175,7 +175,7 @@
     <string name="searching_for_epubs">Searching for EPUB files.</string>
     <string name="dictionary">Dictionary</string>
     <string name="add_to_srs">Add to SRS</string>
-    <string name="share">Share</string>
+    <string name="Share">Share</string>
     <string name="copy">Copy</string>
     <string name="share_menu_headline">Open in</string>
     <string name="word_colon">Word:</string>
@@ -240,6 +240,13 @@
     <string name="fullscreen_dialog_info_notice"><big><b>The More You Know</b></big>
         \nYou can switch to and from the fullscreen mode by single tapping anywhere on the text in the panels!</string>
         
+    <string name="export_srs_dialog_info_text"><big><b>Do not change</b></big>
+        \nthe following export settings unless you <i>really</i> know what you\'re doing.
+        The default settings should work without problem with most SRS programs (such as Anki).</string>
+    <string name="Export_successful_info_msg"><big><b>Export successful!</b></big>
+        \nClick <b>Share</b> to share the file to some application, such as an Email client.
+        \n\nExported file can be found at:\n</string>
+        
     <string name="Cannot_hide_the_only_open_panel">Can\'t hide the only opened panel.</string>
     <string name="Fullscreen">Fullscreen</string>
     <string name="De_activate_scroll_sync">De/activate Scroll Synchronization</string>
@@ -248,6 +255,14 @@
     <string name="deactivated_scroll_sync">Deactivated Scroll synchronization.</string>
     <string name="Panel_hidden">Panel hidden.</string>
     <string name="Reappear_panel">Reappear panel</string>
+    <string name="Export">Export</string>
+    <string name="Fields_separator_colon">Fields separated by:</string>
+    <string name="Enclosed_in_quotation_marks">Enclosed in quotation marks (\"):</string>
+    <string name="Export_SRS_entries">Export SRS entries</string>
+    <string name="Close">Close</string>
+    <string name="Share_exported_file">Share exported file</string>
+    <string name="There_are_no_SRS_cards_to_export">There are no SRS cards to export.</string>
+    <string name="Encountered_an_error_while_exporting">Encountered an error while exporting.</string>
     
 
 </resources>

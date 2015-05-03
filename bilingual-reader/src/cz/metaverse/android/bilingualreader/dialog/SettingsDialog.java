@@ -91,7 +91,7 @@ public class SettingsDialog extends DialogFragment implements DialogInterface.On
 		} else {
 			// If there are no dictionaries, display info about that.
 			ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
-					R.array.spinner_no_dictionaries, android.R.layout.simple_spinner_dropdown_item);
+					R.array.spinner_no_dictionaries, android.R.layout.simple_spinner_item);
 
 			// Specify the layout to use when the list of choices appears and set the adapter
 			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

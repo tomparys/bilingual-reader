@@ -10,7 +10,7 @@
         android:id="@+id/share_menu_item"
         android:showAsAction="always"
         android:icon="@drawable/ic_action_share"
-        android:title="@string/share"/>
+        android:title="@string/Share"/>
     <item
         android:id="@+id/dictionary_menu_item"
         android:showAsAction="always"

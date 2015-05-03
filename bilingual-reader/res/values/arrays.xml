@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+         BEWARE, arrays are indexed only by their position,
+         therefore *reordering* them needs to be *mirrored in the Java code*.
+    -->
+
+    <array name="dialog_export_separator">
+        <item>semicolon (;)</item>
+        <item>comma (,)</item>
+        <item>tab (    )</item>
+    </array>
+
+</resources>
