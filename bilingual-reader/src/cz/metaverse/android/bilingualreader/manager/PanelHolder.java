@@ -372,36 +372,23 @@ public class PanelHolder {
 	}
 
 	/**
-	 * Go to next chapter,
-	 * if synchronized chapters are active, change chapter in both books.
+	 * Change chapter: Go to next or previous chapter.
+	 * If ChapterSync is active, change chapter in both books/panels.
 	 */
-	public void goToNextChapter() {
-		// TODO Unify with Prev Chapter
+	public void changeChapter(boolean forward) {
 		try {
-			setBookPage(book.goToNextChapter());
+			setBookPage(forward ? book.goToNextChapter() : book.goToPreviousChapter());
 
 			if (governor.isChapterSync()) {
 				if (sisterPanelHolder.book != null) {
-					sisterPanelHolder.setBookPage(sisterPanelHolder.book.goToNextChapter());
+					if (forward) {
+						sisterPanelHolder.setBookPage(sisterPanelHolder.book.goToNextChapter());
+					} else {
+						sisterPanelHolder.setBookPage(sisterPanelHolder.book.goToPreviousChapter());
+					}
 				}
-			}
-		} catch (Exception e) {
-			activity.errorMessage(activity.getString(R.string.error_cannotTurnPage));
-		}
-	}
-
-	/**
-	 * Go to previous chapter,
-	 * if synchronized chapters are active, change chapter in each books.
-	 */
-	public void goToPrevChapter() {
-		try {
-			setBookPage(book.goToPreviousChapter());
-
-			if (governor.isChapterSync()) {
-				if (sisterPanelHolder.book != null) {
-					sisterPanelHolder.setBookPage(sisterPanelHolder.book.goToPreviousChapter());
-				}
+			} else {
+				governor.setScrollSync(false);
 			}
 		} catch (Exception e) {
 			activity.errorMessage(activity.getString(R.string.error_cannotTurnPage));

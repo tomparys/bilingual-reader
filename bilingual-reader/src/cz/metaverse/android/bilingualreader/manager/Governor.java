@@ -289,6 +289,10 @@ public class Governor {
 		chapterSync = value;
 	}
 
+	public void setScrollSync(boolean value) {
+		scrollSync = value;
+	}
+
 	/**
 	 * Flips the state of SynchronizedChapters (active -> inactive, inactive -> active).
 	 */

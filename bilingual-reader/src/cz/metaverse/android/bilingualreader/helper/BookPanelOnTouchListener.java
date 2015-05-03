@@ -15,8 +15,8 @@ import android.view.Window;
 import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
-import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 import cz.metaverse.android.bilingualreader.manager.Governor;
+import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
 import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 
@@ -379,11 +379,11 @@ public class BookPanelOnTouchListener
 				if (diffX > quarterWidth && absDiffX > absDiffY) {
 					// Next chapter - If the swipe was to the right, over 1/4 of the screen wide,
 					//  and more broad than high.
-					panelHolder.goToNextChapter();
+					panelHolder.changeChapter(true);
 				} else if (diffX < -quarterWidth && absDiffX > absDiffY) {
 					// Previous chapter - If the swipe was to the left, over 1/4 of the screen wide,
 					//  and more broad than high.
-					panelHolder.goToPrevChapter();
+					panelHolder.changeChapter(false);
 				}
 			}
 		}
