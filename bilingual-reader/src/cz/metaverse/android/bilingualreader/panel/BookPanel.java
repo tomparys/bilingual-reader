@@ -283,6 +283,14 @@ public class BookPanel extends SplitPanel {
 	}
 
 	/**
+	 * Load the position within the page from before to be used when webView is instantiated.
+	 */
+	public void loadScrollPosition(SharedPreferences preferences) {
+		loadPositionX = preferences.getInt("positionX"+panelPosition, 0);
+		loadPositionY = preferences.getInt("positionY"+panelPosition, 0);
+	}
+
+	/**
 	 * Load state and content of the page.
 	 */
 	@Override
@@ -311,14 +319,6 @@ public class BookPanel extends SplitPanel {
 		}
 
 		loadScrollPosition(preferences);
-	}
-
-	/**
-	 * Load the position within the page from before to be used when webView is instantiated.
-	 */
-	public void loadScrollPosition(SharedPreferences preferences) {
-		loadPositionX = preferences.getInt("positionX"+panelPosition, 0);
-		loadPositionY = preferences.getInt("positionY"+panelPosition, 0);
 	}
 
 }
