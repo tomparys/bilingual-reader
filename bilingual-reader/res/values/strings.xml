@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="Description_of_dictionary_functionality">To allow integration with <i>any</i> installed
+         dictionary, please pick your desired dictionary from the following
+         list of all apps that handle text.</string>
+    <string name="close_panel_info_notice"><big><b>The More You Know</b></big>         \nYou don\'t have to close the panel, you can temporarily hide it by double tapping in it, <i>holding that second tap,</i> and swiping left or right! (Up or down in landscape mode.)
+        \n\nAnd that same gesture will bring it back up.</string>
+    <string name="hide_panel_info_notice"><big><b>The More You Know</b></big>         \nYou can hide a panel by double tapping in it, <i>holding that second tap,</i> and swiping
+        left or right! (Up or down in landscape mode.)
+        \n\nAnd that same gesture will bring it back up.</string>
+    <string name="panel_size_dialog_info_notice"><big><b>The More You Know</b></big>         \nYou can change panel size by double tapping anywhere on the text in the panels, <i>holding that second tap,</i> and swiping
+        up or down! (Left or right in landscape mode.)</string>
+    <string name="fullscreen_dialog_info_notice"><big><b>The More You Know</b></big>         \nYou can switch to and from the fullscreen mode by single tapping anywhere on the text in the panels!</string>
+    <string name="export_srs_dialog_info_text"><big><b>Do not change</b></big>         \nthe following export settings unless you <i>really</i> know what you\'re doing.
+        The default settings should work without problem with most SRS programs (such as Anki).</string>
+    <string name="Export_successful_info_msg"><big><b>Export successful!</b></big>         \nClick <b>Share</b> to share the file to some application, such as an Email client.
+        \n\nExported file can be found at:\n</string>
     <string name="app_name">Bilingual Reader</string>
-
-    <color name="dark_grey">#696969</color>
-
     <string name="Open_Book_1">Open Book 1</string>
     <string name="Open_Book_2">Open Book 2</string>
     <string name="Activate_bilingual_ebook">Activate bilingual ebook</string>
@@ -77,48 +89,15 @@
     <string name="SetSizeTitle">Upper Panel Size</string>
     <string name="LanguageChooserTitle">Choose two languages:</string>
     <string name="readingBilingualEbookBool">readingBilingualEbookBool</string>
-
-    <string-array name="ColorFont">
-        <item>Black</item>
-        <item>Red</item>
-        <item>Green</item>
-        <item>Blue</item>
-        <item>White</item>
-    </string-array>
-
     <string name="ChangeBackgroundColor">Background Color:</string>
-
-    <string-array name="ColorBack">
-        <item>White</item>
-        <item>Red</item>
-        <item>Green</item>
-        <item>Blue</item>
-        <item>Black</item>
-    </string-array>
-
     <string name="Sync_Scroll">Sync Scroll</string>
     <string name="ChangeFont">Font:</string>
-
-    <string-array name="FontStyle">
-        <item>Sans Serif</item>
-        <item>Serif</item>
-        <item>Monospace</item>
-    </string-array>
-
     <string name="Arial">Sans Serif</string>
     <string name="Serif">Serif</string>
     <string name="Monospace">Monospace</string>
     <string name="FontSize">Font Size:</string>
     <string name="LineHeight">Line Height:</string>
     <string name="TextAlign">Alignment:</string>
-
-    <string-array name="testAlignOption">
-        <item>Left</item>
-        <item>Center</item>
-        <item>Right</item>
-        <item>Justify</item>
-    </string-array>
-
     <string name="Left_Align">Left</string>
     <string name="Center_Align">Center</string>
     <string name="Right_Align">Right</string>
@@ -126,35 +105,7 @@
     <string name="px">px</string>
     <string name="open">Open...</string>
     <string name="Margin">Margin left, right (px):</string>
-
-    <string-array name="FontSize">
-        <item>100%</item>
-        <item>125%</item>
-        <item>150%</item>
-        <item>175%</item>
-        <item>200%</item>
-        <item>90%</item>
-    </string-array>
-    <string-array name="LineHeight">
-        <item>1em</item>
-        <item>1.25em</item>
-        <item>1.5em</item>
-        <item>1.75em</item>
-        <item>2em</item>
-        <item>0.9em</item>
-    </string-array>
-
     <string name="Justify">Justify</string>
-
-    <string-array name="Margin">
-        <item>0</item>
-        <item>5</item>
-        <item>10</item>
-        <item>15</item>
-        <item>20</item>
-        <item>25</item>
-    </string-array>
-
     <string name="title_activity_split_panel">SplitPanel</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
@@ -189,12 +140,6 @@
     <string name="Set_default_dictionary">Pick a default dictionary in the settings.</string>
     <string name="Test_this_dictionary_app">Test this dictionary app.</string>
     <string name="Dictionaries_that_work_with_this_app">Dictionaries that work with this app</string>
-
-    <string-array name="spinner_no_dictionaries">
-        <item>No available dictionaries,</item>
-        <item>please install some.</item>
-    </string-array>
-
     <string name="File_list_refreshed">File list refreshed.</string>
     <string name="action_bar_title">BR</string>
     <string name="button_reset_panel_size_to_50_50">Reset to 50/50</string>
@@ -214,9 +159,6 @@
     <string name="Delete">Delete</string>
     <string name="Sort_alphabetically">Sort alphabetically</string>
     <string name="Sort_by_last_added">Sort by last added</string>
-    <string name="Description_of_dictionary_functionality">To allow integration with <i>any</i> installed
-         dictionary, please pick your desired dictionary from the following
-         list of all apps that handle text.</string>
     <string name="Close_panel">Close panel</string>
     <string name="Hide_panel">Hide panel</string>
     <string name="Panel_1">Panel 1</string>
@@ -225,28 +167,6 @@
     <string name="Hide_Panel_2">Hide Panel 2</string>
     <string name="Close_Panel_1">Close Panel 1</string>
     <string name="Close_Panel_2">Close Panel 2</string>
-    
-    <string name="close_panel_info_notice"><big><b>The More You Know</b></big>
-        \nYou don\'t have to close the panel, you can temporarily hide it by double tapping in it,
-        <i>holding that second tap,</i> and swiping left or right! (Up or down in landscape mode.)
-        \n\nAnd that same gesture will bring it back up.</string>
-    <string name="hide_panel_info_notice"><big><b>The More You Know</b></big>
-        \nYou can hide a panel by double tapping in it, <i>holding that second tap,</i> and swiping
-        left or right! (Up or down in landscape mode.)
-        \n\nAnd that same gesture will bring it back up.</string>
-    <string name="panel_size_dialog_info_notice"><big><b>The More You Know</b></big>
-        \nYou can change panel size by double tapping anywhere on the text in the panels, <i>holding that second tap,</i> and swiping
-        up or down! (Left or right in landscape mode.)</string>
-    <string name="fullscreen_dialog_info_notice"><big><b>The More You Know</b></big>
-        \nYou can switch to and from the fullscreen mode by single tapping anywhere on the text in the panels!</string>
-        
-    <string name="export_srs_dialog_info_text"><big><b>Do not change</b></big>
-        \nthe following export settings unless you <i>really</i> know what you\'re doing.
-        The default settings should work without problem with most SRS programs (such as Anki).</string>
-    <string name="Export_successful_info_msg"><big><b>Export successful!</b></big>
-        \nClick <b>Share</b> to share the file to some application, such as an Email client.
-        \n\nExported file can be found at:\n</string>
-        
     <string name="Cannot_hide_the_only_open_panel">Can\'t hide the only opened panel.</string>
     <string name="Fullscreen">Fullscreen</string>
     <string name="De_activate_scroll_sync">De/activate Scroll Synchronization</string>
@@ -263,6 +183,5 @@
     <string name="Share_exported_file">Share exported file</string>
     <string name="There_are_no_SRS_cards_to_export">There are no SRS cards to export.</string>
     <string name="Encountered_an_error_while_exporting">Encountered an error while exporting.</string>
-    
 
 </resources>

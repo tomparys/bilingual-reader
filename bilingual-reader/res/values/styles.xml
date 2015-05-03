@@ -5,4 +5,6 @@
         <!-- All customizations can go here. -->
     </style>
 
+    <color name="dark_grey">#696969</color>
+
 </resources>

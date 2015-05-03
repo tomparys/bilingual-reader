@@ -6,10 +6,63 @@
          therefore *reordering* them needs to be *mirrored in the Java code*.
     -->
 
-    <array name="dialog_export_separator">
+    <string-array name="dialog_export_separator">
         <item>semicolon (;)</item>
         <item>comma (,)</item>
         <item>tab (    )</item>
-    </array>
+    </string-array>
+    <string-array name="spinner_no_dictionaries">
+        <item>No available dictionaries,</item>
+        <item>please install some.</item>
+    </string-array>
+    <string-array name="ColorFont">
+        <item>Black</item>
+        <item>Red</item>
+        <item>Green</item>
+        <item>Blue</item>
+        <item>White</item>
+    </string-array>
+    <string-array name="ColorBack">
+        <item>White</item>
+        <item>Red</item>
+        <item>Green</item>
+        <item>Blue</item>
+        <item>Black</item>
+    </string-array>
+    <string-array name="Margin">
+        <item>0</item>
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>20</item>
+        <item>25</item>
+    </string-array>
+    <string-array name="FontSize">
+        <item>100%</item>
+        <item>125%</item>
+        <item>150%</item>
+        <item>175%</item>
+        <item>200%</item>
+        <item>90%</item>
+    </string-array>
+    <string-array name="LineHeight">
+        <item>1em</item>
+        <item>1.25em</item>
+        <item>1.5em</item>
+        <item>1.75em</item>
+        <item>2em</item>
+        <item>0.9em</item>
+    </string-array>
+    <string-array name="testAlignOption">
+        <item>Left</item>
+        <item>Center</item>
+        <item>Right</item>
+        <item>Justify</item>
+    </string-array>
+    <string-array name="FontStyle">
+        <item>Sans Serif</item>
+        <item>Serif</item>
+        <item>Monospace</item>
+    </string-array>
 
 </resources>
