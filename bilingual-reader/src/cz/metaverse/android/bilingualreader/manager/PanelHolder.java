@@ -507,9 +507,10 @@ public class PanelHolder {
 	 * If necessary, recreates the panels from last time based on saved preferences,
 	 *  and displays them.
 	 * @param preferences
+	 * @param creatingActivity  Whether or not the activity is just being created.
 	 * @return 1 if this panel now exists, 0 if it doesn't
 	 */
-	public int loadPanel(SharedPreferences preferences) {
+	public int loadPanel(SharedPreferences preferences, boolean creatingActivity) {
 		Log.d(LOG, "PanelHolder.loadPanel");
 
 		// If the panel doesn't exist or if it doesn't appear to be ok, recreate it.
@@ -524,6 +525,12 @@ public class PanelHolder {
 							sisterPanelHolder.book.getAudio());
 				}
 				panel.loadState(preferences);
+			}
+		// If the panel exists and is sound, but we're (re)creating the activity.
+		} else if (creatingActivity) {
+			if (isBookPanel()) {
+				// Scroll position gets lost when changing to/from landscape mod, so load it.
+				getBookPanel().loadScrollPosition(preferences);
 			}
 		}
 

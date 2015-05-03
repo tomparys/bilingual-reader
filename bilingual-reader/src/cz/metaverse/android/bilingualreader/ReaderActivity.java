@@ -187,7 +187,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		// Load persistent state and create panels from before if needed.
 		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 		governor = Governor.loadAndGetSingleton(this, preferences, creatingActivity);
-		panelCount = governor.loadPanels(preferences);
+		panelCount = governor.loadPanels(preferences, creatingActivity);
 	}
 
 	/**

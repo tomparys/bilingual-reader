@@ -388,15 +388,16 @@ public class Governor {
 	 * If necessary, recreates the panels from last time based on saved preferences,
 	 *  and displays them.
 	 * @param preferences SharedPreferences to load from.
+	 * @param creatingActivity  Whether or not the activity is just being created.
 	 * @return Number of now existing panels.
 	 */
-	public int loadPanels(SharedPreferences preferences) {
+	public int loadPanels(SharedPreferences preferences, boolean creatingActivity) {
 		Log.d(LOG, "Governor.loadPanels");
 
 		int panelCount = 0;
 
 		for (PanelHolder ph : panelHolder) {
-			panelCount += ph.loadPanel(preferences);
+			panelCount += ph.loadPanel(preferences, creatingActivity);
 		}
 
 		return panelCount;
