@@ -464,13 +464,13 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 
 		// Hide panel / Reappear panel
 		case R.id.drawer_hide_panel_button:
-			if (governor.isOnlyOnePanelOpen()) {
-				// Can't hide the only open panel.
-				Toast.makeText(this, R.string.Cannot_hide_the_only_open_panel, Toast.LENGTH_SHORT).show();
-
-			} else if (governor.isAnyPanelHidden()) {
+			if (governor.isAnyPanelHidden()) {
 				// Reappear (un-hide) the hidden panel.
 				governor.reappearPanel();
+
+			} else if (governor.isOnlyOnePanelOpen()) {
+				// Can't hide the only open panel.
+				Toast.makeText(this, R.string.Cannot_hide_the_only_open_panel, Toast.LENGTH_SHORT).show();
 
 			} else {
 				// Open a HidePanelDialog.

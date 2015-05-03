@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Log;
+import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.helper.BookPanelState;
@@ -144,9 +145,15 @@ public class PanelHolder {
 	 * Hides this panel if the other panel is not hidden.
 	 */
 	public void hidePanel() {
-		// No need to test for panel.isVisible(), because hiding it twice doesn't matter anyway.
-		if ((governor.hiddenPanel == null || governor.hiddenPanel == this) && panel != null) {
-			activity.hidePanel(panel);
+		if (governor.isOnlyOnePanelOpen()) {
+			// Can't hide the only open panel.
+			Toast.makeText(activity, R.string.Cannot_hide_the_only_open_panel, Toast.LENGTH_SHORT).show();
+		} else if ((governor.hiddenPanel == null || governor.hiddenPanel == this)) {
+			// No need to test for panel.isVisible(), because hiding it twice doesn't matter anyway.
+			if (panel != null) {
+				activity.hidePanel(panel);
+			}
+
 			governor.hiddenPanel = this;
 			isPanelHidden = true;
 
@@ -158,13 +165,14 @@ public class PanelHolder {
 	 * Reappears this panel.
 	 */
 	public void reappearPanel() {
-		if (panel != null && panel.isHidden()) {
+		if (panel != null) {
 			activity.showPanel(panel);
-			governor.hiddenPanel = null;
-			isPanelHidden = false;
-
-			activity.setDrawerHideOrReappearPanelButton(true);
 		}
+
+		governor.hiddenPanel = null;
+		isPanelHidden = false;
+
+		activity.setDrawerHideOrReappearPanelButton(true);
 	}
 
 	/**
@@ -221,6 +229,9 @@ public class PanelHolder {
 
 			// If one of the panels gets closed, user no longer reads bilingual ebook in a bilingual mode.
 			governor.setReadingBilingualEbook(false);
+
+			// If one of the panels was hidden, reappear it, so we don't end up with no panel visible.
+			governor.reappearPanel();
 
 			// If this is the 1st panel (pos=0), and the sister panel holder has an open panel,
 			// switch panel holder instances so that it is now first.
