@@ -406,6 +406,17 @@ public class PanelHolder {
 			String cleanPath = pathOfPage.split("#", 2)[0];
 			if ((cleanPath.equals(book.getCurrentPageURL())) || (book.getPageIndex(cleanPath) >= 0)) {
 				enumState = BookPanelState.books;
+
+				// TODO Load scroll position and offset from database
+
+				if (governor.isScrollSync()) {
+					// TODO rework after we get offset loaded from database
+
+					SelectionWebView swv = getBookPanel().getWebView();
+					if (swv != null) {
+						swv.resetScrollSync();
+					}
+				}
 			}
 		}
 

@@ -228,9 +228,7 @@ public class BookPanel extends SplitPanel {
 
 		if (created) {
 			webView.loadDataWithBaseURL(baseUrl, data,
-					getActivity().getApplicationContext().getResources().getString(R.string.textOrHTML),
-					null, null);
-			webView.resetScrollSync();
+					getActivity().getString(R.string.textOrHTML), null, null);
 		}
 	}
 
@@ -243,11 +241,13 @@ public class BookPanel extends SplitPanel {
 
 		if(created) {
 			webView.loadUrl(path);
-
-			// TODO Move reestScrollSync to panelHolder.setBookPage()
-			webView.resetScrollSync();
 		}
 	}
+
+
+	// ============================================================================================
+	//		Save and load state to preferences
+	// ============================================================================================
 
 	/**
 	 * This method gets called by our SelectionWebView when the WebView has definitively finished
@@ -269,13 +269,11 @@ public class BookPanel extends SplitPanel {
 			webView.setScrollY(Math.round(loadPositionY * webView.getContentHeight()));
 			loadPositionX = null;
 			loadPositionY = null;
+
+			// Load the scroll sync offset, etc.
+			webView.loadStateWhenContentRendered();
 		}
 	}
-
-
-	// ============================================================================================
-	//		Save and load state to preferences
-	// ============================================================================================
 
 	/**
 	 * Save state and content of the page.
@@ -298,6 +296,11 @@ public class BookPanel extends SplitPanel {
 			editor.putInt("positionX"+panelPosition, webView.getScrollX());
 			editor.putFloat("positionY"+panelPosition,
 					(float) webView.getScrollY() / (float) webView.getContentHeight());
+		}
+
+		// Load the scroll sync offset, etc.
+		if (webView != null) {
+			webView.saveState(editor);
 		}
 	}
 

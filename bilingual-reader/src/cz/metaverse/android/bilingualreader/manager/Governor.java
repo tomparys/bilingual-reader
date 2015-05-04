@@ -31,6 +31,7 @@ import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.helper.BookPanelState;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
+import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 
 /**
  *
@@ -316,6 +317,16 @@ public class Governor {
 
 	public void setScrollSync(boolean value) {
 		scrollSync = value;
+
+		if (scrollSync) {
+			if (getPanelHolder(0).isBookPanel()) {
+				SelectionWebView selectionWebView = getPanelHolder(0).getBookPanel().getWebView();
+				if (selectionWebView != null) {
+					// Reset scroll sync offset
+					selectionWebView.resetScrollSync();
+				}
+			}
+		}
 	}
 
 	/**

@@ -2,6 +2,8 @@ package cz.metaverse.android.bilingualreader.selectionwebview;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Canvas;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -54,12 +56,13 @@ public class SelectionWebView extends WebView {
 	private boolean userScrollingPaused = false;
 	private boolean noScrollAtAll = false;
 
-	// ScrollSync method offset
+	// ScrollSync method: offset
 	private int scrollSyncOffset;
-	private int scrollYwhenPaused;
+	private int scrollPositionYwhenPaused;
 
 	// The previous returned value from getContentHeight().
 	int previousContentHeight = 0;
+
 
 
 	/**
@@ -152,6 +155,35 @@ public class SelectionWebView extends WebView {
 				bookPanel.onFinishedRenderingContent();
 			}
 		}
+	}
+
+	/**
+	 * Loads the ScollSync variables from preferences.
+	 */
+	public void loadStateWhenContentRendered() {
+		SharedPreferences preferences = readerActivity.getPreferences(Context.MODE_PRIVATE);
+
+		// Load ScrollSync offset
+		float load_scrollSyncOffset = preferences.getFloat("SelectionWV_scrollSyncOffset"+panelPosition, 0f);
+		scrollSyncOffset = Math.round(load_scrollSyncOffset * computeMaxScrollY());
+
+		Log.d(LOG, "SelectionWebView.loadStateWhenContentRendered, scrollSyncOffset: " + scrollSyncOffset
+				+ ", computeMaxScrollY(): " + computeMaxScrollY());
+	}
+
+	/**
+	 * Saves the ScrollSync variables, such as offset.
+	 */
+	public void saveState(Editor editor) {
+		// Resumes scroll sync if it was currently paused, to compute the current offset.
+		resumeScrollSync();
+
+		// Save ScrollSync offset
+		editor.putFloat("SelectionWV_scrollSyncOffset"+panelPosition,
+				(float) scrollSyncOffset / (float) computeMaxScrollY());
+
+		Log.d(LOG, "SelectionWebView.saveState, scrollSyncOffset: " + scrollSyncOffset
+				+ ", computeMaxScrollY(): " + computeMaxScrollY());
 	}
 
 
@@ -362,7 +394,7 @@ public class SelectionWebView extends WebView {
 			switch (scrollSyncMethod) {
 
 			case percentual_withOffset:
-				scrollYwhenPaused = getScrollY();
+				scrollPositionYwhenPaused = getScrollY();
 				break;
 
 			default:
@@ -387,7 +419,7 @@ public class SelectionWebView extends WebView {
 				// Because the position equation isn't symmetrical,
 				// we have to compute offset differently in each panel:
 				if (panelPosition == 0) {
-					scrollSyncOffset += getScrollY() - scrollYwhenPaused;
+					scrollSyncOffset += getScrollY() - scrollPositionYwhenPaused;
 				} else {
 					// If maxScrollY is positive.
 					int computedMaxScrollY = computeMaxScrollY();
@@ -397,7 +429,7 @@ public class SelectionWebView extends WebView {
 						SelectionWebView sisterWV = getSisterWebView();
 						if (sisterWV != null) {
 
-							scrollSyncOffset += (getScrollY() - scrollYwhenPaused)
+							scrollSyncOffset += (getScrollY() - scrollPositionYwhenPaused)
 									* sisterWV.computeMaxScrollY() / computedMaxScrollY;
 						}
 					}
