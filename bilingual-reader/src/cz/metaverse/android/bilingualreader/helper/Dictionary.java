@@ -131,7 +131,7 @@ public class Dictionary implements Comparable<Dictionary> {
 	 * Opens the default dictionary (if one is set and available) and searches for given text.
 	 * @return	Whether a dictionary was launched or not.
 	 */
-	public static boolean openDefault(Activity activity, String text) {
+	public static boolean openDefault(ReaderActivity activity, String text) {
 		if (getDefault(activity) != null) {
 			getDefault(activity).open(activity, text);
 			return true;
@@ -143,7 +143,7 @@ public class Dictionary implements Comparable<Dictionary> {
 	 * Sets the default dictionary into preferences.
 	 * @param activity	ReaderActivity instance to get its shared preferences
 	 */
-	public static void setDefault(Activity activity, Dictionary dictionary) {
+	public static void setDefault(ReaderActivity activity, Dictionary dictionary) {
 		// Save the value to shared preferences
 		SharedPreferences.Editor editor = activity.getPreferences(Context.MODE_PRIVATE).edit();
 		// Save the packageName of the given dictionary into preferences
@@ -159,10 +159,10 @@ public class Dictionary implements Comparable<Dictionary> {
 	 * @param activity	ReaderActivity instance to get its shared preferences
 	 * @return			If no default is set, or the default one is no longer available, returns null.
 	 */
-	public static Dictionary getDefault(Activity activity) {
+	public static Dictionary getDefault(ReaderActivity activity) {
 		if (defaultDictionary == null) {
 			// Load default dictionary from preferences.
-			SharedPreferences preferences = ((ReaderActivity) activity).getPreferences(Context.MODE_PRIVATE);
+			SharedPreferences preferences = activity.getPreferences(Context.MODE_PRIVATE);
 			String defaultDictionaryString = preferences.getString(
 					activity.getString(R.string.putString_defaultDictionary), null);
 

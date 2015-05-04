@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.R;
@@ -18,6 +19,9 @@ import cz.metaverse.android.bilingualreader.helper.Dictionary;
  *
  */
 public class WebAppInterface {
+
+	private static final String LOG = "WebAppInterface";
+
 	ReaderActivity activity;
 
 	WebAppInterface(ReaderActivity activity) {
@@ -55,7 +59,11 @@ public class WebAppInterface {
 
 		// Open dictionary
 		case R.id.dictionary_menu_item:
+			Log.d(LOG, LOG + " - Dictionary menu item clicked.");
+
 			if (!Dictionary.openDefault(activity, selectedText)) {
+				Log.d(LOG, LOG + " - No default dictionary found.");
+
 				Toast.makeText(activity, R.string.Set_default_dictionary, Toast.LENGTH_SHORT).show();
 				activity.openSettings();
 			}

@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.helper.Dictionary;
 
 /**
@@ -81,7 +82,7 @@ public class SettingsDialog extends DialogFragment implements DialogInterface.On
 			spinner.setAdapter(adapter);
 
 			// Set the selected item in the spinner
-			Dictionary defaultDict = Dictionary.getDefault(getActivity());
+			Dictionary defaultDict = Dictionary.getDefault((ReaderActivity) getActivity());
 			if (defaultDict != null) {
 				int defaultDictPosition = dictionaries.indexOf(defaultDict);
 				if (defaultDictPosition != -1) {
@@ -107,7 +108,7 @@ public class SettingsDialog extends DialogFragment implements DialogInterface.On
 		// Spinner
 		if (dictionaries.size() > 0) {
 			Dictionary selectedDict = (Dictionary) spinner.getSelectedItem();
-			Dictionary.setDefault(getActivity(), selectedDict);
+			Dictionary.setDefault((ReaderActivity) getActivity(), selectedDict);
 		}
 	}
 
