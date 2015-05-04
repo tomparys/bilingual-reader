@@ -2,6 +2,7 @@ package cz.metaverse.android.bilingualreader.selectionwebview;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -17,8 +18,8 @@ import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.helper.BookPanelState;
 import cz.metaverse.android.bilingualreader.helper.ScrollSyncMethod;
-import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 import cz.metaverse.android.bilingualreader.manager.Governor;
+import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
 
 /**
@@ -34,6 +35,7 @@ public class SelectionWebView extends WebView {
 	private ReaderActivity readerActivity;
 	private Governor governor;
 	private PanelHolder panelHolder;
+	private BookPanel bookPanel;
 
 	/* For setting custom Contextual Action Bar (CAB) */
 	private ActionMode mActionMode;
@@ -55,6 +57,9 @@ public class SelectionWebView extends WebView {
 	// ScrollSync method offset
 	private int scrollSyncOffset;
 	private int scrollYwhenPaused;
+
+	// The previous returned value from getContentHeight().
+	int previousContentHeight = 0;
 
 
 	/**
@@ -99,6 +104,7 @@ public class SelectionWebView extends WebView {
 		//Log.d(LOG, "setPanelHolderAndPosition");
 
 		this.panelHolder = panelHolder;
+		bookPanel = panelHolder.getBookPanel();
 		panelPosition = position;
 	}
 
@@ -121,6 +127,31 @@ public class SelectionWebView extends WebView {
 
 		//Log.v(LOG, "[" + panelPos + "] getSisterWebView - null panelHolder");
 		return null;
+	}
+
+	/**
+	 * Overriding onDraw is necessary, because it is a tested method (See ParagraphPositionsWebView)
+	 *  of a chance to figure out when the WebView has finished rendering its contents and we can
+	 *  obtain a new non-zero getContentHeight() value.
+	 *
+	 * Warning: getContentHeight either returns 0 when content isn't yet rendered,
+	 *  or a non-zero value that is >= the height of the WebView display area.
+	 * Therefore if user opens two pages that are shorter than the WebView display area after each other,
+	 *  we will NOT get notified that the content has finished rendering.
+	 * This is, however, not an issue, because in such short pages, loading the scroll position
+	 *   from preferences makes no sense anyway.
+	 */
+	@Override
+	protected void onDraw(Canvas canvas) {
+		super.onDraw(canvas);
+
+		if (previousContentHeight != getContentHeight() && getProgress() == 100) {
+			if (bookPanel != null) {
+				previousContentHeight = getContentHeight();
+
+				bookPanel.onFinishedRenderingContent();
+			}
+		}
 	}
 
 

@@ -62,7 +62,8 @@ public class BookPanel extends SplitPanel {
 	protected String displayedData;
 
 	// Position within the page loaded from before
-	protected Integer loadPositionX, loadPositionY;
+	protected Integer loadPositionX;
+	protected Float loadPositionY;
 
 	// Our customized WebView and its onTouchListener
 	protected SelectionWebView webView;
@@ -242,15 +243,32 @@ public class BookPanel extends SplitPanel {
 
 		if(created) {
 			webView.loadUrl(path);
-			webView.resetScrollSync();
 
-			// Load position from before if this is a page opening from before.
-			if (loadPositionX != null && loadPositionY != null) {
-				webView.setScrollX(loadPositionX);
-				webView.setScrollY(loadPositionY);
-				loadPositionX = null;
-				loadPositionY = null;
-			}
+			// TODO Move reestScrollSync to panelHolder.setBookPage()
+			webView.resetScrollSync();
+		}
+	}
+
+	/**
+	 * This method gets called by our SelectionWebView when the WebView has definitively finished
+	 * rendering its contents and getContentHeight() returns a new non-zero value.
+	 *
+	 * Warning: May not get called when two pages shorter than the WebView display area get opened after
+	 *  each other. For details see SelectionWebView.onDraw() javadoc.
+	 * This is, however, not an issue, because in such short pages, loading the scroll position
+	 *   from preferences makes no sense anyway.
+	 */
+	public void onFinishedRenderingContent() {
+		// Load position from before if this is a page opening from before.
+		if (loadPositionX != null && loadPositionY != null) {
+
+			Log.d(LOG, "BookPanel.onFinishedRenderingContent, loadY: " + loadPositionY
+					+ ", contentHeight: " + webView.getContentHeight());
+
+			webView.setScrollX(loadPositionX);
+			webView.setScrollY(Math.round(loadPositionY * webView.getContentHeight()));
+			loadPositionX = null;
+			loadPositionY = null;
 		}
 	}
 
@@ -278,7 +296,8 @@ public class BookPanel extends SplitPanel {
 		// Save the position within the page.
 		if (webView != null) {
 			editor.putInt("positionX"+panelPosition, webView.getScrollX());
-			editor.putInt("positionY"+panelPosition, webView.getScrollY());
+			editor.putFloat("positionY"+panelPosition,
+					(float) webView.getScrollY() / (float) webView.getContentHeight());
 		}
 	}
 
@@ -287,7 +306,7 @@ public class BookPanel extends SplitPanel {
 	 */
 	public void loadScrollPosition(SharedPreferences preferences) {
 		loadPositionX = preferences.getInt("positionX"+panelPosition, 0);
-		loadPositionY = preferences.getInt("positionY"+panelPosition, 0);
+		loadPositionY = preferences.getFloat("positionY"+panelPosition, 0f);
 	}
 
 	/**
