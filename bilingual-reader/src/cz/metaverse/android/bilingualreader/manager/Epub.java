@@ -78,7 +78,7 @@ public class Epub {
 	private String pathOPF;
 	private String metadata;
 
-	private String fileName;
+	private String filePath;
 	FileInputStream fileInputStream;
 	private String actualCSS = "";
 	private String[][] audio;
@@ -89,12 +89,12 @@ public class Epub {
 
 	/**
 	 * Initialize EpubManupulator with a book from given fileName.
-	 * @param fileName		Path of the epub to work with
+	 * @param filePath		Path of the epub to work with
 	 * @param destFolder 	Subpath where to unzip the ebook (usually an index 0-2)
 	 * @param theContext 	Base context of the encapsulating activity
 	 * @throws Exception
 	 */
-	public Epub(String fileName, String destFolder,
+	public Epub(String filePath, String destFolder,
 			Context theContext) throws Exception {
 
 		List<String> spineElements;
@@ -104,11 +104,11 @@ public class Epub {
 			context = theContext;
 		}
 
-		this.fileInputStream = new FileInputStream(fileName);
+		this.fileInputStream = new FileInputStream(filePath);
 		this.book = (new EpubReader()).readEpub(fileInputStream);
 		this.title = book.getTitle();
 
-		this.fileName = fileName;
+		this.filePath = filePath;
 		this.decompressedFolder = destFolder;
 
 		Spine spine = book.getSpine();
@@ -123,7 +123,7 @@ public class Epub {
 
 		this.spineElementPaths = new String[spineElements.size()];
 
-		unzipEpub(fileName, tempLocation + decompressedFolder);
+		unzipEpub(filePath, tempLocation + decompressedFolder);
 
 		pathOPF = getPathOPF(tempLocation + decompressedFolder);
 
@@ -144,7 +144,7 @@ public class Epub {
 
 	/**
 	 * Initialize EpubManupulator with a book from given fileName with an already decompressed contents.
-	 * @param fileName		Path of the epub to work with
+	 * @param filePath		Path of the epub to work with
 	 * @param folder		Path of the folder where the epub is decompressed
 	 * @param spineIndex
 	 * @param language
@@ -153,7 +153,7 @@ public class Epub {
 	 *
 	 * TODO unify with the first initializator.
 	 */
-	public Epub(String fileName, String folder, int spineIndex,
+	public Epub(String filePath, String folder, int spineIndex,
 			int language, Context theContext) throws Exception {
 		List<String> spineElements;
 		List<SpineReference> spineList;
@@ -162,10 +162,10 @@ public class Epub {
 			context = theContext;
 		}
 
-		this.fileInputStream = new FileInputStream(fileName);
+		this.fileInputStream = new FileInputStream(filePath);
 		this.book = (new EpubReader()).readEpub(fileInputStream);
 		this.title = book.getTitle();
-		this.fileName = fileName;
+		this.filePath = filePath;
 		this.decompressedFolder = folder;
 
 		Spine spine = book.getSpine();
@@ -198,7 +198,7 @@ public class Epub {
 	public boolean selfCheck() {
 		boolean ok = title != null && currentPage != null && spineElementPaths != null
 				&& spineElementPaths.length > 0 && decompressedFolder != null && decompressedFolder != null
-				&& metadata != null && fileName != null;
+				&& metadata != null && filePath != null;
 
 		Log.d(LOG, "Epub selfCheck - " + ok);
 		return ok;
@@ -455,7 +455,7 @@ public class Epub {
 
 		// Recreate ToC because its links are now pointing to the old file locations.
 		if (book == null) {
-			this.fileInputStream = new FileInputStream(fileName);
+			this.fileInputStream = new FileInputStream(filePath);
 			this.book = (new EpubReader()).readEpub(fileInputStream);
 		}
 		createTableOfContentsFile();
@@ -939,6 +939,10 @@ public class Epub {
 		return title;
 	}
 
+	public String getFilePath() {
+		return filePath;
+	}
+
 	public int getCurrentSpineElementIndex() {
 		return currentSpineElementIndex;
 	}
@@ -956,7 +960,7 @@ public class Epub {
 	}
 
 	public String getFileName() {
-		return fileName;
+		return filePath;
 	}
 
 	public String getDecompressedFolder() {
