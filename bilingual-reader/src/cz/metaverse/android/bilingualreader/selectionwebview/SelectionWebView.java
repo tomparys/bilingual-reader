@@ -333,7 +333,7 @@ public class SelectionWebView extends WebView {
 									* sisterWV.computeMaxScrollY() / computedMaxScrollY;
 						} else {
 							scrollValue = getScrollY()
-									* sisterWV.computeMaxScrollY() / computedMaxScrollY - scrollSyncOffset;
+									* sisterWV.computeMaxScrollY() / computedMaxScrollY + scrollSyncOffset;
 						}
 
 						/*Log.v(LOG, "[" + panelPos + "] computeScroll:  from " + getScrollY()
@@ -387,7 +387,7 @@ public class SelectionWebView extends WebView {
 	public void pauseScrollSync() {
 		// Pause only if we were really user scrolling and not paused.
 		if (userIsScrolling && !userScrollingPaused) {
-			//Log.d(LOG, "[" + panelPos + "] pauseScrollSync for now");
+			Log.d(LOG, "SelectionWebView.[" + panelPosition + "] pauseScrollSync for now");
 
 			userScrollingPaused = true;
 
@@ -409,7 +409,7 @@ public class SelectionWebView extends WebView {
 	public void resumeScrollSync() {
 		// Make resume computations only if we were really user scrolling and paused.
 		if (userIsScrolling && userScrollingPaused) {
-			//Log.d(LOG, "[" + panelPos + "] resumeScrollSync went through");
+			Log.d(LOG, "SelectionWebView.[" + panelPosition + "] resumeScrollSync went through");
 
 			userScrollingPaused = false;
 
@@ -429,12 +429,12 @@ public class SelectionWebView extends WebView {
 						SelectionWebView sisterWV = getSisterWebView();
 						if (sisterWV != null) {
 
-							scrollSyncOffset += (getScrollY() - scrollPositionYwhenPaused)
+							scrollSyncOffset += (scrollPositionYwhenPaused - getScrollY())
 									* sisterWV.computeMaxScrollY() / computedMaxScrollY;
 						}
 					}
 				}
-				//Log.d(LOG, "[" + panelPos + "] new offset: " + scrollSyncOffset);
+				Log.d(LOG, "SelectionWebView.[" + panelPosition + "] new offset: " + scrollSyncOffset);
 				break;
 
 			default:
@@ -487,8 +487,9 @@ public class SelectionWebView extends WebView {
 	 * Sets corresponding data for the ScrollSyncMethod offset method.
 	 */
 	public void setCorrespondingScrollSyncOffset(int offset) {
-		//Log.d(LOG, "[" + panelPos + "] received new offset: " + offset);
-		scrollSyncOffset = -offset;
+		scrollSyncOffset = offset;
+
+		Log.d(LOG, "SelectionWebView.[" + panelPosition + "] received new offset: " + scrollSyncOffset);
 	}
 
 	/**
