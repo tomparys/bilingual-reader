@@ -4,18 +4,34 @@
     <string name="Description_of_dictionary_functionality">To allow integration with <i>any</i> installed
          dictionary, please pick your desired dictionary from the following
          list of all apps that handle text.</string>
-    <string name="close_panel_info_notice"><big><b>The More You Know</b></big>         \nYou don\'t have to close the panel, you can temporarily hide it by double tapping in it, <i>holding that second tap,</i> and swiping left or right! (Up or down in landscape mode.)
+         
+    <string name="close_panel_info_notice"><big><b>The More You Know</b></big>
+        \nYou don\'t have to close the panel, you can temporarily hide it by double tapping in it,
+        <i>holding that second tap,</i> and swiping left or right! (Up or down in landscape mode.)
         \n\nAnd that same gesture will bring it back up.</string>
-    <string name="hide_panel_info_notice"><big><b>The More You Know</b></big>         \nYou can hide a panel by double tapping in it, <i>holding that second tap,</i> and swiping
+        
+    <string name="hide_panel_info_notice"><big><b>The More You Know</b></big>
+        \nYou can hide a panel by double tapping in it, <i>holding that second tap,</i> and swiping
         left or right! (Up or down in landscape mode.)
         \n\nAnd that same gesture will bring it back up.</string>
-    <string name="panel_size_dialog_info_notice"><big><b>The More You Know</b></big>         \nYou can change panel size by double tapping anywhere on the text in the panels, <i>holding that second tap,</i> and swiping
-        up or down! (Left or right in landscape mode.)</string>
-    <string name="fullscreen_dialog_info_notice"><big><b>The More You Know</b></big>         \nYou can switch to and from the fullscreen mode by single tapping anywhere on the text in the panels!</string>
-    <string name="export_srs_dialog_info_text"><big><b>Do not change</b></big>         \nthe following export settings unless you <i>really</i> know what you\'re doing.
+        
+    <string name="panel_size_dialog_info_notice"><big><b>The More You Know</b></big>
+        \nYou can change panel size by double tapping anywhere on the text in the panels,
+        <i>holding that second tap,</i> and swiping up or down! (Left or right in landscape mode.)</string>
+        
+    <string name="fullscreen_dialog_info_notice"><big><b>The More You Know</b></big>
+        \nYou can switch to and from the fullscreen mode by single tapping
+        anywhere on the text in the panels!</string>
+        
+    <string name="export_srs_dialog_info_text"><big><b>Do not change</b></big>
+        \nthe following export settings unless you <i>really</i> know what you\'re doing.
         The default settings should work without problem with most SRS programs (such as Anki).</string>
-    <string name="Export_successful_info_msg"><big><b>Export successful!</b></big>         \nClick <b>Share exported file</b> to open the file in some other application, such as an attachment in an Email client.
+        
+    <string name="Export_successful_info_msg"><big><b>Export successful!</b></big>
+        \nClick <b>Share exported file</b> to open the file in some other application,
+        such as an attachment in an Email client.
         \n\nExported file can be found at:\n</string>
+        
     <string name="app_name">Bilingual Reader</string>
     <string name="Open_Book_1">Open Book 1</string>
     <string name="Open_Book_2">Open Book 2</string>
