@@ -9,7 +9,7 @@ import android.util.Log;
 import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
-import cz.metaverse.android.bilingualreader.helper.BookPanelState;
+import cz.metaverse.android.bilingualreader.enums.BookPanelState;
 import cz.metaverse.android.bilingualreader.panel.AudioPanel;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;

@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package cz.metaverse.android.bilingualreader.helper;
+package cz.metaverse.android.bilingualreader.enums;
 
 /**
  *

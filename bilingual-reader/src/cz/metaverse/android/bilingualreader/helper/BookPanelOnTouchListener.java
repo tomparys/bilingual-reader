@@ -14,6 +14,7 @@ import android.view.View.OnTouchListener;
 import android.view.Window;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
+import cz.metaverse.android.bilingualreader.enums.BookPanelState;
 import cz.metaverse.android.bilingualreader.manager.Governor;
 import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;

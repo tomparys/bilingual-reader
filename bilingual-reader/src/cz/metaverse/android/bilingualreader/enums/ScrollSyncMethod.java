@@ -1,4 +1,4 @@
-package cz.metaverse.android.bilingualreader.helper;
+package cz.metaverse.android.bilingualreader.enums;
 
 /**
  *
