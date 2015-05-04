@@ -49,7 +49,7 @@ public class SRSDatabaseTable {
 	private static final String [] allColumns = new String[] {COL_HELP_ID, COL_WORD, COL_DEFINITION};
 
 	// Database info
-	private static final String DATABASE_NAME = "BILINGUAL-READER";
+	private static final String DATABASE_NAME = "BILINGUAL_READER";
 	private static final String VIRTUAL_TABLE_NAME = "SRS"; // We're creating a virtual SQLite FTS3 table
 	private static final int DATABASE_VERSION = 1;
 
