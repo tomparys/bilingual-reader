@@ -12,6 +12,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 
@@ -21,6 +22,8 @@ import cz.metaverse.android.bilingualreader.ReaderActivity;
  *
  */
 public class Dictionary implements Comparable<Dictionary> {
+
+	private static final String LOG = "Dictionary";
 
 	// Statically stored the default dictionary.
 	private static Dictionary defaultDictionary;
@@ -166,8 +169,12 @@ public class Dictionary implements Comparable<Dictionary> {
 			String defaultDictionaryString = preferences.getString(
 					activity.getString(R.string.putString_defaultDictionary), null);
 
-			if (respondsPackageToIntent(activity, defaultDictionaryString)) {
-				defaultDictionary = new Dictionary(defaultDictionaryString);
+			Log.d(LOG, LOG + ".getDefault: defaultDictionaryString=" + defaultDictionaryString);
+
+			if (defaultDictionaryString != null) {
+				if (respondsPackageToIntent(activity, defaultDictionaryString)) {
+					defaultDictionary = new Dictionary(defaultDictionaryString);
+				}
 			}
 		}
 
