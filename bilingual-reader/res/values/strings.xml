@@ -14,7 +14,7 @@
     <string name="fullscreen_dialog_info_notice"><big><b>The More You Know</b></big>         \nYou can switch to and from the fullscreen mode by single tapping anywhere on the text in the panels!</string>
     <string name="export_srs_dialog_info_text"><big><b>Do not change</b></big>         \nthe following export settings unless you <i>really</i> know what you\'re doing.
         The default settings should work without problem with most SRS programs (such as Anki).</string>
-    <string name="Export_successful_info_msg"><big><b>Export successful!</b></big>         \nClick <b>Share</b> to share the file to some application, such as an Email client.
+    <string name="Export_successful_info_msg"><big><b>Export successful!</b></big>         \nClick <b>Share exported file</b> to open the file in some other application, such as an attachment in an Email client.
         \n\nExported file can be found at:\n</string>
     <string name="app_name">Bilingual Reader</string>
     <string name="Open_Book_1">Open Book 1</string>
