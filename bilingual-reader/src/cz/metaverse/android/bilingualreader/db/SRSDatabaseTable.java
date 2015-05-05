@@ -272,7 +272,7 @@ public class SRSDatabaseTable {
 			// Create the destination directory in case it doesn't exist yet.
 			String destinationDir = Func.Paths.getSRSExportDir();
 			File destinationDirectory = new File(destinationDir);
-			destinationDirectory.mkdir();
+			destinationDirectory.mkdirs();
 
 			// Compute the new filename.
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss", Locale.US);
