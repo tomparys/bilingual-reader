@@ -334,7 +334,7 @@ public class SelectionWebView extends WebView {
 				if (sisterWV != null) {
 
 					// Compute and set the corresponding scroll position of the other WebView.
-					int scrollValue = 0;
+					long scrollValue = 0; // Needs to be long, because the multiplication gets quite large!
 					switch (scrollSyncMethod) {
 
 					// Offset - the webviews are synchronized on their % of scroll + offset pixels
@@ -343,13 +343,13 @@ public class SelectionWebView extends WebView {
 						// we have to compute them differently for each panel:
 						if (panelPosition == 0) {
 							scrollValue = (getScrollY() - scrollSyncOffset)
-									* sisterWV.computeMaxScrollY() / computedMaxScrollY;
+									* (long) sisterWV.computeMaxScrollY() / computedMaxScrollY;
 						} else {
 							scrollValue = getScrollY()
-									* sisterWV.computeMaxScrollY() / computedMaxScrollY + scrollSyncOffset;
+									* (long) sisterWV.computeMaxScrollY() / computedMaxScrollY + scrollSyncOffset;
 						}
 
-						/*Log.v(LOG, "[" + panelPos + "] computeScroll:  from " + getScrollY()
+						/*Log.v(LOG, "[" + panelPosition + "] computeScroll:  from " + getScrollY()
 								+ "  to " + scrollValue + "  offset " + scrollSyncOffset
 								+ "   (maxScrollY " + computedMaxScrollY + "  destinationMaxScrollY "
 								+ sisterWV.computeMaxScrollY() + ")"); /**/
@@ -360,7 +360,7 @@ public class SelectionWebView extends WebView {
 					}
 
 					// Set the computed scroll to the sister webview.
-					sisterWV.setScrollY(scrollValue);
+					sisterWV.setScrollY((int) scrollValue);
 				}
 			}
 		}
