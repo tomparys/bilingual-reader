@@ -319,7 +319,7 @@ public class BookPanel extends SplitPanel {
 	public void saveBookPageToDb() {
 		// Only save when there is something to save and if it's a book page.
 		if (displayedPage != null && webView != null && finishedRenderingContent
-				&& enumState == BookPanelState.books) {
+				&& displayedBookPageKey != null) {
 
 			// Compute the values to be saved.
 			float scrollY = getPositionYAsFloat();
@@ -358,11 +358,18 @@ public class BookPanel extends SplitPanel {
 	 * @param latestBookPage BookPage entry to load data from, or NULL so the method contacts database itself.
 	 */
 	public void loadBookPageFromDb(BookPage latestBookPage) {
-		// Compute the unique identifier of a book page: (bookFilename, bookTitle, pageFilename).
-		displayedBookPageKey = new String[] {
-				Func.fileNameFromPath(panelHolder.getBook().getFilePath()),
-				panelHolder.getBook().getTitle(),
-				Func.fileNameFromPath(displayedPage)};
+
+		// Only prepare displayedBookPageKey if enumState=books, because when saveBookPageToDb() gets
+		// called, the enumState will be already changed to the new one. This way, we can test
+		// whether displayedBookPageKey!=null to achieve the same effect.
+		if (enumState == BookPanelState.books) {
+
+			// Compute the unique identifier of a book page: (bookFilename, bookTitle, pageFilename).
+			displayedBookPageKey = new String[] {
+					Func.fileNameFromPath(panelHolder.getBook().getFilePath()),
+					panelHolder.getBook().getTitle(),
+					Func.fileNameFromPath(displayedPage)};
+		}
 
 		// Load page only if this isn't the first time we're opening any page in this run of the app,
 		// in which case we're loading the data from preferences, and loading from DB would be redundant.
