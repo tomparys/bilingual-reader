@@ -77,7 +77,7 @@ public abstract class SplitPanel extends Fragment {
 	 * didn't close any important fields that would result in NullPointerExceptions.
 	 * @return true if everything appears to be sound
 	 */
-	public boolean selfCheck() {
+	public boolean selfCheck(boolean creatingActivity) {
 		boolean ok = governor != null && panelHolder != null;
 
 		Log.d(LOG, "SplitPanel selfCheck - " + ok);

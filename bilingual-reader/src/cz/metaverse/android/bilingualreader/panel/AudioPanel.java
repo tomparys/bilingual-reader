@@ -93,8 +93,8 @@ public class AudioPanel extends SplitPanel {
 	 * @return true if everything appears to be sound
 	 */
 	@Override
-	public boolean selfCheck() {
-		boolean ok = super.selfCheck() && rew != null && playpause != null && progressBar != null
+	public boolean selfCheck(boolean creatingActivity) {
+		boolean ok = super.selfCheck(creatingActivity) && rew != null && playpause != null && progressBar != null
 				&& progressHandler != null;
 
 		Log.d(LOG, "AudioPanel selfCheck - " + ok);

@@ -121,6 +121,10 @@ public class Governor {
 		}
 	}
 
+	public ReaderActivity getActivity() {
+		return activity;
+	}
+
 	/**
 	 * Creates and saves two PanelHolders for basic operation of our application.
 	 * Invoked upon creation or if Android system closed one of the instances to free memory.

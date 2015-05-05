@@ -130,8 +130,7 @@ public class Epub {
 		for (int i = 0; i < spineElements.size(); ++i) {
 			// TODO: is there a robust path joiner in the java libs?
 			this.spineElementPaths[i] = "file://" + tempLocation
-					+ decompressedFolder + "/" + pathOPF + "/"
-					+ spineElements.get(i);
+					+ decompressedFolder + "/" + pathOPF + spineElements.get(i);
 		}
 
 		if (spineElements.size() > 0) {
@@ -181,8 +180,8 @@ public class Epub {
 
 		for (int i = 0; i < spineElements.size(); ++i) {
 			// TODO: is there a robust path joiner in the java libs?
-			this.spineElementPaths[i] = "file://" + tempLocation + folder + "/"
-					+ pathOPF + "/" + spineElements.get(i);
+			this.spineElementPaths[i] = "file://" + tempLocation + decompressedFolder + "/"
+					+ pathOPF + spineElements.get(i);
 		}
 		goToPage(spineIndex);
 
@@ -329,6 +328,12 @@ public class Epub {
 		int last = pathOPF.lastIndexOf('/');
 		if (last > -1) {
 			pathOPF = pathOPF.substring(0, last); // we only need the directory, not the file name
+		}
+
+		// If the path is not empty, add a trailing "/" so we can add it to the path freely
+		//  without thinking whether it is empty or not. Thus avoiding the dreaded two consecutive //.
+		if (pathOPF != "") {
+			pathOPF = pathOPF + "/";
 		}
 
 		return pathOPF;
@@ -631,7 +636,7 @@ public class Epub {
 	public String r_createTableOfContentsFile(TOCReference e) {
 
 		String childrenPath = "file://" + tempLocation + decompressedFolder + "/"
-				+ pathOPF + "/" + e.getCompleteHref();
+				+ pathOPF + e.getCompleteHref();
 
 		String html = "<ul><li>" + "<a href=\"" + childrenPath + "\">"
 				+ e.getTitle() + "</a>" + "</li></ul>";
@@ -658,7 +663,7 @@ public class Epub {
 			html += getS(R.string.tocReference);
 			for (int i = 0; i < tmp.size(); i++) {
 				String path = "file://" + tempLocation + decompressedFolder + "/"
-						+ pathOPF + "/" + tmp.get(i).getCompleteHref();
+						+ pathOPF + tmp.get(i).getCompleteHref();
 
 				html += "<li>" + "<a href=\"" + path + "\">"
 						+ tmp.get(i).getTitle() + "</a>" + "</li>";
@@ -933,6 +938,22 @@ public class Epub {
 		} catch (IOException e) {
 			return false;
 		}
+	}
+
+	/**
+	 * Given an absolute path to a page in the unpacked ebook, removes the unpacking directory,
+	 * returning a relative path to the page inside the ebook.
+	 */
+	public String getRelativePathFromAbsolute(String absolutePath) {
+		return absolutePath.replace("file://" + tempLocation + decompressedFolder + "/", "");
+	}
+
+	/**
+	 * Given a relative path to a page inside an ebook, returns an absolute path to it inside the
+	 * temporarily unpacked folder with the ebook.
+	 */
+	public String getAbsolutePathFromRelative(String relativePath) {
+		return "file://" + tempLocation + decompressedFolder + "/" + relativePath;
 	}
 
 	public String getTitle() {

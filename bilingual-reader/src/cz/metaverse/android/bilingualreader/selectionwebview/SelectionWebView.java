@@ -158,6 +158,20 @@ public class SelectionWebView extends WebView {
 	}
 
 	/**
+	 * Given the offset as a fraction of the computeMaxScrollY area, returns the actual integer offset.
+	 */
+	public void setScrollSyncOffsetFromFloat(float floatOffset) {
+		scrollSyncOffset = Math.round(floatOffset * computeMaxScrollY());
+	}
+
+	/**
+	 * Given the actual integer offset, returns the offset as a fraction of the computeMaxScrollY area.
+	 */
+	public float getScrollSyncOffsetAsFloat() {
+		return (float) scrollSyncOffset / (float) computeMaxScrollY();
+	}
+
+	/**
 	 * Loads the ScollSync variables from preferences.
 	 */
 	public void loadStateWhenContentRendered() {
@@ -165,7 +179,7 @@ public class SelectionWebView extends WebView {
 
 		// Load ScrollSync offset
 		float load_scrollSyncOffset = preferences.getFloat("SelectionWV_scrollSyncOffset"+panelPosition, 0f);
-		scrollSyncOffset = Math.round(load_scrollSyncOffset * computeMaxScrollY());
+		setScrollSyncOffsetFromFloat(load_scrollSyncOffset);
 
 		Log.d(LOG, "SelectionWebView.loadStateWhenContentRendered, scrollSyncOffset: " + scrollSyncOffset
 				+ ", computeMaxScrollY(): " + computeMaxScrollY());
@@ -179,8 +193,7 @@ public class SelectionWebView extends WebView {
 		resumeScrollSync();
 
 		// Save ScrollSync offset
-		editor.putFloat("SelectionWV_scrollSyncOffset"+panelPosition,
-				(float) scrollSyncOffset / (float) computeMaxScrollY());
+		editor.putFloat("SelectionWV_scrollSyncOffset"+panelPosition, getScrollSyncOffsetAsFloat());
 
 		Log.d(LOG, "SelectionWebView.saveState, scrollSyncOffset: " + scrollSyncOffset
 				+ ", computeMaxScrollY(): " + computeMaxScrollY());

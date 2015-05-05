@@ -69,4 +69,37 @@ public class Func {
 				TypedValue.COMPLEX_UNIT_DIP, deviceIndependentPixels, resources.getDisplayMetrics()));
 	}
 
+	/**
+	 * Returns filename from given file-path. I.e. removes everything before the last '/'.
+	 */
+	public static String fileNameFromPath(String filePath) {
+		if (filePath == null) {
+			return null;
+		}
+
+		// Remove everything before the last '/'
+		String filename = filePath.substring(filePath.lastIndexOf("/") + 1);
+
+		// Remove everything after and including the first '#' (AKA the Fragment Identifier).
+		filename = removeFragmentIdentifier(filename);
+
+		return filename;
+	}
+
+	/**
+	 * Removes the Fragment Identifier, i.e. anything after and including the # symbol.
+	 */
+	public static String removeFragmentIdentifier(String filePath) {
+		if (filePath == null) {
+			return null;
+		}
+
+		// Remove everything after and including the first '#' (AKA the Fragment Identifier).
+		int pos = filePath.indexOf("#");
+		if (pos != -1) {
+			filePath = filePath.substring(0, pos);
+		}
+		return filePath;
+	}
+
 }

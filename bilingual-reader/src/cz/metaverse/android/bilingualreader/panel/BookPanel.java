@@ -39,8 +39,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
+import cz.metaverse.android.bilingualreader.db.BookPageDB;
+import cz.metaverse.android.bilingualreader.db.BookPageDB.BookPage;
 import cz.metaverse.android.bilingualreader.enums.BookPanelState;
 import cz.metaverse.android.bilingualreader.helper.BookPanelOnTouchListener;
+import cz.metaverse.android.bilingualreader.helper.Func;
 import cz.metaverse.android.bilingualreader.manager.Governor;
 import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
@@ -56,14 +59,29 @@ public class BookPanel extends SplitPanel {
 
 	private ReaderActivity activity;
 
+	// Prepared static variables for interaction with the DB. DB columns to be updated.
+	private static final String[] colsUpdate = new String[] {BookPageDB.COL_SCROLL_Y,
+			BookPageDB.COL_SCROLLSYNC_OFFSET, BookPageDB.COL_LAST_OPENED};
+
+	private static final String[] colsInsert = new String[] {BookPageDB.COL_BOOK_FILENAME,
+			BookPageDB.COL_BOOK_TITLE, BookPageDB.COL_PAGE_FILENAME, BookPageDB.COL_PAGE_RELATIVE_PATH,
+			BookPageDB.COL_SCROLL_Y, BookPageDB.COL_SCROLLSYNC_OFFSET, BookPageDB.COL_LAST_OPENED};
+
 	// Information about the content
 	public BookPanelState enumState = BookPanelState.books;
 	protected String displayedPage;
 	protected String displayedData;
 
-	// Position within the page loaded from before
-	protected Integer loadPositionX;
-	protected Float loadPositionY;
+	// Position within the page and ScrollSync offset loaded from before.
+	private Float loadPositionY;
+	private Float loadScrollSyncOffset;
+
+	// Fields concerning communication with the DB
+	private Long loadedFromBookPageRowId;
+	private String[] displayedBookPageKey;
+
+	// Whether the current page has been fully rendered.
+	private boolean finishedRenderingContent = false;
 
 	// Our customized WebView and its onTouchListener
 	protected SelectionWebView webView;
@@ -78,6 +96,7 @@ public class BookPanel extends SplitPanel {
 	 */
 	public BookPanel(Governor governor, PanelHolder panelHolder, int position) {
 		super(governor, panelHolder, position); // Invokes changePosition(position)
+
 		Log.d(LOG, "BookPanel.new BookPanel (note. constructor)");
 	}
 
@@ -87,8 +106,19 @@ public class BookPanel extends SplitPanel {
 	 * @return true if everything appears to be sound
 	 */
 	@Override
-	public boolean selfCheck() {
-		boolean ok = super.selfCheck() && webView != null && onTouchListener != null && enumState != null;
+	public boolean selfCheck(boolean creatingActivity) {
+		// If the ReaderActivity is being recreated due to a runtime change (e.g. switch to/from landscape),
+		// than this BookPanel has persisted and is still open. But since we need this BookPage to act
+		// like it's just being created, we have to set finishedRenderingContent=false.
+		// Otherwise it would screw up in loadData() and loadPage() where it would null out
+		// loadPositionY and loadScrollSyncOffset, which are to be nulled out only after switching to a new
+		// page, not after opening the first, due to how loading these values in loadState() works.
+		//   - For more information see comment inside loadPage().
+		if (creatingActivity) {
+			finishedRenderingContent = false;
+		}
+
+		boolean ok = super.selfCheck(creatingActivity) && webView != null && onTouchListener != null && enumState != null;
 
 		Log.d(LOG, "BookPanel.selfCheck - " + ok);
 		return ok;
@@ -223,6 +253,21 @@ public class BookPanel extends SplitPanel {
 	 * @param baseUrl	URL of any file from the associated epub to get proper encoding from it.
 	 */
 	public void loadData(String data, String baseUrl) {
+		Log.d(LOG, LOG + ".loadData");
+
+		// For explanation see the same section in loadPage().
+		if (finishedRenderingContent) {
+			loadPositionY = null;
+			loadScrollSyncOffset = null;
+			Log.d(LOG, "nulling load* variables");
+		}
+
+		saveBookPageToDb();
+
+		// This needs to be set only *after* calling saveBookPageToDb().
+		finishedRenderingContent = false;
+
+		/* Save the data to be loaded and display them if possible. */
 		displayedPage = baseUrl;
 		displayedData = data;
 
@@ -237,11 +282,30 @@ public class BookPanel extends SplitPanel {
 	 * @param path to load
 	 */
 	public void loadPage(String path) {
-		displayedPage = path;
+		Log.d(LOG, LOG + ".loadPage, created: " + created);
 
+		// We have to null these fields here, because onFinishedRenderingContent() might very rarely get
+		// called twice, first time with wrong content height, and nulling the variables then would mean
+		// that when it gets called for the second time, it wouldn't do anything. Now when it gets called
+		// for the second time, it recalculates the values and corrects the previous mistake.
+		if (finishedRenderingContent) {
+			loadPositionY = null;
+			loadScrollSyncOffset = null;
+			Log.d(LOG, "nulling load* variables");
+		}
+
+		saveBookPageToDb();
+
+		// Save the page to be displayed and display it if possible.
+		displayedPage = path;
 		if(created) {
 			webView.loadUrl(path);
 		}
+
+		loadBookPageFromDb(null);
+
+		// This needs to be set only after calling both saveBookPageToDb() and loadBookPageFromDb().
+		finishedRenderingContent = false;
 	}
 
 
@@ -250,28 +314,127 @@ public class BookPanel extends SplitPanel {
 	// ============================================================================================
 
 	/**
+	 * Saves scroll position and ScrollSync offset into the BookPage database.
+	 */
+	public void saveBookPageToDb() {
+		// Only save when there is something to save and if it's a book page.
+		if (displayedPage != null && webView != null && finishedRenderingContent
+				&& enumState == BookPanelState.books) {
+
+			// Compute the values to be saved.
+			float scrollY = getPositionYAsFloat();
+			float scrollSyncOffset = webView.getScrollSyncOffsetAsFloat();
+
+			// Obtain database access.
+			BookPageDB bookPageDB = BookPageDB.getInstance(governor.getActivity());
+
+			if (loadedFromBookPageRowId != null) {
+				// Update the existing BookPage entry in the DB with new values.
+				String[] values = new String[] {
+						"" + scrollY, "" + scrollSyncOffset, "" + System.currentTimeMillis()};
+				bookPageDB.updateBookPage(loadedFromBookPageRowId, colsUpdate, values);
+			}
+			else {
+				// Insert a brand new BookPage entry into the DB.
+				String[] values = new String[] {
+						displayedBookPageKey[0], displayedBookPageKey[1], displayedBookPageKey[2],
+						panelHolder.getBook().getRelativePathFromAbsolute(displayedPage),
+						"" + scrollY, "" + scrollSyncOffset, "" + System.currentTimeMillis()};
+
+				bookPageDB.insertBookPage(colsInsert, values);
+			}
+
+			Log.d(LOG, String.format("%s: Saved to DB (id: %s, ScrollY: %s, ScrollSyncOffset: %s, +time)",
+					LOG, loadedFromBookPageRowId, scrollY, scrollSyncOffset));
+			//Toast.makeText(ReaderActivity.debugContext, "Saved page to DB", Toast.LENGTH_SHORT).show();
+
+			displayedBookPageKey = null;
+			loadedFromBookPageRowId = null;
+		}
+	}
+
+	/**
+	 * Loads scroll position and ScrollSync offset from the BookPage database.
+	 * @param latestBookPage BookPage entry to load data from, or NULL so the method contacts database itself.
+	 */
+	public void loadBookPageFromDb(BookPage latestBookPage) {
+		// Compute the unique identifier of a book page: (bookFilename, bookTitle, pageFilename).
+		displayedBookPageKey = new String[] {
+				Func.fileNameFromPath(panelHolder.getBook().getFilePath()),
+				panelHolder.getBook().getTitle(),
+				Func.fileNameFromPath(displayedPage)};
+
+		// Load page only if this isn't the first time we're opening any page in this run of the app,
+		// in which case we're loading the data from preferences, and loading from DB would be redundant.
+		if ((latestBookPage != null || finishedRenderingContent) && enumState == BookPanelState.books) {
+
+			BookPage bookPage;
+			if (latestBookPage != null) {
+				bookPage = latestBookPage;
+			} else {
+				// Load the BookPage from database if it wasn't provided.
+				BookPageDB bookPageDB = BookPageDB.getInstance(governor.getActivity());
+				bookPage = bookPageDB.findBookPage(
+					displayedBookPageKey[0], displayedBookPageKey[1], displayedBookPageKey[2]);
+			}
+
+			// If the BookPage was found in the database, load the data to be used later!
+			if (bookPage != null) {
+				loadedFromBookPageRowId = bookPage.getId();
+				loadPositionY = bookPage.getScrollY();
+				loadScrollSyncOffset = bookPage.getScrollSyncOffset();
+
+				Log.d(LOG, String.format("%s: Loaded from DB (id: %s, ScrollY: %s, ScrollSyncOffset: %s)",
+						LOG, loadedFromBookPageRowId, loadPositionY, loadScrollSyncOffset));
+			}
+
+			/*Toast.makeText(ReaderActivity.debugContext, "Loaded page from DB: "
+					+ (bookPage != null ? "found" : "not found"), Toast.LENGTH_SHORT).show(); /**/
+			/*Log.v(LOG, String.format("%s: Searching DB for BookPage with these values: (%s, %s, %s)", LOG,
+					Func.fileNameFromPath(panelHolder.getBook().getFilePath()),
+					panelHolder.getBook().getTitle(),
+					Func.fileNameFromPath(displayedPageFilename))); /**/
+		}
+	}
+
+	/**
+	 * Returns the scroll position as a fraction of the ContentHeight.
+	 * Used when saving to the preferences or the database. Because next time, the page might be opened
+	 * in a different sized WebView, so absolute values would be no good.
+	 */
+	private float getPositionYAsFloat() {
+		return (float) webView.getScrollY() / (float) webView.getContentHeight();
+	}
+
+	/**
 	 * This method gets called by our SelectionWebView when the WebView has definitively finished
 	 * rendering its contents and getContentHeight() returns a new non-zero value.
 	 *
 	 * Warning: May not get called when two pages shorter than the WebView display area get opened after
 	 *  each other. For details see SelectionWebView.onDraw() javadoc.
 	 * This is, however, not an issue, because in such short pages, loading the scroll position
-	 *   from preferences makes no sense anyway.
+	 *  from preferences makes no sense anyway.
+	 *
+	 * Warning 2!: This method might very rarely get called twice, first time with a little
+	 *  premature shorter getContentHeight(), and the second time with the correct getContentHeight().
+	 * Thus it is important to do not null the load* fields here, so that in case the method gets called
+	 *  the second time, it can recalculate the values and get it right!
+	 * Nulling of load* values was therefore moved to loadPage/loadData when the user opens another page.
 	 */
 	public void onFinishedRenderingContent() {
+		finishedRenderingContent = true;
+
+		Log.d(LOG, "BookPanel.onFinishedRenderingContent, loadY: " + loadPositionY
+				+ ", contentHeight: " + webView.getContentHeight());
+
 		// Load position from before if this is a page opening from before.
-		if (loadPositionX != null && loadPositionY != null) {
-
-			Log.d(LOG, "BookPanel.onFinishedRenderingContent, loadY: " + loadPositionY
-					+ ", contentHeight: " + webView.getContentHeight());
-
-			webView.setScrollX(loadPositionX);
+		if (loadPositionY != null) {
 			webView.setScrollY(Math.round(loadPositionY * webView.getContentHeight()));
-			loadPositionX = null;
-			loadPositionY = null;
+		}
 
-			// Load the scroll sync offset, etc.
-			webView.loadStateWhenContentRendered();
+		// Load the scroll sync offset, etc.
+		if (loadScrollSyncOffset != null) {
+			webView.setScrollSyncOffsetFromFloat(loadScrollSyncOffset);
 		}
 	}
 
@@ -295,7 +458,7 @@ public class BookPanel extends SplitPanel {
 		if (webView != null) {
 			editor.putInt("positionX"+panelPosition, webView.getScrollX());
 			editor.putFloat("positionY"+panelPosition,
-					(float) webView.getScrollY() / (float) webView.getContentHeight());
+					getPositionYAsFloat());
 		}
 
 		// Load the scroll sync offset, etc.
@@ -308,7 +471,6 @@ public class BookPanel extends SplitPanel {
 	 * Load the position within the page from before to be used when webView is instantiated.
 	 */
 	public void loadScrollPosition(SharedPreferences preferences) {
-		loadPositionX = preferences.getInt("positionX"+panelPosition, 0);
 		loadPositionY = preferences.getFloat("positionY"+panelPosition, 0f);
 	}
 

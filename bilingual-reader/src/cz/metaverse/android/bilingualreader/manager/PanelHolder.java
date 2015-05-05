@@ -9,7 +9,10 @@ import android.util.Log;
 import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
+import cz.metaverse.android.bilingualreader.db.BookPageDB;
+import cz.metaverse.android.bilingualreader.db.BookPageDB.BookPage;
 import cz.metaverse.android.bilingualreader.enums.BookPanelState;
+import cz.metaverse.android.bilingualreader.helper.Func;
 import cz.metaverse.android.bilingualreader.panel.AudioPanel;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
@@ -258,6 +261,13 @@ public class PanelHolder {
 	 */
 	public void changePanel(SplitPanel p) {
 		if (panel != null) {
+			// We're closing this panel, so if it was a BookPanel, save the reading progress
+			// of the opened page to the BookPage database so we can reopen the book on the given page,
+			// at a given scroll position.
+			if (isBookPanel()) {
+				getBookPanel().saveBookPageToDb();
+			}
+
 			activity.removePanel(panel);
 			p.changeWeight(panel.getWeight());
 		}
@@ -347,7 +357,23 @@ public class PanelHolder {
 
 			book = new Epub(path, "" + position, activity);
 			changePanel(new BookPanel(governor, this, position));
-			setBookPage(book.getSpineElementPath(0));
+
+			// Look through the database for the last page of this book we had opened.
+			BookPageDB bookPageDB = BookPageDB.getInstance(activity);
+			BookPage latestBookPage = bookPageDB.findLatestBookPage(
+					Func.fileNameFromPath(book.getFilePath()), book.getTitle());
+
+			if (latestBookPage != null) {
+				// Last page found - load it!
+				setBookPage(Func.removeFragmentIdentifier(book.getAbsolutePathFromRelative(
+						latestBookPage.getPageRelativePath())));
+
+				// Tell BookPanel to load the scroll position and offset.
+				getBookPanel().loadBookPageFromDb(latestBookPage);
+			} else {
+				// Last page not found, load the first page of the book.
+				setBookPage(book.getSpineElementPath(0));
+			}
 
 			// If we opened a new book, we automatically cancelled the reading of a bilingual book,
 			// because at least one panel now does now contain a different book.
@@ -585,7 +611,7 @@ public class PanelHolder {
 		Log.d(LOG, "PanelHolder.loadPanel");
 
 		// If the panel doesn't exist or if it doesn't appear to be ok, recreate it.
-		if (panel == null || !panel.selfCheck()) {
+		if (panel == null || !panel.selfCheck(creatingActivity)) {
 			Log.d(LOG, "PanelHolder.loadPanel - creating panel from memory");
 
 			panel = newPanelByClassName(preferences.getString(getS(R.string.ViewType) + position, ""));
