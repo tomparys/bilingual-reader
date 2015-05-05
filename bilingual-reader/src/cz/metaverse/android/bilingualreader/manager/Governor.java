@@ -61,7 +61,7 @@ public class Governor {
 	private PanelHolder[] panelHolder;
 
 	/* Sync */
-	private boolean scrollSync = true;
+	private boolean scrollSync;
 	private boolean chapterSync;
 	private boolean readingBilingualEbook;
 

@@ -350,6 +350,9 @@ public class PanelHolder {
 	 * @return Success
 	 */
 	public boolean openBook(String path) {
+		// Cancel ScrollSync if it was on.
+		governor.setScrollSync(false);
+
 		try {
 			if (book != null) {
 				book.destroy();
