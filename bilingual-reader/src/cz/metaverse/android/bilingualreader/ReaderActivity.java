@@ -355,8 +355,6 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		decorView.setSystemUiVisibility(flags);
 	}
 
-	// This snippet shows the system bars. It does this by removing all the flags
-	// except for the ones that make the content appear under the system bars.
 	/**
 	 * Deactivates full-screen mode - shows status bar, system navigation and the Action Bar.
 	 */
@@ -371,21 +369,31 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 */
 	@Override
 	public void onSystemUiVisibilityChange(int visibility) {
+
 		// Note that system bars will only be "visible" if none of the
 		//  LOW_PROFILE, HIDE_NAVIGATION, or FULLSCREEN flags are set.
 		// But we're setting only the SYSTEM_UI_FLAG_FULLSCREEN flag, so we test for it.
 		if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-			// The system bars are visible - show the action bar if it is hidden.
-			fullscreenMode = false;
-			if (!getActionBar().isShowing()) {
-				getActionBar().show();
+			// The system bars are visible again.
+
+			if (fullscreenMode) {
+				// If we have not deactivated the fullscreen manually through deactivateFullscreen(),
+				// but the fullscreen was exited by a swipe from the top or the bottom of the screen in -
+				// only the fullscreen flag was cancelled, so cancel the rest as well,
+				// so that the navigation drawer renders properly.
+				deactivateFullscreen();
 			}
-		} else {
-			// The system bars are NOT visible - hide the action bar if it is shown.
-			fullscreenMode = true;
-			if (getActionBar().isShowing()) {
-				getActionBar().hide();
+
+			Log.d(LOG, LOG + ".onSystemUiVisibilityChange - fullscreen cancelled");
+		}
+		else {
+			// The system bars are no longer visible.
+
+			if (!fullscreenMode) {
+				activateFullscreen();
 			}
+
+			Log.d(LOG, LOG + ".onSystemUiVisibilityChange - fullscreen entered");
 		}
 	}
 
