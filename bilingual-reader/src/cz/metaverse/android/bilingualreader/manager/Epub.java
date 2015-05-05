@@ -945,7 +945,10 @@ public class Epub {
 	 * returning a relative path to the page inside the ebook.
 	 */
 	public String getRelativePathFromAbsolute(String absolutePath) {
-		return absolutePath.replace("file://" + tempLocation + decompressedFolder + "/", "");
+		String relativePath = absolutePath.replace("file://" + tempLocation + decompressedFolder + "/", "");
+
+		Log.d(LOG, LOG + ".getRelativePathFromAbsolute: " + absolutePath + " --> " + relativePath);
+		return relativePath;
 	}
 
 	/**
