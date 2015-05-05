@@ -70,6 +70,18 @@ public class Func {
 	}
 
 	/**
+	 * Returns the closest number to the *value* in a range (min, max).
+	 */
+	public static int minMaxRange(int min, int value, int max) {
+		if (value < min) {
+			value = min;
+		} else if (value > max) {
+			value = max;
+		}
+		return value;
+	}
+
+	/**
 	 * Returns filename from given file-path. I.e. removes everything before the last '/'.
 	 */
 	public static String fileNameFromPath(String filePath) {

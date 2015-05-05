@@ -20,6 +20,7 @@ import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.enums.BookPanelState;
 import cz.metaverse.android.bilingualreader.enums.ScrollSyncMethod;
+import cz.metaverse.android.bilingualreader.helper.Func;
 import cz.metaverse.android.bilingualreader.manager.Governor;
 import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
@@ -334,7 +335,9 @@ public class SelectionWebView extends WebView {
 				if (sisterWV != null) {
 
 					// Compute and set the corresponding scroll position of the other WebView.
-					long scrollValue = 0; // Needs to be long, because the multiplication gets quite large!
+					//  Variables need to be long, because the multiplication gets quite large!
+					long scrollValue = 0;
+					long sisterMaxScrollY = sisterWV.computeMaxScrollY();
 					switch (scrollSyncMethod) {
 
 					// Offset - the webviews are synchronized on their % of scroll + offset pixels
@@ -343,10 +346,10 @@ public class SelectionWebView extends WebView {
 						// we have to compute them differently for each panel:
 						if (panelPosition == 0) {
 							scrollValue = (getScrollY() - scrollSyncOffset)
-									* (long) sisterWV.computeMaxScrollY() / computedMaxScrollY;
+									* sisterMaxScrollY / computedMaxScrollY;
 						} else {
 							scrollValue = getScrollY()
-									* (long) sisterWV.computeMaxScrollY() / computedMaxScrollY + scrollSyncOffset;
+									* sisterMaxScrollY / computedMaxScrollY + scrollSyncOffset;
 						}
 
 						/*Log.v(LOG, "[" + panelPosition + "] computeScroll:  from " + getScrollY()
@@ -359,8 +362,9 @@ public class SelectionWebView extends WebView {
 						break;
 					}
 
-					// Set the computed scroll to the sister webview.
-					sisterWV.setScrollY((int) scrollValue);
+					// Set the computed scroll to the sister webview if it falls between the
+					// minimum and maximum scroll position, otherwise return min or max.
+					sisterWV.setScrollY(Func.minMaxRange(0, (int) scrollValue, (int) sisterMaxScrollY));
 				}
 			}
 		}
