@@ -485,6 +485,20 @@ public class Epub {
 	}
 
 	/**
+	 * Returns whether the book has a given page.
+	 * @param page Integer identifier of the sought for page.
+	 */
+	private boolean hasPage(int page) {
+		if (page < 0) {
+			return false;
+		}
+		if (page >= this.pageCount) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * Obtain a page in the given language.
 	 * @param page	page to obtain
 	 * @param lang	language to obtain the page in
@@ -525,19 +539,36 @@ public class Epub {
 	}
 
 	/**
-	 * Go to next chapter
+	 * Go to next chapter.
 	 */
 	public String goToNextChapter() throws Exception {
-		return goToPage(this.currentSpineElementIndex + 1);
+		return goToPage(currentSpineElementIndex + 1);
 	}
 
 	/**
-	 * Go to previous chapter
+	 * Returns whether there is a next chapter.
 	 */
-	public String goToPreviousChapter() throws Exception {
-		return goToPage(this.currentSpineElementIndex - 1);
+	public boolean hasNextChapter() {
+		return hasPage(currentSpineElementIndex + 1);
 	}
 
+	/**
+	 * Go to previous chapter.
+	 */
+	public String goToPreviousChapter() throws Exception {
+		return goToPage(currentSpineElementIndex - 1);
+	}
+
+	/**
+	 * Returns whether there is a previous chapter.
+	 */
+	public boolean hasPreviousChapter() {
+		return hasPage(currentSpineElementIndex - 1);
+	}
+
+	/**
+	 * @return a String with the metadata HTML page.
+	 */
 	public String metadata() {
 		return metadata;
 	}

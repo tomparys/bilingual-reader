@@ -477,7 +477,19 @@ public class PanelHolder {
 	 */
 	public void changeChapter(boolean forward) {
 		try {
-			setBookPage(forward ? book.goToNextChapter() : book.goToPreviousChapter());
+			if (forward) {
+				if (book.hasNextChapter()) {
+					setBookPage(book.goToNextChapter());
+				} else {
+					Toast.makeText(activity, R.string.This_is_the_last_page, Toast.LENGTH_SHORT).show();
+				}
+			} else {
+				if (book.hasPreviousChapter()) {
+					setBookPage(book.goToPreviousChapter());
+				} else {
+					Toast.makeText(activity, R.string.This_is_the_first_page, Toast.LENGTH_SHORT).show();
+				}
+			}
 
 			if (governor.isChapterSync()) {
 				if (sisterPanelHolder.book != null) {

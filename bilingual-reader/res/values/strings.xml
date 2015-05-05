@@ -199,5 +199,7 @@
     <string name="Share_exported_file">Share exported file</string>
     <string name="There_are_no_SRS_cards_to_export">There are no SRS cards to export.</string>
     <string name="Encountered_an_error_while_exporting">Encountered an error while exporting.</string>
+    <string name="This_is_the_last_page">This is the last page.</string>
+    <string name="This_is_the_first_page">This is the first page.</string>
 
 </resources>
