@@ -306,9 +306,13 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 */
 	@Override
 	public void onBackPressed() {
+		// If the navigation drawer is opened, close it.
+		if (navigationDrawerLayout.isDrawerOpen(Gravity.START)) {
+			navigationDrawerLayout.closeDrawer(Gravity.START);
+		}
 		// See if there is some PanelViewState.notes or PanelViewState.metadata panel to be closed,
 		// if so, close it. If not, moveTaskToBack().
-		if (!governor.closeLastOpenedNotes()) {
+		else if (!governor.closeLastOpenedNotes()) {
 			moveTaskToBack(true);
 		}
 	}
