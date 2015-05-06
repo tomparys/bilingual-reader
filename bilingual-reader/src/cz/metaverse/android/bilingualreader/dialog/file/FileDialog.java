@@ -2,11 +2,11 @@
 COPYRIGHT
 
 This file contains code taken from the Android-File-Dialog project, (c) twig, that can be found at:
-    https://github.com/twig/Android-File-Dialog
+	 https://github.com/twig/Android-File-Dialog
 
 Released under the BSD 3-Clause License under the personal permission of the author:
-    https://github.com/twig/Android-File-Dialog/issues/1
-    http://opensource.org/licenses/BSD-3-Clause
+	 https://github.com/twig/Android-File-Dialog/issues/1
+	 http://opensource.org/licenses/BSD-3-Clause
  */
 
 package cz.metaverse.android.bilingualreader.dialog.file;
@@ -49,8 +49,8 @@ public class FileDialog extends DialogFragment {
 
 	private FileDialogOptions options;
 
-    // Option for filtering files by extension
-    private static final String FILTER_FILES_BY_EXTENSION = "epub";
+	 // Option for filtering files by extension
+	 private static final String FILTER_FILES_BY_EXTENSION = "epub";
 
 	// TODO: This needs a cleanup
 	private AlertDialog dialog;
@@ -73,7 +73,7 @@ public class FileDialog extends DialogFragment {
 		//setRetainInstance(true); -- bug in the API, this closes the dialog upon orientation change.
 
 		// Restore the state in case of an orientation change.
-		//   -- no need to restore it, android doesn't destroy the Dialog upon orientation change.
+		//	-- no need to restore it, android doesn't destroy the Dialog upon orientation change.
 		/*if (savedInstanceState != null) {
 			this.currentPath = savedInstanceState.getString("currentPath");
 			listview.onRestoreInstanceState(savedInstanceState.getParcelable("listview"));
@@ -141,19 +141,19 @@ public class FileDialog extends DialogFragment {
 
 		// Try to restore current path after screen rotation
 		if (savedInstanceState != null) {
-		    getDir(savedInstanceState.getString("currentPath"));
-		    // TODO: restore scroll position also
+			 getDir(savedInstanceState.getString("currentPath"));
+			 // TODO: restore scroll position also
 		}
 		// New instance of FileDialog
 		else {
-		    File file = new File(options.currentPath);
+			 File file = new File(options.currentPath);
 
-		    if (file.isDirectory() && file.exists()) {
-		        getDir(options.currentPath);
-		    }
-		    else {
-		        getDir(PATH_SDCARD);
-		    }
+			 if (file.isDirectory() && file.exists()) {
+				getDir(options.currentPath);
+			 }
+			 else {
+				getDir(PATH_SDCARD);
+			 }
 		}
 
 
@@ -195,25 +195,25 @@ public class FileDialog extends DialogFragment {
 
 		// Sort files by alphabet and ignore casing
 		Arrays.sort(files, new Comparator<File>() {
-            @Override
-            public int compare(File lhs, File rhs) {
-                return lhs.getPath().compareToIgnoreCase(rhs.getPath());
-            }
+				@Override
+				public int compare(File lhs, File rhs) {
+					 return lhs.getPath().compareToIgnoreCase(rhs.getPath());
+				}
 		});
 
-	    dialog.setTitle(replaceSDCardPath(currentPath));
+		 dialog.setTitle(replaceSDCardPath(currentPath));
 
 		// Add the "Back to SD card" line.
-        if (!currentPath.equals(PATH_SDCARD)) {
-            boolean mounted = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+		if (!currentPath.equals(PATH_SDCARD)) {
+				boolean mounted = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
 
-            if (mounted) {
-                addItem(mList, getString(R.string.Back_to_SD_card), this.options.iconSDCard);
-                path.add(PATH_SDCARD);
-            }
-        }
+				if (mounted) {
+					 addItem(mList, getString(R.string.Back_to_SD_card), this.options.iconSDCard);
+					 path.add(PATH_SDCARD);
+				}
+		}
 
-        // Add the ".." line
+		// Add the ".." line
 		if (!currentPath.equals(PATH_ROOT)) {
 			addItem(mList, getString(R.string.parent_folder_line), this.options.iconUp);
 			path.add(f.getParent());
@@ -251,21 +251,21 @@ public class FileDialog extends DialogFragment {
 
 		// Add directories
 		for (File dir : listDirs) {
-		    path.add(dir.getPath());
+			 path.add(dir.getPath());
 			addItem(mList, dir.getName(), this.options.iconFolder);
 		}
 
 		// Add files
 		for (File file : listFiles) {
-		    path.add(file.getPath());
+			 path.add(file.getPath());
 			addItem(mList, file.getName(), this.options.iconFile);
 		}
 
 		SimpleAdapter fileList = new SimpleAdapter(getActivity(), mList,
-            R.layout.file_dialog_row,
-            new String[] { ITEM_KEY, ITEM_IMAGE },
-            new int[] { R.id.fdrowtext, R.id.fdrowimage }
-        );
+				R.layout.file_dialog_row,
+				new String[] { ITEM_KEY, ITEM_IMAGE },
+				new int[] { R.id.fdrowtext, R.id.fdrowimage }
+		);
 
 		fileList.notifyDataSetChanged();
 
@@ -292,21 +292,20 @@ public class FileDialog extends DialogFragment {
 		File file = new File(path.get(position));
 
 		if (!file.exists()) {
-		    new AlertDialog.Builder(getActivity())
-                .setTitle("Does not exist.")
-                .setMessage(file.getName())
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .show();
-		    return;
+			 new AlertDialog.Builder(getActivity())
+					 .setTitle("Does not exist.")
+					 .setMessage(file.getName())
+					 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {}
+					 })
+					 .show();
+			 return;
 		}
 
 		if (file.isDirectory()) {
 			if (file.canRead()) {
-			    // Save the scroll position so users don't get confused when they come back
+				 // Save the scroll position so users don't get confused when they come back
 				lastPositions.put(currentPath, listview.getFirstVisiblePosition());
 				getDir(path.get(position));
 			}
@@ -322,7 +321,7 @@ public class FileDialog extends DialogFragment {
 			v.setSelected(true);
 
 			if (selectedFile != null) {
-			    returnSelection(selectedFile.getPath());
+				 returnSelection(selectedFile.getPath());
 			}
 		}
 	}
@@ -332,8 +331,8 @@ public class FileDialog extends DialogFragment {
 	 * @param filePath
 	 */
 	private void returnSelection(String filePath) {
-	    this.options.currentPath = currentPath;
-	    this.options.selectedFile = filePath;
+		this.options.currentPath = currentPath;
+		this.options.selectedFile = filePath;
 
 		// Save the current path to preferences so next time we open the dialog in same directory.
 		Editor prefEditor = getActivity().getPreferences(Context.MODE_PRIVATE).edit();
@@ -341,9 +340,9 @@ public class FileDialog extends DialogFragment {
 		prefEditor.commit();
 
 		// Send the filePath back to the activity.
-	    ((RecentlyOpenedFilesActivity) getActivity()).returnPathAndFinish(filePath);
+		((RecentlyOpenedFilesActivity) getActivity()).returnPathAndFinish(filePath);
 
-	    dismiss();
+		dismiss();
 	}
 
 	/**
