@@ -32,14 +32,21 @@ public class AddToSRSDialog extends DialogFragment implements DialogInterface.On
 	private String original_description;
 
 	// Data to allow working with SRSDatabaseActivity, e.g. editing existing SRS cards.
-	private SRSDatabaseActivity SRSDatabaseActivity;
+	private boolean startedFromSRSDatabaseActivity;
 	private Long rowid;
+
+
+	/**
+	 * Parameterless constructor that gets called upon orientation change.
+	 */
+	public AddToSRSDialog() {}
 
 	/**
 	 * Constructor to set the data to be displayed in the EditTexts.
 	 * @param word	The word to set to the "word" EditText
 	 */
 	public AddToSRSDialog(String word) {
+		startedFromSRSDatabaseActivity = false;
 		original_word = word;
 		if (original_word != null) {
 			original_word = original_word.toLowerCase(Locale.getDefault());
@@ -50,8 +57,8 @@ public class AddToSRSDialog extends DialogFragment implements DialogInterface.On
 	 * Constructor to allow working with SRSDatabaseActivity on editing existing SRS cards.
 	 * @param rowid	Id of the DB row that we're going to update with new data.
 	 */
-	public AddToSRSDialog(SRSDatabaseActivity SRSDActivity, Long rowid, String word, String description) {
-		this.SRSDatabaseActivity = SRSDActivity;
+	public AddToSRSDialog(boolean startedFromSRSDActivity, Long rowid, String word, String description) {
+		this.startedFromSRSDatabaseActivity = startedFromSRSDActivity;
 		this.rowid = rowid;
 		this.original_word = word;
 		this.original_description = description;
@@ -60,8 +67,19 @@ public class AddToSRSDialog extends DialogFragment implements DialogInterface.On
 	/**
 	 * Constructor to allow refreshing of data in the SRSDialogActivity afterwards.
 	 */
-	public AddToSRSDialog(SRSDatabaseActivity SRSDActivity) {
-		this(SRSDActivity, null, null, null);
+	public AddToSRSDialog(boolean startedFromSRSDActivity) {
+		this(startedFromSRSDActivity, null, null, null);
+	}
+
+	/**
+	 * Remember the information when the screen is just about to be rotated.
+	 */
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		outState.putBoolean("startedFromSRSDActivity", startedFromSRSDatabaseActivity);
+		outState.putLong("rowid", rowid);
 	}
 
 	/**
@@ -70,6 +88,16 @@ public class AddToSRSDialog extends DialogFragment implements DialogInterface.On
 	@SuppressLint("InflateParams") // Normal for DialogFragments
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+		// If orientation change recreated this activity, load variables from before.
+		if (savedInstanceState != null) {
+			startedFromSRSDatabaseActivity = savedInstanceState.getBoolean("startedFromSRSDActivity", false);
+			rowid = savedInstanceState.getLong("rowid", -1);
+			if (rowid == -1) {
+				rowid = null;
+			}
+		}
+
 		// Inflate the form with EditTexts for data
 		form = getActivity().getLayoutInflater().inflate(R.layout.dialog_add_to_srs, null);
 		word = (EditText) form.findViewById(R.id.word_edit_text);
@@ -114,26 +142,8 @@ public class AddToSRSDialog extends DialogFragment implements DialogInterface.On
 		}
 
 		// Reload the data in the SRSDatabaseActivity so that the new/edited card is immediately visible.
-		if (SRSDatabaseActivity != null) {
-			SRSDatabaseActivity.reloadData();
+		if (startedFromSRSDatabaseActivity) {
+			((SRSDatabaseActivity) getActivity()).reloadData();
 		}
 	}
-
-	/**
-	 * Called when the dialog gets dismissed by the Cancel button.
-	 */
-	@Override
-	public void onDismiss(DialogInterface unused) {
-		super.onDismiss(unused);
-	}
-
-	/**
-	 * Called when the dialog gets dismissed otherwise,
-	 *  e.g. clicking around the dialog.
-	 */
-	@Override
-	public void onCancel(DialogInterface unused) {
-		super.onCancel(unused);
-	}
-
 }

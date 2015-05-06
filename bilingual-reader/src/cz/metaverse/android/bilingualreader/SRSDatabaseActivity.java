@@ -110,7 +110,7 @@ public class SRSDatabaseActivity extends ListActivity
 		Cursor cursor = cursorAdapter.getCursor();
 		if (cursor != null) {
 			cursor.moveToPosition(position);
-			new AddToSRSDialog(this, id, cursor.getString(1), cursor.getString(2))
+			new AddToSRSDialog(true, id, cursor.getString(1), cursor.getString(2))
 					.show(getFragmentManager(), "add_to_srs_dialog");
 		}
 	}
@@ -153,7 +153,7 @@ public class SRSDatabaseActivity extends ListActivity
 
 		// Add SRS card
 		case R.id.add_SRS_card_menu_item:
-			new AddToSRSDialog(this).show(getFragmentManager(), "add_to_srs_dialog");
+			new AddToSRSDialog(true).show(getFragmentManager(), "add_to_srs_dialog");
 			return true;
 
 		// Sort alphabetically
