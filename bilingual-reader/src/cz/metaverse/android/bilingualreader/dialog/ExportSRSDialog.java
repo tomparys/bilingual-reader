@@ -42,6 +42,11 @@ public class ExportSRSDialog extends DialogFragment implements DialogInterface.O
 
 
 	/**
+	 * Parameterless constructor that gets called upon orientation change.
+	 */
+	public ExportSRSDialog() {}
+
+	/**
 	 * Constructor.
 	 */
 	public ExportSRSDialog(SRSDatabaseActivity activity) {

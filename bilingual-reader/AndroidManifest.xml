@@ -26,7 +26,9 @@
         </activity>
         <activity android:name="cz.metaverse.android.bilingualreader.RecentlyOpenedFilesActivity" />
         <activity android:name="cz.metaverse.android.bilingualreader.FileChooserActivity" />
-        <activity android:name="cz.metaverse.android.bilingualreader.SRSDatabaseActivity" />
+        <activity
+            android:name="cz.metaverse.android.bilingualreader.SRSDatabaseActivity"
+            android:configChanges="orientation|screenSize" />
         <activity
             android:name="cz.metaverse.android.bilingualreader.panel.BookPanel"
             android:label="@string/title_activity_book_view" />
