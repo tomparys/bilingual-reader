@@ -21,7 +21,7 @@ import android.widget.SearchView.OnCloseListener;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import cz.metaverse.android.bilingualreader.db.SRSDatabaseTable;
+import cz.metaverse.android.bilingualreader.db.SRSDB;
 import cz.metaverse.android.bilingualreader.dialog.AddToSRSDialog;
 import cz.metaverse.android.bilingualreader.dialog.ExportSRSDialog;
 
@@ -71,7 +71,7 @@ public class SRSDatabaseActivity extends ListActivity
 
 		// Create an empty adapter we will use to display the loaded data after they arrive.
 		cursorAdapter = new SimpleCursorAdapter(this, R.layout.listview_row_double, null,
-				new String[] {SRSDatabaseTable.COL_WORD, SRSDatabaseTable.COL_DEFINITION},
+				new String[] {SRSDB.COL_WORD, SRSDB.COL_DEFINITION},
 				new int[] {android.R.id.text1, android.R.id.text2 }, 0);
 		setListAdapter(cursorAdapter);
 
@@ -153,13 +153,13 @@ public class SRSDatabaseActivity extends ListActivity
 
 		// Sort alphabetically
 		case R.id.sort_alphabetically_menu_item:
-			SRSDatabaseTable.getInstance(this).sortAlphabetically(true);
+			SRSDB.getInstance(this).sortAlphabetically(true);
 			reloadData();
 			return true;
 
 		// Sort by last added
 		case R.id.sort_by_last_added_menu_item:
-			SRSDatabaseTable.getInstance(this).sortAlphabetically(false);
+			SRSDB.getInstance(this).sortAlphabetically(false);
 			reloadData();
 			return true;
 
@@ -203,12 +203,12 @@ public class SRSDatabaseActivity extends ListActivity
 				@Override
 				public Cursor loadInBackground() {
 					// Search the database for all or filtered results, depending on what we want.
-					SRSDatabaseTable dbt = SRSDatabaseTable.getInstance(SRSDatabaseActivity.this);
+					SRSDB srsDB = SRSDB.getInstance(SRSDatabaseActivity.this);
 
 					if (currentFilter != null) {
-						return dbt.getMatches(currentFilter);
+						return srsDB.getMatches(currentFilter);
 					} else {
-						return dbt.getAll();
+						return srsDB.getAll();
 					}
 				}
 			};
@@ -275,7 +275,7 @@ public class SRSDatabaseActivity extends ListActivity
 		// Delete
 		case R.id.delete_item_menu_item:
 			long[] ids = getListView().getCheckedItemIds();
-			SRSDatabaseTable.getInstance(this).deleteCards(ids);
+			SRSDB.getInstance(this).deleteCards(ids);
 			reloadData();
 
 			actionMode.finish();

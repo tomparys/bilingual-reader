@@ -48,7 +48,7 @@ public class BookDB {
 					COL_BOOK_FILE_PATH + ", " + COL_LAST_OPENED + ")";
 
 	// The class does most of the interaction with the database.
-	private final DatabaseOpenHelper dbOpenHelper;
+	private final DatabaseManager dbManager;
 
 	// The active sort order that will be applied to returned results.
 	private String chosenSortOrder;
@@ -69,7 +69,7 @@ public class BookDB {
 	 * Private constructor - so the singleton pattern has to be used.
 	 */
 	private BookDB(Context context) {
-		dbOpenHelper = new DatabaseOpenHelper(context);
+		dbManager = new DatabaseManager(context);
 	}
 
 	/**
@@ -96,9 +96,9 @@ public class BookDB {
 			String where = COL_ROWID + " = ?";
 			String[] whereArgs = new String[] {"" + bookId};
 
-			return dbOpenHelper.getWritableDatabase().update(VIRTUAL_TABLE_NAME, values, where, whereArgs);
+			return dbManager.getWritableDatabase().update(VIRTUAL_TABLE_NAME, values, where, whereArgs);
 		} else {
-			return dbOpenHelper.getWritableDatabase().insert(VIRTUAL_TABLE_NAME, null, values);
+			return dbManager.getWritableDatabase().insert(VIRTUAL_TABLE_NAME, null, values);
 		}
 	}
 
@@ -133,7 +133,7 @@ public class BookDB {
 		String where = COL_ROWID + " = ?";
 		String[] whereArgs = new String[] {"" + id};
 
-		return dbOpenHelper.getWritableDatabase().delete(VIRTUAL_TABLE_NAME, where, whereArgs);
+		return dbManager.getWritableDatabase().delete(VIRTUAL_TABLE_NAME, where, whereArgs);
 	}
 
 	/**
@@ -180,7 +180,7 @@ public class BookDB {
 		SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
 		builder.setTables(VIRTUAL_TABLE_NAME);
 
-		Cursor cursor = builder.query(dbOpenHelper.getReadableDatabase(),
+		Cursor cursor = builder.query(dbManager.getReadableDatabase(),
 				columns, selection, selectionArgs, null, null, chosenSortOrder);
 
 		if (cursor == null) {

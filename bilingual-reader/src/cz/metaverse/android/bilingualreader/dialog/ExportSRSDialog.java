@@ -19,7 +19,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.SRSDatabaseActivity;
-import cz.metaverse.android.bilingualreader.db.SRSDatabaseTable;
+import cz.metaverse.android.bilingualreader.db.SRSDB;
 
 /**
  *
@@ -37,7 +37,7 @@ public class ExportSRSDialog extends DialogFragment implements DialogInterface.O
 	private CheckBox enclose;
 
 	// Database and data
-	private SRSDatabaseTable databaseTable;
+	private SRSDB srsDB;
 	private Cursor exportData;
 
 
@@ -55,8 +55,8 @@ public class ExportSRSDialog extends DialogFragment implements DialogInterface.O
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		// Obtain the data
-		databaseTable = SRSDatabaseTable.getInstance(getActivity());
-		exportData = databaseTable.getAll();
+		srsDB = SRSDB.getInstance(getActivity());
+		exportData = srsDB.getAll();
 
 		// Use builder to create the rest of the Dialog
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -104,7 +104,7 @@ public class ExportSRSDialog extends DialogFragment implements DialogInterface.O
 			case 2: separatorChar = '\t'; break;
 		}
 
-		final File exportedFile = databaseTable.export(exportData, separatorChar, enclose.isChecked());
+		final File exportedFile = srsDB.export(exportData, separatorChar, enclose.isChecked());
 
 		/* Show a dialog with the results */
 		// Use builder to create the rest of the Dialog

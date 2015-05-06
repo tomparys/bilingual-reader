@@ -57,7 +57,7 @@ public class BookPageDB {
 			+ COL_LAST_OPENED + " integer)";
 
 	// The class does most of the interaction with the database.
-	private final DatabaseOpenHelper dbOpenHelper;
+	private final DatabaseManager dbManager;
 	private final Context savedContext;
 
 
@@ -78,7 +78,7 @@ public class BookPageDB {
 	 * Private constructor - so the singleton pattern has to be used.
 	 */
 	private BookPageDB(Context context) {
-		dbOpenHelper = new DatabaseOpenHelper(context);
+		dbManager = new DatabaseManager(context);
 		savedContext = context;
 	}
 
@@ -94,7 +94,7 @@ public class BookPageDB {
 			initialValues.put(cols[i], values[i]);
 		}
 
-		return dbOpenHelper.getWritableDatabase().insert(TABLE_NAME, null, initialValues);
+		return dbManager.getWritableDatabase().insert(TABLE_NAME, null, initialValues);
 	}
 
 	/**
@@ -114,9 +114,9 @@ public class BookPageDB {
 			String where = COL_ROWID + " = ?";
 			String[] whereArgs = new String[] {"" + id};
 
-			return dbOpenHelper.getWritableDatabase().update(TABLE_NAME, editValues, where, whereArgs);
+			return dbManager.getWritableDatabase().update(TABLE_NAME, editValues, where, whereArgs);
 		} else {
-			return dbOpenHelper.getWritableDatabase().insert(TABLE_NAME, null, editValues);
+			return dbManager.getWritableDatabase().insert(TABLE_NAME, null, editValues);
 		}
 
 	}
@@ -128,7 +128,7 @@ public class BookPageDB {
 		String where = COL_ROWID + " = ?";
 		String[] whereArgs = new String[] {"" + id};
 
-		return dbOpenHelper.getWritableDatabase().delete(TABLE_NAME, where, whereArgs);
+		return dbManager.getWritableDatabase().delete(TABLE_NAME, where, whereArgs);
 	}
 
 	/**
@@ -198,7 +198,7 @@ public class BookPageDB {
 		SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
 		builder.setTables(TABLE_NAME);
 
-		Cursor cursor = builder.query(dbOpenHelper.getReadableDatabase(),
+		Cursor cursor = builder.query(dbManager.getReadableDatabase(),
 				columns, selection, selectionArgs, null, null, sortOrder);
 
 		if (cursor == null) {

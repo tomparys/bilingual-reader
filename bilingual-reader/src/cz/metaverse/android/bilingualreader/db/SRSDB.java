@@ -26,13 +26,13 @@ import cz.metaverse.android.bilingualreader.helper.Func;
  * 	More info at: www.sqlite.org/fts3.html
  *
  */
-public class SRSDatabaseTable {
+public class SRSDB {
 
 	// For the singleton pattern - only one instance will be created.
-	private static SRSDatabaseTable srsDatabaseTableInstance;
+	private static SRSDB srsDatabaseTableInstance;
 
 	// Logging tag
-	private static final String LOG = "SRSDatabaseTable";
+	private static final String LOG = "SRSDB";
 
 	// The columns of the SRS table
 	public static final String COL_WORD = "WORD";
@@ -55,7 +55,7 @@ public class SRSDatabaseTable {
 				" USING fts3 (" + COL_WORD + ", " + COL_DEFINITION + ")";
 
 	// The class does most of the interaction with the database.
-	private final DatabaseOpenHelper databaseOpenHelper;
+	private final DatabaseManager dbManager;
 
 	// The active sort order that will be applied to returned results.
 	private String chosenSortOrder;
@@ -63,9 +63,9 @@ public class SRSDatabaseTable {
 	/**
 	 * Creates, if necessary, an instance of this class and returns it.
 	 */
-	public static SRSDatabaseTable getInstance(Context context) {
+	public static SRSDB getInstance(Context context) {
 		if (srsDatabaseTableInstance == null) {
-			srsDatabaseTableInstance = new SRSDatabaseTable(context);
+			srsDatabaseTableInstance = new SRSDB(context);
 
 			srsDatabaseTableInstance.sortAlphabetically(false);
 		}
@@ -75,8 +75,8 @@ public class SRSDatabaseTable {
 	/**
 	 * Private constructor - so the singleton pattern has to be used.
 	 */
-	private SRSDatabaseTable(Context context) {
-		databaseOpenHelper = new DatabaseOpenHelper(context);
+	private SRSDB(Context context) {
+		dbManager = new DatabaseManager(context);
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class SRSDatabaseTable {
 		initialValues.put(COL_WORD, word);
 		initialValues.put(COL_DEFINITION, definition);
 
-		return databaseOpenHelper.getWritableDatabase().insert(VIRTUAL_TABLE_NAME, null, initialValues);
+		return dbManager.getWritableDatabase().insert(VIRTUAL_TABLE_NAME, null, initialValues);
 	}
 
 	/**
@@ -115,7 +115,7 @@ public class SRSDatabaseTable {
 		String where = COL_ROWID + " = ?";
 		String[] whereArgs = new String[] {"" + id};
 
-		return databaseOpenHelper.getWritableDatabase().update(VIRTUAL_TABLE_NAME, newValues, where, whereArgs);
+		return dbManager.getWritableDatabase().update(VIRTUAL_TABLE_NAME, newValues, where, whereArgs);
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class SRSDatabaseTable {
 		String where = COL_ROWID + " = ?";
 		String[] whereArgs = new String[] {"" + id};
 
-		return databaseOpenHelper.getWritableDatabase().delete(VIRTUAL_TABLE_NAME, where, whereArgs);
+		return dbManager.getWritableDatabase().delete(VIRTUAL_TABLE_NAME, where, whereArgs);
 	}
 
 	/**
@@ -184,7 +184,7 @@ public class SRSDatabaseTable {
 		SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
 		builder.setTables(VIRTUAL_TABLE_NAME);
 
-		Cursor cursor = builder.query(databaseOpenHelper.getReadableDatabase(),
+		Cursor cursor = builder.query(dbManager.getReadableDatabase(),
 				columns, selection, selectionArgs, null, null, chosenSortOrder);
 
 		if (cursor == null) {

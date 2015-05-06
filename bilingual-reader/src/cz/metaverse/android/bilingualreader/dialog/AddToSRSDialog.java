@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.EditText;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.SRSDatabaseActivity;
-import cz.metaverse.android.bilingualreader.db.SRSDatabaseTable;
+import cz.metaverse.android.bilingualreader.db.SRSDB;
 
 /**
  *
@@ -103,7 +103,7 @@ public class AddToSRSDialog extends DialogFragment implements DialogInterface.On
 	 */
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
-		SRSDatabaseTable db = SRSDatabaseTable.getInstance(getActivity());
+		SRSDB db = SRSDB.getInstance(getActivity());
 
 		if (rowid != null) {
 			// Edit the already existing card in the database

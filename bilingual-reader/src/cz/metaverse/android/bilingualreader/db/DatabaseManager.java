@@ -11,7 +11,7 @@ import android.util.Log;
 *  our database table can be created and upgraded when necessary.
 *
 */
-public class DatabaseOpenHelper extends SQLiteOpenHelper {
+public class DatabaseManager extends SQLiteOpenHelper {
 
 	// Logging tag
 	private static final String LOG = "DatabaseOpenHelper";
@@ -24,7 +24,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	private static final int DATABASE_VERSION = 5;
 
 
-	DatabaseOpenHelper(Context context) {
+	DatabaseManager(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		helperContext = context;
 	}
@@ -32,7 +32,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		database = db;
-		database.execSQL(SRSDatabaseTable.FTS_TABLE_CREATE);
+		database.execSQL(SRSDB.FTS_TABLE_CREATE);
 		database.execSQL(BookDB.FTS_TABLE_CREATE);
 		database.execSQL(BookPageDB.TABLE_CREATE);
 	}
@@ -41,7 +41,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		Log.w(LOG, "Upgrading database from version " + oldVersion + " to "
 				+ newVersion + ", which will destroy all old data");
-		db.execSQL("DROP TABLE IF EXISTS " + SRSDatabaseTable.VIRTUAL_TABLE_NAME);
+		db.execSQL("DROP TABLE IF EXISTS " + SRSDB.VIRTUAL_TABLE_NAME);
 		db.execSQL("DROP TABLE IF EXISTS " + BookDB.VIRTUAL_TABLE_NAME);
 		db.execSQL("DROP TABLE IF EXISTS " + BookPageDB.TABLE_NAME);
 		onCreate(db);
