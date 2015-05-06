@@ -512,4 +512,17 @@ public class BookPanel extends SplitPanel {
 		loadScrollPosition(preferences);
 	}
 
+	/**
+	 * Activity calls this when a runtime change happens in case we need to do something about it.
+	 * Examples: Screen orientation changed, entered/exited fullscreen, etc.
+	 */
+	public void onRuntimeChange() {
+		Log.d(LOG, LOG + ".onOrientationChanged");
+
+		// Save the scroll variables so that if content is going to get re-rendered,
+		// we load the proper values.
+		loadPositionY = getPositionYAsFloat();
+		loadScrollSyncOffset = webView.getScrollSyncOffsetAsFloat();
+	}
+
 }

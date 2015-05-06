@@ -1,15 +1,10 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/left_drawer"
     android:layout_width="300dp"
     android:layout_height="match_parent"
     android:layout_gravity="start"
     android:background="#fff"
-    android:orientation="vertical" >
-
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="1" >
+    android:fillViewport="true" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -171,14 +166,32 @@
             android:layout_height="1dp"
             android:background="?android:attr/dividerVertical" />
 
-        <!-- Exit button when in landscape -->
+        <!-- Empty View that fills all remaining vertical space, so that Exit button is always on the bottom. -->
 
-        <include layout="@layout/merge_drawer_exit_button_in_scrollview" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Divider and Exit button -->
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="?android:attr/dividerVertical" />
+
+        <Button
+            android:id="@+id/drawer_exit_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="start|center_vertical"
+            android:onClick="onDrawerButtonClicked"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:text="@string/Exit"
+            android:textSize="18sp"
+            android:visibility="visible" />
     </LinearLayout>
+
 </ScrollView>
-
-    <!-- Exit button when in portrait -->
-
-    <include layout="@layout/merge_drawer_exit_button_below_scrollview" />
-
-</LinearLayout>

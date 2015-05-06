@@ -37,6 +37,7 @@ import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
@@ -173,7 +174,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 
 		// Fullscreen: Reactivate if it was active before.
 		if (fullscreenMode) {
-			activateFullscreen();
+			activateFullscreen(true);
 		}
 
 		// Load the Governor and panels from persistent state if needed.
@@ -275,6 +276,32 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	}
 
 	/**
+	 * Called when the device configuration changes.
+	 */
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		Log.d(LOG, LOG + ".onConfigurationChanged");
+		super.onConfigurationChanged(newConfig);
+
+		// Signal to the Governor that a runtime change has occurred.
+		governor.onRuntimeChange();
+
+		// Change the orientation of the PanelsLayout accordingly.
+		LinearLayout panelsLayout = (LinearLayout) findViewById(R.id.PanelsLayout);
+		if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+			panelsLayout.setOrientation(LinearLayout.VERTICAL);
+		} else {
+			panelsLayout.setOrientation(LinearLayout.HORIZONTAL);
+		}
+
+		// Set the divider again, because it needs to be redrawn due to the orientation change.
+		panelsLayout.setDividerDrawable(ContextCompat.getDrawable(this, R.drawable.divider_panels));
+
+		// Inform ActionBar Drawer Toggle of the change.
+		actionBarDrawerToggle.onConfigurationChanged(newConfig);
+	}
+
+	/**
 	 * Called when the FileChooser (or possibly other) Intent we launched sends back results.
 	 */
 	@Override
@@ -333,7 +360,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		if (fullscreenMode) {
 			deactivateFullscreen();
 		} else {
-			activateFullscreen();
+			activateFullscreen(true);
 		}
 	}
 
@@ -341,25 +368,31 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 * Activates full-screen mode - hides status bar, system navigation and the Action Bar.
 	 */
 	@SuppressLint("InlinedApi") // Android versions not supporting Immersive Fullscreen ignore unsupported flags.
-	public void activateFullscreen() {
-
-		// Set basic fullscreen flags
-		int flags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION  // Hides the system navigation
-				| View.SYSTEM_UI_FLAG_FULLSCREEN;  // Hides the status bar
-
-		// Set flags for devices with support for immersive fullscreen.
-		if (Build.VERSION.SDK_INT >= 19) {
-			// The last two flags make for a smoother transition in android versions with IMMERSIVE fullscreen.
-			flags = flags
-					| View.SYSTEM_UI_FLAG_IMMERSIVE  // Ensures that no touch events won't cancel fullscreen mode.
-					| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION  // Ensures more seamless transition.
-					| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;  // Ensures more seamless transition.
-		}
+	public void activateFullscreen(boolean setFlags) {
 
 		// Hide action bar and activate fullscreen flags.
 		fullscreenMode = true;
 		getActionBar().hide();
-		decorView.setSystemUiVisibility(flags);
+
+		if (setFlags) {
+			// Set basic fullscreen flags
+			int flags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION  // Hides the system navigation
+					| View.SYSTEM_UI_FLAG_FULLSCREEN;  // Hides the status bar
+
+			// Set flags for devices with support for immersive fullscreen.
+			if (Build.VERSION.SDK_INT >= 19) {
+				// The last two flags make for a smoother transition in android versions with IMMERSIVE fullscreen.
+				flags = flags
+						| View.SYSTEM_UI_FLAG_IMMERSIVE  // Ensures that no touch events won't cancel fullscreen mode.
+						| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION  // Ensures more seamless transition.
+						| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;  // Ensures more seamless transition.
+			}
+
+			decorView.setSystemUiVisibility(flags);
+		}
+
+		// Signal to the Governor that a runtime change has occurred.
+		governor.onRuntimeChange();
 	}
 
 	/**
@@ -368,7 +401,10 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	public void deactivateFullscreen() {
 		fullscreenMode = false;
 		getActionBar().show();
-		decorView.setSystemUiVisibility(0); // Seting no flags returns all to normal.
+		decorView.setSystemUiVisibility(0); // Setting no flags returns all to normal.
+
+		// Signal to the Governor that a runtime change has occurred.
+		governor.onRuntimeChange();
 	}
 
 	/**
@@ -397,7 +433,9 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			// The system bars are no longer visible.
 
 			if (!fullscreenMode) {
-				activateFullscreen();
+				// Do everything but set the fullscreen flags, so we don't end up in a crazy loop
+				// of switching fullscreen on and off.
+				activateFullscreen(false);
 			}
 
 			Log.d(LOG, LOG + ".onSystemUiVisibilityChange - fullscreen entered");
@@ -413,7 +451,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			if (fullscreenMode) {
 				// If we have regained back focus and fullscreenImmersion was active before,
 				// re-hide system UI.
-				activateFullscreen();
+				activateFullscreen(true);
 			}
 		}
 	}
@@ -559,15 +597,6 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 
 		// Sync the toggle state after onRestoreInstanceState has occurred.
 		actionBarDrawerToggle.syncState();
-	}
-
-	/**
-	 * Called when the device configuration changes.
-	 */
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		actionBarDrawerToggle.onConfigurationChanged(newConfig);
 	}
 
 

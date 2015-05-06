@@ -488,4 +488,14 @@ public class Governor {
 	private String getS(int id) {
 		return activity.getString(id);
 	}
+
+	/**
+	 * Activity calls this when a runtime change happens in case we need to do something about it.
+	 * Examples: Screen orientation changed, entered/exited fullscreen, etc.
+	 */
+	public void onRuntimeChange() {
+		for (PanelHolder ph : panelHolder) {
+			ph.onRuntimeChange();
+		}
+	}
 }

@@ -1,5 +1,0 @@
-<merge xmlns:android="http://schemas.android.com/apk/res/android" >
-
-    <include layout="@layout/merge_drawer_exit_button" />
-
-</merge>
