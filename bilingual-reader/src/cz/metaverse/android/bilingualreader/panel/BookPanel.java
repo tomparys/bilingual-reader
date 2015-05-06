@@ -422,8 +422,8 @@ public class BookPanel extends SplitPanel {
 	 * This is, however, not an issue, because in such short pages, loading the scroll position
 	 *  from preferences makes no sense anyway.
 	 *
-	 * Warning 2!: This method might very rarely get called twice, first time with a little
-	 *  premature shorter getContentHeight(), and the second time with the correct getContentHeight().
+	 * Warning 2!: This method might very rarely get called twice, first time with a little premature
+	 *  (shorter OR longer) getContentHeight(), and the second time with the correct getContentHeight().
 	 * Thus it is important to do not null the load* fields here, so that in case the method gets called
 	 *  the second time, it can recalculate the values and get it right!
 	 * Nulling of load* values was therefore moved to loadPage/loadData when the user opens another page.
