@@ -37,13 +37,13 @@ public class FileDialogOptions {
     public boolean selectFolderMode = false;
 
     // Option for file icon.
-    public int iconFile = R.drawable.document;
+    public int iconFile = R.drawable.file_dialog_document;
     // Option for folder icon.
-    public int iconFolder = R.drawable.folder_horizontal;
+    public int iconFolder = R.drawable.file_dialog_folder;
     // Option for up/root icon.
-    public int iconUp = R.drawable.shortcut_overlay;
+    public int iconUp = R.drawable.file_dialog_back;
     // Option for SDCard icon
-    public int iconSDCard = R.drawable.floppy;
+    public int iconSDCard = R.drawable.file_dialog_floppy;
 
 
 
