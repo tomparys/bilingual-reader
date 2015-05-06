@@ -10,6 +10,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.manager.Governor;
 
 /**
@@ -20,7 +21,7 @@ import cz.metaverse.android.bilingualreader.manager.Governor;
  */
 public class CloseOrHidePanelDialog extends DialogFragment {
 
-	private Governor governor;
+	// Whether this is a Close panel dialog or Hide panel dialog.
 	private boolean close;
 
 	// The XML form containing EditTexts that user fills with data
@@ -29,12 +30,26 @@ public class CloseOrHidePanelDialog extends DialogFragment {
 	private Button button1;
 	private Button button2;
 
+
+	/**
+	 * Parameterless constructor that gets called upon orientation change.
+	 */
+	public CloseOrHidePanelDialog() {}
+
 	/**
 	 * Constructor - so we know whether this is close or hide panel dialog.
 	 */
-	public CloseOrHidePanelDialog(Governor governor, boolean close) {
-		this.governor = governor;
+	public CloseOrHidePanelDialog( boolean close) {
 		this.close = close;
+	}
+
+	/**
+	 * Remember the information when the screen is just about to be rotated.
+	 */
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putBoolean("close", close);
 	}
 
 	/**
@@ -43,6 +58,12 @@ public class CloseOrHidePanelDialog extends DialogFragment {
 	@SuppressLint("InflateParams") // Normal for DialogFragments
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+		// If orientation change recreated this activity, load variables from before.
+		if (savedInstanceState != null) {
+			close = savedInstanceState.getBoolean("close", false);
+		}
+
 		// Inflate the form with EditTexts for data
 		form = getActivity().getLayoutInflater().inflate(R.layout.dialog_close_or_hide_panel, null);
 		textView = (TextView) form.findViewById(R.id.close_or_hide_panel_info_textview);
@@ -58,16 +79,16 @@ public class CloseOrHidePanelDialog extends DialogFragment {
 			@Override
 			public void onClick(View v) {
 				if (close) {
-					governor.getPanelHolder(0).closePanel();
+					getGovernor().getPanelHolder(0).closePanel();
 				} else {
-					governor.getPanelHolder(0).hidePanel();
+					getGovernor().getPanelHolder(0).hidePanel();
 				}
 				dismiss();
 			}
 		});
 
 		/* Button 2 */
-		if (!governor.getPanelHolder(1).hasOpenPanel()) {
+		if (!getGovernor().getPanelHolder(1).hasOpenPanel()) {
 			// Hide the button if the second panel isn't open.
 			button2.setVisibility(View.GONE);
 		} else {
@@ -76,9 +97,9 @@ public class CloseOrHidePanelDialog extends DialogFragment {
 				@Override
 				public void onClick(View v) {
 					if (close) {
-						governor.getPanelHolder(1).closePanel();
+						getGovernor().getPanelHolder(1).closePanel();
 					} else {
-						governor.getPanelHolder(1).hidePanel();
+						getGovernor().getPanelHolder(1).hidePanel();
 					}
 					dismiss();
 				}
@@ -91,5 +112,12 @@ public class CloseOrHidePanelDialog extends DialogFragment {
 				.setView(form)
 				.setNegativeButton(android.R.string.cancel, null);
 		return builder.create();
+	}
+
+	/**
+	 * Obtains a Governor instance from our ReaderActivity.
+	 */
+	private Governor getGovernor() {
+		return ((ReaderActivity) getActivity()).governor;
 	}
 }

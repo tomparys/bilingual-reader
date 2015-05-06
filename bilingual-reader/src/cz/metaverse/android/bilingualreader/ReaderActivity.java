@@ -464,8 +464,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 
 		// Close panel
 		case R.id.drawer_close_panel_button:
-			new CloseOrHidePanelDialog(governor, true)
-					.show(getFragmentManager(), "close_or_hide_panel_dialog");
+			new CloseOrHidePanelDialog(true).show(getFragmentManager(), "close_or_hide_panel_dialog");
 			break;
 
 		// Hide panel / Reappear panel
@@ -480,8 +479,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 
 			} else {
 				// Open a HidePanelDialog.
-				new CloseOrHidePanelDialog(governor, false)
-						.show(getFragmentManager(), "close_or_hide_panel_dialog");
+				new CloseOrHidePanelDialog(false).show(getFragmentManager(), "close_or_hide_panel_dialog");
 			}
 			break;
 
