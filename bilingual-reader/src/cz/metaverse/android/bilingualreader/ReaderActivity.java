@@ -281,6 +281,11 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(LOG, "ReaderActivity.onActivityResult");
 
+		// If the user has changed orientation when away from this activity, the Drawer will be left opened.
+		if (navigationDrawerLayout.isDrawerOpen(Gravity.START)) {
+			navigationDrawerLayout.closeDrawer(Gravity.START);
+		}
+
 		// Load the Governor and panels from persistent state if needed.
 		loadGovernorAndPanelsIfNeeded(false);
 		doNotLoadGovernorThisTimeInOnResume = true;
