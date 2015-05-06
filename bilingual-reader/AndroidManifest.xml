@@ -26,7 +26,6 @@
         </activity>
         <activity android:name="cz.metaverse.android.bilingualreader.RecentlyOpenedFilesActivity" />
         <activity android:name="cz.metaverse.android.bilingualreader.FileChooserActivity" />
-        <activity android:name="cz.metaverse.android.bilingualreader.dialog.file.FileDialog" />
         <activity android:name="cz.metaverse.android.bilingualreader.SRSDatabaseActivity" />
         <activity
             android:name="cz.metaverse.android.bilingualreader.panel.BookPanel"

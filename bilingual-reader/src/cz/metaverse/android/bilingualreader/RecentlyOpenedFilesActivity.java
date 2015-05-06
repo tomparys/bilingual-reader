@@ -116,11 +116,7 @@ public class RecentlyOpenedFilesActivity extends ListActivity
 			cursor.moveToPosition(position);
 			String bookFilePath = cursor.getString(3);
 
-			// Create and set the result Intent.
-			Intent resultIntent = new Intent();
-			resultIntent.putExtra(getString(R.string.bpath), bookFilePath);
-			setResult(Activity.RESULT_OK, resultIntent);
-			finish();
+			returnPathAndFinish(bookFilePath);
 		}
 	}
 
@@ -142,6 +138,18 @@ public class RecentlyOpenedFilesActivity extends ListActivity
 				finish();
 			}
 		}
+	}
+
+	/**
+	 * Sets the result data with the selected filePath and finishes the Activity.
+	 * @param filePath
+	 */
+	public void returnPathAndFinish(String filePath) {
+		// Create and set the result Intent and finish here.
+		Intent resultIntent = new Intent();
+		resultIntent.putExtra(getString(R.string.bpath), filePath);
+		setResult(Activity.RESULT_OK, resultIntent);
+		finish();
 	}
 
 
@@ -177,14 +185,7 @@ public class RecentlyOpenedFilesActivity extends ListActivity
 
 		// Open file
 		case R.id.open_file_menu_item:
-			// TODO some file chooser
-			Intent intent = new Intent(getBaseContext(), FileDialog.class);
-			//intent.putExtra(FileDialog.START_PATH, "/sdcard");
-			//can user select directories or not
-			//intent.putExtra(FileDialog.CAN_SELECT_DIR, true);
-			//alternatively you can set file filter
-			//intent.putExtra(FileDialog.FORMAT_FILTER, new String[] { "png" });
-			startActivityForResult(intent, 5);
+			new FileDialog().show(getFragmentManager(), "FileDialog");
 			return true;
 
 		// List of all EPUBS

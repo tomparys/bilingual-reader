@@ -17,12 +17,12 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.KeyEvent;
@@ -32,8 +32,12 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import cz.metaverse.android.bilingualreader.R;
+import cz.metaverse.android.bilingualreader.RecentlyOpenedFilesActivity;
 
-public class FileDialog extends Activity {
+public class FileDialog extends DialogFragment {
+
+	private static final String LOG = "FileDialog";
+
 	private static final String ITEM_KEY = "key";
 	private static final String ITEM_IMAGE = "image";
 
@@ -41,6 +45,9 @@ public class FileDialog extends Activity {
 	public static final String PATH_SDCARD = Environment.getExternalStorageDirectory().getAbsolutePath();
 
 	private FileDialogOptions options;
+
+    // Option for filtering files by extension
+    private static final String FILTER_FILES_BY_EXTENSION = "epub";
 
 	// TODO: This needs a cleanup
 	private AlertDialog dialog;
@@ -58,17 +65,17 @@ public class FileDialog extends Activity {
 	 * Called when the activity is first created.
 	 */
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		//setRetainInstance(true);
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			getWindow().setBackgroundDrawable(new ColorDrawable(0));
-		}
+		// Restore the state in case of an orientation change.
+		/*if (savedInstanceState != null) {
+			this.currentPath = savedInstanceState.getString("currentPath");
+			listview.onRestoreInstanceState(savedInstanceState.getParcelable("listview"));
+		}*/
 
-		setResult(RESULT_CANCELED, getIntent());
-
-
-		RelativeLayout layout = (RelativeLayout) getLayoutInflater().inflate(R.layout.file_dialog_main, null);
+		RelativeLayout layout = (RelativeLayout) getActivity().getLayoutInflater().inflate(R.layout.file_dialog_main, null);
 
 		listview = (ListView) layout.findViewById(android.R.id.list);
 		listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -80,9 +87,9 @@ public class FileDialog extends Activity {
 
 
 		// Read options
-		options = new FileDialogOptions(getIntent());
+		options = new FileDialogOptions();
 
-		dialog = new AlertDialog.Builder(this)
+		dialog = new AlertDialog.Builder(getActivity())
 			.setTitle("Select file")
 			.setView(layout)
 			.setCancelable(false)
@@ -90,11 +97,11 @@ public class FileDialog extends Activity {
 				@Override
 				public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
 					if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
-						if (!currentPath.equals(PATH_ROOT)) {
+						if (!currentPath.equals(PATH_ROOT) && !currentPath.equals(PATH_SDCARD)) {
 							getDir(parentPath);
 						}
 						else {
-							finish();
+							dismiss();
 						}
 					}
 
@@ -104,16 +111,17 @@ public class FileDialog extends Activity {
 			.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 				@Override public void onClick(DialogInterface dialog, int which) {
 					if (options.selectFolderMode) {
+						// TODO me: maybe you should return the dir here? Well, I'm not using this anyhow.
 						returnSelection(null);
 						return;
 					}
 
-					finish();
+					dismiss();
 				}
 			})
 			.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 				@Override public void onClick(DialogInterface dialog, int which) {
-					finish();
+					dismiss();
 				}
 			})
 			.create();
@@ -133,38 +141,14 @@ public class FileDialog extends Activity {
 		        getDir(options.currentPath);
 		    }
 		    else {
-		        getDir(PATH_ROOT);
+		        getDir(PATH_SDCARD);
 		    }
 		}
 
 
-		dialog.setTitle(currentPath);
+		dialog.setTitle(replaceSDCardPath(currentPath));
 
-
-
-		// This sets the dialog to fill the screen all the time,
-		// so navigating doesn't make the height twitch
-//		WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-//	    lp.copyFrom(dialog.getWindow().getAttributes());
-//	    lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-//	    lp.height = WindowManager.LayoutParams.MATCH_PARENT;
-		dialog.show();
-//		dialog.getWindow().setAttributes(lp);
-
-//		ViewGroup.MarginLayoutParams mlop = new ViewGroup.MarginLayoutParams(listview.getLayoutParams());
-//		mlop.height = LayoutParams.MATCH_PARENT;
-//	    listview.setLayoutParams(mlop);
-	}
-
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-
-		if (dialog != null) {
-			dialog.dismiss();
-			dialog = null;
-		}
+		return dialog;
 	}
 
 
@@ -193,7 +177,7 @@ public class FileDialog extends Activity {
 
 		// Null if file is not a directory
 		if (files == null) {
-			currentPath = PATH_ROOT;
+			currentPath = PATH_SDCARD;
 			f = new File(currentPath);
 			files = f.listFiles();
 		}
@@ -206,27 +190,21 @@ public class FileDialog extends Activity {
             }
 		});
 
-	    dialog.setTitle(currentPath);
+	    dialog.setTitle(replaceSDCardPath(currentPath));
 
-		/*
-         * http://stackoverflow.com/questions/5090915/show-songs-from-sdcard
-         * http://developer.android.com/reference/android/os/Environment.html
-         * http://stackoverflow.com/questions/5453708/android-how-to-use-environment-getexternalstoragedirectory
-         */
-        if (currentPath.equals(PATH_ROOT)) {
+		// Add the "Back to SD card" line.
+        if (!currentPath.equals(PATH_SDCARD)) {
             boolean mounted = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
 
             if (mounted) {
-                addItem(mList, PATH_SDCARD + "(SD Card)", this.options.iconSDCard);
+                addItem(mList, getString(R.string.Back_to_SD_card), this.options.iconSDCard);
                 path.add(PATH_SDCARD);
             }
         }
 
+        // Add the ".." line
 		if (!currentPath.equals(PATH_ROOT)) {
-			addItem(mList, "/ (Root folder)", this.options.iconUp);
-			path.add(PATH_ROOT);
-
-			addItem(mList, "../ (Parent folder)", this.options.iconUp);
+			addItem(mList, getString(R.string.parent_folder_line), this.options.iconUp);
 			path.add(f.getParent());
 			parentPath = f.getParent();
 		}
@@ -240,21 +218,39 @@ public class FileDialog extends Activity {
 			}
 			// Only add files if we're not in folder mode
 			else if (!options.selectFolderMode) {
-			    listFiles.add(file);
+
+				// Filter files by extension
+				if (FILTER_FILES_BY_EXTENSION != null) {
+					String filePath = file.getPath();
+					int extPosition = filePath.lastIndexOf(".");
+					if (extPosition != -1) {
+						String extension = filePath.substring(extPosition + 1).toLowerCase(Locale.US);
+						//Log.d(LOG, LOG + "; extension: " + extension);
+
+						if (extension != null && extension.equals(FILTER_FILES_BY_EXTENSION)) {
+							listFiles.add(file);
+						}
+					}
+
+				} else {
+					listFiles.add(file);
+				}
 			}
 		}
 
+		// Add directories
 		for (File dir : listDirs) {
 		    path.add(dir.getPath());
 			addItem(mList, dir.getName(), this.options.iconFolder);
 		}
 
+		// Add files
 		for (File file : listFiles) {
 		    path.add(file.getPath());
 			addItem(mList, file.getName(), this.options.iconFile);
 		}
 
-		SimpleAdapter fileList = new SimpleAdapter(this, mList,
+		SimpleAdapter fileList = new SimpleAdapter(getActivity(), mList,
             R.layout.file_dialog_row,
             new String[] { ITEM_KEY, ITEM_IMAGE },
             new int[] { R.id.fdrowtext, R.id.fdrowimage }
@@ -264,6 +260,14 @@ public class FileDialog extends Activity {
 
 		listview.setAdapter(fileList);
 	}
+
+	/**
+	 * If the path contains the path of the SDcard, replace it with the string SDcard.
+	 */
+	private CharSequence replaceSDCardPath(String currentPath) {
+		return currentPath.replace(PATH_SDCARD, getActivity().getString(R.string.SD_card));
+	}
+
 
 	private void addItem(ArrayList<HashMap<String, Object>> mList, String fileName, int imageId) {
 		HashMap<String, Object> item = new HashMap<String, Object>();
@@ -277,7 +281,7 @@ public class FileDialog extends Activity {
 		File file = new File(path.get(position));
 
 		if (!file.exists()) {
-		    new AlertDialog.Builder(this)
+		    new AlertDialog.Builder(getActivity())
                 .setIcon(R.drawable.icon)
                 .setTitle("Does not exist.")
                 .setMessage(file.getName())
@@ -297,7 +301,7 @@ public class FileDialog extends Activity {
 				getDir(path.get(position));
 			}
 			else {
-				new AlertDialog.Builder(this)
+				new AlertDialog.Builder(getActivity())
 					.setIcon(R.drawable.icon)
 					.setTitle("[" + file.getName() + "] " + getText(R.string.cant_read_folder))
 					.setPositiveButton("OK", null)
@@ -314,42 +318,26 @@ public class FileDialog extends Activity {
 		}
 	}
 
-//	@Override
-//	public boolean onKeyDown(int keyCode, KeyEvent event) {
-//		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-//			if (!currentPath.equals(PATH_ROOT)) {
-//				getDir(parentPath);
-//				return true;
-//			}
-//		}
-//
-//		return super.onKeyDown(keyCode, event);
-//	}
-
-
-
-	private void returnSelection(String filepath) {
+	/**
+	 * This is where we do the thing we want with the selected file.
+	 * @param filePath
+	 */
+	private void returnSelection(String filePath) {
 	    this.options.currentPath = currentPath;
-	    this.options.selectedFile = filepath;
+	    this.options.selectedFile = filePath;
 
-	    setResult(RESULT_OK, options.createResultIntent());
-	    finish();
+	    ((RecentlyOpenedFilesActivity) getActivity()).returnPathAndFinish(filePath);
+	    dismiss();
 	}
 
-	// Remember the information when the screen is just about to be rotated.
+	/**
+	 * Remember the information when the screen is just about to be rotated.
+	 */
 	@Override
-	protected void onSaveInstanceState(Bundle outState) {
+	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 
 		outState.putString("currentPath", this.currentPath);
 		outState.putParcelable("listview", listview.onSaveInstanceState());
-	}
-
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-
-		this.currentPath = savedInstanceState.getString("currentPath");
-		listview.onRestoreInstanceState(savedInstanceState.getParcelable("listview"));
 	}
 }

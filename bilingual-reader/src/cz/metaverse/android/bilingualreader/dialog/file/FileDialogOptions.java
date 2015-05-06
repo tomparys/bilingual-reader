@@ -23,16 +23,16 @@ public class FileDialogOptions {
 
 
     // This is used to configure the start folder when it opens and the folder of the result file.
-    public String currentPath = FileDialog.PATH_ROOT;
+    public String currentPath = FileDialog.PATH_SDCARD;
     // Used to retrieve the absolute filename of the result file.
     public String selectedFile = null;
 
     // Set to enable the "New" file button.
-    public boolean allowCreate = true;
+    public boolean allowCreate = false;
     // Set to show current folder in activity titlebar and hide the "myPath" TextView.
-    public boolean titlebarForCurrentPath;
+    public boolean titlebarForCurrentPath = true;
     // Option for one-click select
-    public boolean oneClickSelect;
+    public boolean oneClickSelect = true;
     // Option for selecting a folder rather than file
     public boolean selectFolderMode = false;
 
