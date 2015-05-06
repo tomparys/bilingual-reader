@@ -24,6 +24,7 @@ import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import cz.metaverse.android.bilingualreader.db.BookDB;
+import cz.metaverse.android.bilingualreader.dialog.file.FileDialog;
 
 
 /**
@@ -177,6 +178,13 @@ public class RecentlyOpenedFilesActivity extends ListActivity
 		// Open file
 		case R.id.open_file_menu_item:
 			// TODO some file chooser
+			Intent intent = new Intent(getBaseContext(), FileDialog.class);
+			//intent.putExtra(FileDialog.START_PATH, "/sdcard");
+			//can user select directories or not
+			//intent.putExtra(FileDialog.CAN_SELECT_DIR, true);
+			//alternatively you can set file filter
+			//intent.putExtra(FileDialog.FORMAT_FILTER, new String[] { "png" });
+			startActivityForResult(intent, 5);
 			return true;
 
 		// List of all EPUBS
