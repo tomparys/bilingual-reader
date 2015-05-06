@@ -12,8 +12,6 @@ import java.util.Locale;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.text.TextUtils;
 import android.util.Log;
@@ -48,10 +46,13 @@ public class SRSDatabaseTable {
 	// Array of all available columns to be used for results.
 	private static final String [] allColumns = new String[] {COL_HELP_ID, COL_WORD, COL_DEFINITION};
 
-	// Database info
-	private static final String DATABASE_NAME = "BILINGUAL_READER";
-	private static final String VIRTUAL_TABLE_NAME = "SRS"; // We're creating a virtual SQLite FTS3 table
-	private static final int DATABASE_VERSION = 1;
+	// DB Table
+	protected static final String VIRTUAL_TABLE_NAME = "SRS"; // We're creating a virtual SQLite FTS3 table
+
+	// SQL command that creates the database.
+	protected static final String FTS_TABLE_CREATE =
+				"CREATE VIRTUAL TABLE " + VIRTUAL_TABLE_NAME +
+				" USING fts3 (" + COL_WORD + ", " + COL_DEFINITION + ")";
 
 	// The class does most of the interaction with the database.
 	private final DatabaseOpenHelper databaseOpenHelper;
@@ -95,22 +96,36 @@ public class SRSDatabaseTable {
 	 * @param word			The front of the card - the word or a phrase to be remembered
 	 * @param definition	The back of the card - the word's translation or definition
 	 */
-	public void addCard(String word, String definition) {
-		databaseOpenHelper.addCard(word, definition);
+	public long addCard(String word, String definition) {
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(COL_WORD, word);
+		initialValues.put(COL_DEFINITION, definition);
+
+		return databaseOpenHelper.getWritableDatabase().insert(VIRTUAL_TABLE_NAME, null, initialValues);
 	}
 
 	/**
 	 * Edits an existing SRS card.
 	 */
-	public void editCard(long id, String word, String definition) {
-		databaseOpenHelper.editCard(id, word, definition);
+	public long editCard(long id, String word, String definition) {
+		ContentValues newValues = new ContentValues();
+		newValues.put(COL_WORD, word);
+		newValues.put(COL_DEFINITION, definition);
+
+		String where = COL_ROWID + " = ?";
+		String[] whereArgs = new String[] {"" + id};
+
+		return databaseOpenHelper.getWritableDatabase().update(VIRTUAL_TABLE_NAME, newValues, where, whereArgs);
 	}
 
 	/**
 	 * Deletes an SRS card.
 	 */
-	public void deleteCard(long id) {
-		databaseOpenHelper.deleteCard(id);
+	public long deleteCard(long id) {
+		String where = COL_ROWID + " = ?";
+		String[] whereArgs = new String[] {"" + id};
+
+		return databaseOpenHelper.getWritableDatabase().delete(VIRTUAL_TABLE_NAME, where, whereArgs);
 	}
 
 	/**
@@ -182,82 +197,7 @@ public class SRSDatabaseTable {
 	}
 
 
-	/**
-	 *
-	 * The SQLiteOpenHelper inner class defines abstract methods that we override so that
-	 *  our database table can be created and upgraded when necessary.
-	 *
-	 */
-	private static class DatabaseOpenHelper extends SQLiteOpenHelper {
 
-		private final Context helperContext;
-		private SQLiteDatabase database;
-
-		// SQL command that creates the database.
-		private static final String FTS_TABLE_CREATE =
-					"CREATE VIRTUAL TABLE " + VIRTUAL_TABLE_NAME +
-					" USING fts3 (" + COL_WORD + ", " + COL_DEFINITION + ")";
-
-
-		DatabaseOpenHelper(Context context) {
-			super(context, DATABASE_NAME, null, DATABASE_VERSION);
-			helperContext = context;
-		}
-
-		@Override
-		public void onCreate(SQLiteDatabase db) {
-			database = db;
-			database.execSQL(FTS_TABLE_CREATE);
-		}
-
-		@Override
-		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			Log.w(LOG, "Upgrading database from version " + oldVersion + " to "
-					+ newVersion + ", which will destroy all old data");
-			db.execSQL("DROP TABLE IF EXISTS " + VIRTUAL_TABLE_NAME);
-			onCreate(db);
-		}
-
-		/**
-		 * Adds one "SRS card" into the database table.
-		 * @param word			The front of the card - the word or a phrase to be remembered
-		 * @param definition	The back of the card - the word's translation or definition
-		 * @return				Id of the newly entered row in the table
-		 */
-		public long addCard(String word, String definition) {
-			ContentValues initialValues = new ContentValues();
-			initialValues.put(COL_WORD, word);
-			initialValues.put(COL_DEFINITION, definition);
-
-			return getWritableDatabase().insert(VIRTUAL_TABLE_NAME, null, initialValues);
-		}
-
-		/**
-		 * Updates a card in the database with new data on the card.
-		 * @param id  Rowid of the card we're updating
-		 */
-		public long editCard(long id, String word, String definition) {
-			ContentValues newValues = new ContentValues();
-			newValues.put(COL_WORD, word);
-			newValues.put(COL_DEFINITION, definition);
-
-			String where = "rowid = ?";
-			String[] whereArgs = new String[] {"" + id};
-
-			return getWritableDatabase().update(VIRTUAL_TABLE_NAME, newValues, where, whereArgs);
-		}
-
-		/**
-		 * Wipes a given card from the database.
-		 * @param id  Rowid of the banished card
-		 */
-		public long deleteCard(long id) {
-			String where = "rowid = ?";
-			String[] whereArgs = new String[] {"" + id};
-
-			return getWritableDatabase().delete(VIRTUAL_TABLE_NAME, where, whereArgs);
-		}
-	}
 
 
 	// ============================================================================================

@@ -3,8 +3,6 @@ package cz.metaverse.android.bilingualreader.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
 
@@ -23,7 +21,7 @@ public class BookPageDB {
 	private static BookPageDB bookPageDBInstance;
 
 	// Logging tag
-	private static final String LOG = "BookPageDatabaseTable";
+	private static final String LOG = "BookPageDB";
 
 	// The columns of the database table
 	public static final String COL_ROWID = "_id";
@@ -44,10 +42,19 @@ public class BookPageDB {
 			COL_BOOK_FILENAME, COL_BOOK_TITLE, COL_PAGE_FILENAME, COL_PAGE_RELATIVE_PATH, COL_SCROLL_Y,
 			COL_SCROLLSYNC_OFFSET, COL_PARAGRAPHS_COUNT, COL_LAST_OPENED};
 
-	// Database info
-	private static final String DATABASE_NAME = "BILINGUAL_READER";
-	private static final String TABLE_NAME = "BOOKPAGE";
-	private static final int DATABASE_VERSION = 3;
+	/* Database table */
+	protected static final String TABLE_NAME = "BOOKPAGE";
+	// SQL command that creates the database.
+	protected static final String TABLE_CREATE = "CREATE TABLE " + TABLE_NAME +" ("
+			+ COL_ROWID + " integer primary key autoincrement, "
+			+ COL_BOOK_FILENAME + " text not null, "
+			+ COL_BOOK_TITLE + " text, "
+			+ COL_PAGE_FILENAME + " text not null, "
+			+ COL_PAGE_RELATIVE_PATH + " text not null, "
+			+ COL_SCROLL_Y + " real, "
+			+ COL_SCROLLSYNC_OFFSET + " real, "
+			+ COL_PARAGRAPHS_COUNT + " integer, "
+			+ COL_LAST_OPENED + " integer)";
 
 	// The class does most of the interaction with the database.
 	private final DatabaseOpenHelper dbOpenHelper;
@@ -145,7 +152,7 @@ public class BookPageDB {
 		if (cur == null) {
 			return null;
 		} else if (cur.getCount() > 1) {
-			Log.w(LOG, "   Warning!   BookPageDatabaseTable returned more than 1 results for these values "
+			Log.w(LOG, "   Warning!   BookPageDB returned more than 1 results for these values "
 					+ "(bookFilename: " + bookFilename + ", bookTitle: " + bookTitle
 					+ ", pageFilename: " + pageFilename + ")!");
 		}
@@ -238,49 +245,6 @@ public class BookPageDB {
 
 		public long getLastOpened() {
 			return cursor.getLong(cursor.getColumnIndex(COL_LAST_OPENED));
-		}
-	}
-
-
-	/**
-	 *
-	 * The SQLiteOpenHelper inner class defines abstract methods that we override so that
-	 *  our database table can be created and upgraded when necessary.
-	 *
-	 */
-	private static class DatabaseOpenHelper extends SQLiteOpenHelper {
-
-		private SQLiteDatabase database;
-
-		// SQL command that creates the database.
-		private static final String TABLE_CREATE = "CREATE TABLE " + TABLE_NAME +" ("
-				+ COL_ROWID + " integer primary key autoincrement, "
-				+ COL_BOOK_FILENAME + " text not null, "
-				+ COL_BOOK_TITLE + " text, "
-				+ COL_PAGE_FILENAME + " text not null, "
-				+ COL_PAGE_RELATIVE_PATH + " text not null, "
-				+ COL_SCROLL_Y + " real, "
-				+ COL_SCROLLSYNC_OFFSET + " real, "
-				+ COL_PARAGRAPHS_COUNT + " integer, "
-				+ COL_LAST_OPENED + " integer)";
-
-
-		DatabaseOpenHelper(Context context) {
-			super(context, DATABASE_NAME, null, DATABASE_VERSION);
-		}
-
-		@Override
-		public void onCreate(SQLiteDatabase db) {
-			database = db;
-			database.execSQL(TABLE_CREATE);
-		}
-
-		@Override
-		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			Log.w(LOG, "Upgrading database from version " + oldVersion + " to "
-					+ newVersion + ", which will destroy all old data");
-			db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-			onCreate(db);
 		}
 	}
 }
