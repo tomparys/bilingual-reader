@@ -6,176 +6,176 @@
     android:background="#fff"
     android:orientation="vertical" >
 
-    <ScrollView
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1" >
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" >
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:orientation="vertical" >
+
+        <!-- Books section -->
+
+        <Button
+            android:id="@+id/drawer_book_title_1_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:ellipsize="end"
+            android:gravity="start|center_vertical"
+            android:maxLines="2"
+            android:onClick="onDrawerButtonClicked"
+            android:paddingBottom="8dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="8dp"
+            android:text="@string/Panel_1_empty"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/drawer_open_book_1_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:drawableLeft="@drawable/ic_menu_archive"
+            android:drawablePadding="10dp"
+            android:drawableStart="@drawable/ic_menu_archive"
+            android:gravity="start|center_vertical"
+            android:onClick="onDrawerButtonClicked"
+            android:paddingEnd="5dp"
+            android:paddingLeft="50dp"
+            android:paddingRight="5dp"
+            android:paddingStart="50dp"
+            android:text="@string/Open_book_1_dots"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="?android:attr/dividerVertical" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#fff"
-            android:orientation="vertical" >
-
-            <!-- Books section -->
-
-            <Button
-                android:id="@+id/drawer_book_title_1_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackground"
-                android:ellipsize="end"
-                android:gravity="start|center_vertical"
-                android:maxLines="2"
-                android:onClick="onDrawerButtonClicked"
-                android:paddingBottom="8dp"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
-                android:paddingTop="8dp"
-                android:text="@string/Panel_1_empty"
-                android:textSize="18sp" />
+            android:divider="?android:attr/dividerHorizontal"
+            android:orientation="horizontal"
+            android:showDividers="middle"
+            android:weightSum="1" >
 
             <Button
-                android:id="@+id/drawer_open_book_1_button"
+                android:id="@+id/drawer_close_panel_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.5"
                 android:background="?android:attr/selectableItemBackground"
-                android:drawableLeft="@drawable/ic_menu_archive"
-                android:drawablePadding="10dp"
-                android:drawableStart="@drawable/ic_menu_archive"
-                android:gravity="start|center_vertical"
-                android:onClick="onDrawerButtonClicked"
-                android:paddingEnd="5dp"
-                android:paddingLeft="50dp"
-                android:paddingRight="5dp"
-                android:paddingStart="50dp"
-                android:text="@string/Open_book_1_dots"
-                android:textSize="18sp" />
-
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="1dp"
-                android:background="?android:attr/dividerVertical" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:divider="?android:attr/dividerHorizontal"
-                android:orientation="horizontal"
-                android:showDividers="middle"
-                android:weightSum="1" >
-
-                <Button
-                    android:id="@+id/drawer_close_panel_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:gravity="center"
-                    android:onClick="onDrawerButtonClicked"
-                    android:paddingLeft="12dp"
-                    android:paddingRight="12dp"
-                    android:text="@string/Close_panel"
-                    android:textSize="16sp" />
-
-                <Button
-                    android:id="@+id/drawer_hide_panel_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:gravity="center"
-                    android:onClick="onDrawerButtonClicked"
-                    android:paddingLeft="12dp"
-                    android:paddingRight="12dp"
-                    android:text="@string/Hide_panel"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="1dp"
-                android:background="?android:attr/dividerVertical" />
-
-            <Button
-                android:id="@+id/drawer_book_title_2_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackground"
-                android:ellipsize="end"
-                android:gravity="start|center_vertical"
-                android:maxLines="2"
-                android:onClick="onDrawerButtonClicked"
-                android:paddingBottom="8dp"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
-                android:paddingTop="8dp"
-                android:text="@string/Panel_2_empty"
-                android:textSize="18sp" />
-
-            <Button
-                android:id="@+id/drawer_open_book_2_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackground"
-                android:drawableLeft="@drawable/ic_menu_archive"
-                android:drawablePadding="10dp"
-                android:drawableStart="@drawable/ic_menu_archive"
-                android:gravity="start|center_vertical"
-                android:onClick="onDrawerButtonClicked"
-                android:paddingEnd="5dp"
-                android:paddingLeft="50dp"
-                android:paddingRight="5dp"
-                android:paddingStart="50dp"
-                android:text="@string/Open_book_2_dots"
-                android:textSize="18sp" />
-
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="1dp"
-                android:background="?android:attr/dividerVertical" />
-
-            <!-- Menu section -->
-
-            <Button
-                android:id="@+id/drawer_SRS_database_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackground"
-                android:gravity="start|center_vertical"
+                android:gravity="center"
                 android:onClick="onDrawerButtonClicked"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
-                android:text="@string/SRS_Database"
-                android:textSize="18sp" />
-
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="1dp"
-                android:background="?android:attr/dividerVertical" />
+                android:text="@string/Close_panel"
+                android:textSize="16sp" />
 
             <Button
-                android:id="@+id/drawer_settings_button"
+                android:id="@+id/drawer_hide_panel_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.5"
                 android:background="?android:attr/selectableItemBackground"
-                android:gravity="start|center_vertical"
+                android:gravity="center"
                 android:onClick="onDrawerButtonClicked"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
-                android:text="@string/Settings"
-                android:textSize="18sp" />
-
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="1dp"
-                android:background="?android:attr/dividerVertical" />
-
-            <!-- Exit button when in landscape -->
-
-            <include layout="@layout/merge_drawer_exit_button_in_scrollview" />
+                android:text="@string/Hide_panel"
+                android:textSize="16sp" />
         </LinearLayout>
-    </ScrollView>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="?android:attr/dividerVertical" />
+
+        <Button
+            android:id="@+id/drawer_book_title_2_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:ellipsize="end"
+            android:gravity="start|center_vertical"
+            android:maxLines="2"
+            android:onClick="onDrawerButtonClicked"
+            android:paddingBottom="8dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="8dp"
+            android:text="@string/Panel_2_empty"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/drawer_open_book_2_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:drawableLeft="@drawable/ic_menu_archive"
+            android:drawablePadding="10dp"
+            android:drawableStart="@drawable/ic_menu_archive"
+            android:gravity="start|center_vertical"
+            android:onClick="onDrawerButtonClicked"
+            android:paddingEnd="5dp"
+            android:paddingLeft="50dp"
+            android:paddingRight="5dp"
+            android:paddingStart="50dp"
+            android:text="@string/Open_book_2_dots"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="?android:attr/dividerVertical" />
+
+        <!-- Menu section -->
+
+        <Button
+            android:id="@+id/drawer_SRS_database_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="start|center_vertical"
+            android:onClick="onDrawerButtonClicked"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:text="@string/SRS_Database"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="?android:attr/dividerVertical" />
+
+        <Button
+            android:id="@+id/drawer_settings_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="start|center_vertical"
+            android:onClick="onDrawerButtonClicked"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:text="@string/Settings"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="?android:attr/dividerVertical" />
+
+        <!-- Exit button when in landscape -->
+
+        <include layout="@layout/merge_drawer_exit_button_in_scrollview" />
+    </LinearLayout>
+</ScrollView>
 
     <!-- Exit button when in portrait -->
 
