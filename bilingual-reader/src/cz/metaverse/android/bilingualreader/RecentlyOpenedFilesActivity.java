@@ -1,5 +1,6 @@
 package cz.metaverse.android.bilingualreader;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,9 +23,7 @@ import android.widget.SearchView.OnCloseListener;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import cz.metaverse.android.bilingualreader.db.SRSDatabaseTable;
-import cz.metaverse.android.bilingualreader.dialog.AddToSRSDialog;
-import cz.metaverse.android.bilingualreader.dialog.ExportSRSDialog;
+import cz.metaverse.android.bilingualreader.db.BookDB;
 
 
 /**
@@ -31,9 +31,15 @@ import cz.metaverse.android.bilingualreader.dialog.ExportSRSDialog;
  * Activity that displays and handles the SRS cards added to our Spaced Repetition Software (SRS) Database.
  *
  */
-public class SRSDatabaseActivity extends ListActivity
+public class RecentlyOpenedFilesActivity extends ListActivity
 		implements OnQueryTextListener, OnCloseListener, LoaderManager.LoaderCallbacks<Cursor>,
 		MultiChoiceModeListener {
+
+	private static final String LOG = "RecentlyOpenedFilesActivity";
+
+	// Request codes so we know from which Activity we have just returned.
+	private static final int ACTIVITY_RESULT_FILE_CHOOSER = 1;
+
 
 	// The TextView that's displayed with some message when the ListView is empty.
 	TextView emptyTextView;
@@ -51,7 +57,7 @@ public class SRSDatabaseActivity extends ListActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_srs_database);
+		setContentView(R.layout.activity_recently_opened_files);
 
 		emptyTextView = (TextView) findViewById(android.R.id.empty);
 
@@ -71,7 +77,7 @@ public class SRSDatabaseActivity extends ListActivity
 
 		// Create an empty adapter we will use to display the loaded data after they arrive.
 		cursorAdapter = new SimpleCursorAdapter(this, R.layout.listview_row_double, null,
-				new String[] {SRSDatabaseTable.COL_WORD, SRSDatabaseTable.COL_DEFINITION},
+				new String[] {BookDB.COL_BOOK_TITLE, BookDB.COL_BOOK_FILENAME},
 				new int[] {android.R.id.text1, android.R.id.text2 }, 0);
 		setListAdapter(cursorAdapter);
 
@@ -99,14 +105,41 @@ public class SRSDatabaseActivity extends ListActivity
 
 	/**
 	 * Called when user (short) clicks on one of the ListView items.
-	 * We start edit dialog for the clicked SRS card.
+	 * We get the filepath, set it in a result intent and finish.
 	 */
 	@Override public void onListItemClick(ListView l, View v, int position, long id) {
 		Cursor cursor = cursorAdapter.getCursor();
 		if (cursor != null) {
+
+			// Get the file path.
 			cursor.moveToPosition(position);
-			new AddToSRSDialog(this, id, cursor.getString(1), cursor.getString(2))
-					.show(getFragmentManager(), "add_to_srs_dialog");
+			String bookFilePath = cursor.getString(3);
+
+			// Create and set the result Intent.
+			Intent resultIntent = new Intent();
+			resultIntent.putExtra(getString(R.string.bpath), bookFilePath);
+			setResult(Activity.RESULT_OK, resultIntent);
+			finish();
+		}
+	}
+
+	/**
+	 * Called when the FileChooser Intent we launched sends back results.
+	 */
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent resultIntent) {
+		Log.d(LOG, LOG + ".onActivityResult");
+
+		// If we have just returned from the FileChooserActivity.
+		if (requestCode == ACTIVITY_RESULT_FILE_CHOOSER) {
+
+			// Open the selected book in a given panel if all went well.
+			if (resultCode == Activity.RESULT_OK) {
+
+				// Just pass along the resulting intent with the filename.
+				setResult(Activity.RESULT_OK, resultIntent);
+				finish();
+			}
 		}
 	}
 
@@ -120,7 +153,7 @@ public class SRSDatabaseActivity extends ListActivity
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.srs_database_menu, menu);
+		getMenuInflater().inflate(R.menu.recently_opened_files_menu, menu);
 
 		// Connect the SearchView class with the Search menu item..
 		MenuItem item = menu.findItem(R.id.search_menu_item);
@@ -141,46 +174,38 @@ public class SRSDatabaseActivity extends ListActivity
 			finish();
 			return true;
 
+		// Open file
+		case R.id.open_file_menu_item:
+			// TODO some file chooser
+			return true;
+
+		// List of all EPUBS
+		case R.id.list_all_epubs_menu_item:
+			Intent fileChooserIntent = new Intent(this, FileChooserActivity.class);
+			startActivityForResult(fileChooserIntent, ACTIVITY_RESULT_FILE_CHOOSER);
+			return true;
+
 		// Refresh
 		case R.id.refresh_menu_item:
 			reloadData();
 			return true;
 
-		// Add SRS card
-		case R.id.add_SRS_card_menu_item:
-			new AddToSRSDialog(this).show(getFragmentManager(), "add_to_srs_dialog");
-			return true;
-
 		// Sort alphabetically
 		case R.id.sort_alphabetically_menu_item:
-			SRSDatabaseTable.getInstance(this).sortAlphabetically(true);
+			BookDB.getInstance(this).sortAlphabetically(true);
 			reloadData();
 			return true;
 
 		// Sort by last added
-		case R.id.sort_by_last_added_menu_item:
-			SRSDatabaseTable.getInstance(this).sortAlphabetically(false);
+		case R.id.sort_by_last_opened_menu_item:
+			BookDB.getInstance(this).sortAlphabetically(false);
 			reloadData();
-			return true;
-
-		// Export
-		case R.id.export_menu_item:
-			new ExportSRSDialog(this).show(getFragmentManager(), "export_srs_dialog");
 			return true;
 
 		default:
 			return super.onOptionsItemSelected(item);
 
 		}
-	}
-
-	/**
-	 * Launch a prepared Intent.
-	 * Here, because if we launch an Intent from a Dialog that was launched by another Dialog,
-	 *  Android craps its pants.
-	 */
-	public void openShareIntent(Intent shareIntent) {
-		startActivity(Intent.createChooser(shareIntent, getString(R.string.Share)));
 	}
 
 
@@ -203,12 +228,12 @@ public class SRSDatabaseActivity extends ListActivity
 				@Override
 				public Cursor loadInBackground() {
 					// Search the database for all or filtered results, depending on what we want.
-					SRSDatabaseTable dbt = SRSDatabaseTable.getInstance(SRSDatabaseActivity.this);
+					BookDB bdb = BookDB.getInstance(RecentlyOpenedFilesActivity.this);
 
 					if (currentFilter != null) {
-						return dbt.getMatches(currentFilter);
+						return bdb.getMatches(currentFilter);
 					} else {
-						return dbt.getAll();
+						return bdb.getAll();
 					}
 				}
 			};
@@ -227,9 +252,9 @@ public class SRSDatabaseActivity extends ListActivity
 		// If there are no results, update the TextView to display the relevant message.
 		if (data == null || data.getCount() == 0) {
 			if (currentFilter != null) {
-				setEmptyText(R.string.No_SRS_cards_match_search);
+				setEmptyText(R.string.No_books_match_search);
 			} else {
-				setEmptyText(R.string.There_are_no_SRS_cards_yet);
+				setEmptyText(R.string.There_are_no_recently_opened_books_yet);
 			}
 		}
 	}
@@ -275,7 +300,7 @@ public class SRSDatabaseActivity extends ListActivity
 		// Delete
 		case R.id.delete_item_menu_item:
 			long[] ids = getListView().getCheckedItemIds();
-			SRSDatabaseTable.getInstance(this).deleteCards(ids);
+			BookDB.getInstance(this).deleteCards(ids);
 			reloadData();
 
 			actionMode.finish();

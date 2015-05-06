@@ -252,9 +252,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 
 		// If there are no panels, start FileChooser.
 		if (panelCount == 0) {
-			bookSelector = 0;
-			Intent goToChooser = new Intent(this, FileChooserActivity.class);
-			startActivityForResult(goToChooser, ACTIVITY_RESULT_FILE_CHOOSER);
+			startOpenFileActivity(0);
 		}
 
 		// Invalidate options menu, because at the start the ebooks weren't loaded
@@ -437,10 +435,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 
 		// Open book 1
 		case R.id.drawer_open_book_1_button:
-			bookSelector = 0;
-			Intent goToChooser1 = new Intent(ReaderActivity.this, FileChooserActivity.class);
-			goToChooser1.putExtra(getString(R.string.second), getString(R.string.time));
-			startActivityForResult(goToChooser1, ACTIVITY_RESULT_FILE_CHOOSER);
+			startOpenFileActivity(0);
 			break;
 
 		// Book title 2 - open Table of Contents
@@ -453,19 +448,13 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 				}
 			} else {
 				// If only one non-bilingual book is opened, act like open_book_2_button.
-				bookSelector = 1;
-				Intent goToChooser2 = new Intent(ReaderActivity.this, FileChooserActivity.class);
-				goToChooser2.putExtra(getString(R.string.second), getString(R.string.time));
-				startActivityForResult(goToChooser2, ACTIVITY_RESULT_FILE_CHOOSER);
+				startOpenFileActivity(1);
 			}
 			break;
 
 		// Open book 2
 		case R.id.drawer_open_book_2_button:
-			bookSelector = 1;
-			Intent goToChooser2 = new Intent(ReaderActivity.this, FileChooserActivity.class);
-			goToChooser2.putExtra(getString(R.string.second), getString(R.string.time));
-			startActivityForResult(goToChooser2, ACTIVITY_RESULT_FILE_CHOOSER);
+			startOpenFileActivity(1);
 			break;
 
 		// Close panel
@@ -993,6 +982,16 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	// ============================================================================================
 	//		Misc
 	// ============================================================================================
+
+	/**
+	 * Opens another activity to select which EPUB file to open.
+	 * @param panel  Panel into which to load the newly opened EPUB.
+	 */
+	private void startOpenFileActivity(int panel) {
+		bookSelector = panel;
+		Intent goToChooser = new Intent(this, RecentlyOpenedFilesActivity.class);
+		startActivityForResult(goToChooser, ACTIVITY_RESULT_FILE_CHOOSER);
+	}
 
 	/**
 	 * Opens the Settings dialog.

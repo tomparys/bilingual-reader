@@ -1,0 +1,32 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/search_menu_item"
+        android:icon="@drawable/ic_action_search"
+        android:showAsAction="always|collapseActionView"
+        android:title="@string/Search"/>
+    <item
+        android:id="@+id/open_file_menu_item"
+        android:icon="@drawable/ic_menu_add"
+        android:showAsAction="ifRoom"
+        android:title="@string/Open_a_new_file"/>
+    <item
+        android:id="@+id/refresh_menu_item"
+        android:icon="@drawable/ic_action_refresh"
+        android:showAsAction="ifRoom"
+        android:visible="false"
+        android:title="@string/Refresh"/>
+    <item
+        android:id="@+id/sort_by_last_opened_menu_item"
+        android:showAsAction="ifRoom"
+        android:title="@string/Sort_by_Last_Opened"/>
+    <item
+        android:id="@+id/sort_alphabetically_menu_item"
+        android:showAsAction="ifRoom"
+        android:title="@string/Sort_Alphabetically"/>
+    <item
+        android:id="@+id/list_all_epubs_menu_item"
+        android:showAsAction="ifRoom"
+        android:title="@string/List_of_All_EPUBs"/>
+
+</menu>

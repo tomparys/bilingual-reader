@@ -201,5 +201,13 @@
     <string name="Encountered_an_error_while_exporting">Encountered an error while exporting.</string>
     <string name="This_is_the_last_page">This is the last page.</string>
     <string name="This_is_the_first_page">This is the first page.</string>
+    <string name="Open_a_new_file">Open a new file</string>
+    <string name="Sort_by_Last_Opened">Sort by Last Opened</string>
+    <string name="List_of_All_EPUBs">List of All EPUBs</string>
+    <string name="List_of_all_EPUBs">List of all EPUBs</string>
+    <string name="Loading_recently_opened_files">Loading recently opened files</string>
+    <string name="There_are_no_recently_opened_books_yet">There are no recently opened books yet.</string>
+    <string name="No_books_match_search">No books match search criteria.</string>
+    <string name="Recently_opened_books">Recently opened books</string>
 
 </resources>

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
+import cz.metaverse.android.bilingualreader.db.BookDB;
 import cz.metaverse.android.bilingualreader.db.BookPageDB;
 import cz.metaverse.android.bilingualreader.db.BookPageDB.BookPage;
 import cz.metaverse.android.bilingualreader.enums.BookPanelState;
@@ -361,10 +362,19 @@ public class PanelHolder {
 			book = new Epub(path, "" + position, activity);
 			changePanel(new BookPanel(governor, this, position));
 
+			/* Database. */
+			String[] bookUniqueKey = new String[] {
+					Func.fileNameFromPath(book.getFilePath()),
+					book.getTitle()};
+			Log.d(LOG, LOG + ".openBook: bookUniqueKey = (" + bookUniqueKey[0] + "; " + bookUniqueKey[1] + ")");
+
+			// Save this book to the BookDB as recently opened.
+			BookDB bookDB = BookDB.getInstance(activity);
+			bookDB.replaceBook(bookUniqueKey[0], bookUniqueKey[1], path, System.currentTimeMillis());
+
 			// Look through the database for the last page of this book we had opened.
 			BookPageDB bookPageDB = BookPageDB.getInstance(activity);
-			BookPage latestBookPage = bookPageDB.findLatestBookPage(
-					Func.fileNameFromPath(book.getFilePath()), book.getTitle());
+			BookPage latestBookPage = bookPageDB.findLatestBookPage(bookUniqueKey[0], bookUniqueKey[1]);
 
 			if (latestBookPage != null) {
 				// Last page found - load it!
@@ -377,6 +387,8 @@ public class PanelHolder {
 				// Last page not found, load the first page of the book.
 				setBookPage(book.getSpineElementPath(0));
 			}
+			/* Database end */
+
 
 			// If we opened a new book, we automatically cancelled the reading of a bilingual book,
 			// because at least one panel now does now contain a different book.
@@ -391,6 +403,7 @@ public class PanelHolder {
 			activity.setBookNameInDrawer(position, book.getTitle());
 
 			return true;
+
 		} catch (Exception e) {
 			Log.e(LOG, "Exception while opening a book (path: " + path + "): " + e.toString());
 			return false;
