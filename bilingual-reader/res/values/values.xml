@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="putString_defaultDictionary">defaultDictionary</string>
+    <string name="pref_file_dialog_last_path">pref_file_dialog_last_path</string>
 
 </resources>

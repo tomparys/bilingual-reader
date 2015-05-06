@@ -22,7 +22,10 @@ import java.util.Locale;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.KeyEvent;
@@ -67,9 +70,10 @@ public class FileDialog extends DialogFragment {
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//setRetainInstance(true);
+		//setRetainInstance(true); -- bug in the API, this closes the dialog upon orientation change.
 
 		// Restore the state in case of an orientation change.
+		//   -- no need to restore it, android doesn't destroy the Dialog upon orientation change.
 		/*if (savedInstanceState != null) {
 			this.currentPath = savedInstanceState.getString("currentPath");
 			listview.onRestoreInstanceState(savedInstanceState.getParcelable("listview"));
@@ -88,6 +92,13 @@ public class FileDialog extends DialogFragment {
 
 		// Read options
 		options = new FileDialogOptions();
+
+		// Load the last path from preferences so we open the dialog in same directory.
+		SharedPreferences preferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+		String lastPath = preferences.getString(getString(R.string.pref_file_dialog_last_path), null);
+		if (lastPath != null && !lastPath.isEmpty()) {
+			options.currentPath = lastPath;
+		}
 
 		dialog = new AlertDialog.Builder(getActivity())
 			.setTitle("Select file")
@@ -324,7 +335,14 @@ public class FileDialog extends DialogFragment {
 	    this.options.currentPath = currentPath;
 	    this.options.selectedFile = filePath;
 
+		// Save the current path to preferences so next time we open the dialog in same directory.
+		Editor prefEditor = getActivity().getPreferences(Context.MODE_PRIVATE).edit();
+		prefEditor.putString(getString(R.string.pref_file_dialog_last_path), currentPath);
+		prefEditor.commit();
+
+		// Send the filePath back to the activity.
 	    ((RecentlyOpenedFilesActivity) getActivity()).returnPathAndFinish(filePath);
+
 	    dismiss();
 	}
 
