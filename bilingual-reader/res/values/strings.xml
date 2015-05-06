@@ -173,8 +173,8 @@
     <string name="Search">Search</string>
     <string name="Add_SRS_Card">Add SRS Card</string>
     <string name="Delete">Delete</string>
-    <string name="Sort_alphabetically">Sort alphabetically</string>
-    <string name="Sort_by_last_added">Sort by last added</string>
+    <string name="Sort_Alphabetically">Sort Alphabetically</string>
+    <string name="Sort_by_Last_Added">Sort by Last Added</string>
     <string name="Close_panel">Close panel</string>
     <string name="Hide_panel">Hide panel</string>
     <string name="Panel_1">Panel 1</string>
