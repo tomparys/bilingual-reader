@@ -50,11 +50,14 @@ import cz.metaverse.android.bilingualreader.helper.Func;
  */
 public class FileChooserActivity extends Activity {
 
+	private static final String LOG = "FileChooserActivity";
+
 	static List<File> epubs;
 	static List<String> names;
 	ArrayAdapter<String> arrayAdapter;
 	static File selected;
 	boolean firstTime;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +89,7 @@ public class FileChooserActivity extends Activity {
 				// End this Activity by sending the Intent result with the epub absolute path.
 				selected = epubs.get(position);
 				Intent resultIntent = new Intent();
-				resultIntent.putExtra("bpath", selected.getAbsolutePath());
+				resultIntent.putExtra(getString(R.string.bpath), selected.getAbsolutePath());
 				setResult(Activity.RESULT_OK, resultIntent);
 				finish();
 			}
