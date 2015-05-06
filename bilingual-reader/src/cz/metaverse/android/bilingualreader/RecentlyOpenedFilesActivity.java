@@ -8,6 +8,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -70,6 +71,10 @@ public class RecentlyOpenedFilesActivity extends ListActivity
 		searchView.setOnQueryTextListener(this);
 		searchView.setOnCloseListener(this);
 		searchView.setIconifiedByDefault(true);
+
+		// Set the text color in the Search view to white on the account of our black ActionBar.
+		int id = searchView.getResources().getIdentifier("android:id/search_src_text", null, null);
+		((TextView) searchView.findViewById(id)).setTextColor(Color.WHITE);
 
 		// Initialize long-click selecting on the ListView for deleting cards.
 		getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
