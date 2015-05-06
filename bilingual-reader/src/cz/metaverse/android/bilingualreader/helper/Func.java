@@ -4,6 +4,7 @@ import java.io.File;
 
 import android.content.res.Resources;
 import android.os.Environment;
+import android.util.Log;
 import android.util.TypedValue;
 
 /**
@@ -12,6 +13,8 @@ import android.util.TypedValue;
  *
  */
 public class Func {
+
+	private static final String LOG = "Func";
 
 	/**
 	 *
@@ -94,6 +97,9 @@ public class Func {
 
 		// Remove everything after and including the first '#' (AKA the Fragment Identifier).
 		filename = removeFragmentIdentifier(filename);
+
+		Log.d(LOG, LOG + ".fileNameFromPath: filePath: " + filePath);
+		Log.d(LOG, LOG + ".fileNameFromPath: filename:" + filename);
 
 		return filename;
 	}
