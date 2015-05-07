@@ -107,6 +107,10 @@ import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 public class BookPanelOnTouchListener
 		implements OnTouchListener, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
+	// If the computed panel weight is closer to 0.5 than this constant,
+	// snap the panel weight to 0.5 (i.e. 50/50 panel size).
+	private static final double PANEL_RESIZE_SNAP_WEIGHT_AROUND_HALF = 0.035;
+
 	/*
 	 * Threshold constants for supported gestures.
 	 * All values are in device independent pixels (dp).
@@ -277,7 +281,7 @@ public class BookPanelOnTouchListener
 						/ (doubleTapSwipe_viewHeight - doubleTapSwipe_contentStartsAtHeight);
 
 				// If the weight is close to 0.5, let it stick to it.
-				if (Math.abs(0.5 - newPanelsWeight) < 0.05) {
+				if (Math.abs(0.5 - newPanelsWeight) < PANEL_RESIZE_SNAP_WEIGHT_AROUND_HALF) {
 					newPanelsWeight = 0.5f;
 				}
 
