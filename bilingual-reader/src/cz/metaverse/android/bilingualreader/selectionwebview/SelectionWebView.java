@@ -54,10 +54,15 @@ public class SelectionWebView extends WebView {
 
 	private static final String LOG = "SelectionWebView";
 
+	/* Interactivity with the outside. */
 	private ReaderActivity readerActivity;
 	private Governor governor;
 	private PanelHolder panelHolder;
 	private BookPanel bookPanel;
+
+	// Whether this webView is in the top (0) or the bottom (1) panel.
+	private Integer panelPosition;
+
 
 	/* For setting custom Contextual Action Bar (CAB) */
 	private ActionMode mActionMode;
@@ -68,29 +73,54 @@ public class SelectionWebView extends WebView {
 	private boolean wasInActionMode = false;
 	private long actionModeEndedAt;
 
+
 	/* Scroll Sync */
 	private ScrollSyncMethod scrollSyncMethod = ScrollSyncMethod.proportional;
-	private Integer panelPosition;
-	private boolean userIsScrolling = false;
-	// When user is still interacting with this WebView, but the sync scrolling is temporarily paused.
-	private boolean userScrollingPaused = false;
-	private boolean noScrollAtAll = false;
 
-	// ScrollSync method: offset
+	// Scroll Sync Offset
 	private int scrollSyncOffset;
-	private int scrollPositionYwhenPaused;
 
-	// The previous returned value from getContentHeight().
+	// The scrollY position when the user activated independent scrolling.
+	// After independent scrolling ends, we use this to calculate the new Scroll Sync Offset.
+	private int scrollYwhenScrollSyncWasPaused;
+
+	// If the user is currently scrolling this WebView (as opposed to the other one).
+	private boolean userIsScrollingThisWebView = false;
+
+	// When user is still interacting with this WebView, but he activated temporary independent scrolling.
+	private boolean userPausedScrollSync = false;
+
+	// Whether WebView should react to users touch events and scroll.
+	// Used when a double-tap gesture is in progress in which case we do not want the WebView to scroll at all.
+	private boolean doNotScrollThisWebView = false;
+
+
+	/* Other */
+
+	// The previous returned value from getContentHeight()
+	// Used to figure out when the WebView content has finished rendering.
 	int previousContentHeight = 0;
 
 
+
+	// ============================================================================================
+	//		Initialization
+	// ============================================================================================
+
+	/**
+	 * Constructor in case of programmatic initialization - currently not used.
+	 * @param readerActivity ReaderActivity context
+	 */
+	public SelectionWebView(Context readerActivity) {
+		this(readerActivity, null);
+	}
 
 	/**
 	 * Constructor in case of XML initialization.
 	 * @param readerActivity  ReaderActivity context
 	 * @param attributeSet  Set of attributes from the XML declaration
 	 */
-	@SuppressLint("SetJavaScriptEnabled") // Our opensource application has literally nothing to hide.
+	@SuppressLint("SetJavaScriptEnabled") // Our open-source application has literally nothing to hide.
 	public SelectionWebView(Context rActivity, AttributeSet attributeSet) {
 		super(rActivity, attributeSet);
 		this.readerActivity = (ReaderActivity) rActivity;
@@ -109,14 +139,6 @@ public class SelectionWebView extends WebView {
 					"SelectionWebView has been passed a Context that can't be cast " +
 					"into an Activity, which is needed.");
 		}
-	}
-
-	/**
-	 * Constructor in case of programmatic initialization.
-	 * @param readerActivity ReaderActivity context
-	 */
-	public SelectionWebView(Context readerActivity) {
-		this(readerActivity, null);
 	}
 
 
@@ -138,6 +160,12 @@ public class SelectionWebView extends WebView {
 		panelPosition = pos;
 	}
 
+
+
+	// ============================================================================================
+	//		Interaction with the outside
+	// ============================================================================================
+
 	/**
 	 * Returns the WebView belonging to the sister panel of the one containing this WebView.
 	 */
@@ -152,30 +180,265 @@ public class SelectionWebView extends WebView {
 		return null;
 	}
 
+
+
+	// ============================================================================================
+	//		Scroll Sync - Inner methods
+	// ============================================================================================
+
 	/**
-	 * Overriding onDraw is necessary, because it is a tested method (See ParagraphPositionsWebView)
-	 *  of a chance to figure out when the WebView has finished rendering its contents and we can
-	 *  obtain a new non-zero getContentHeight() value.
+	 * Called when scroll position needs to be updated.
 	 *
-	 * Warning: getContentHeight either returns 0 when content isn't yet rendered,
-	 *  or a non-zero value that is >= the height of the WebView display area.
-	 * Therefore if user opens two pages that are shorter than the WebView display area after each other,
-	 *  we will NOT get notified that the content has finished rendering.
-	 * This is, however, not an issue, because in such short pages, loading the scroll position
-	 *   from preferences makes no sense anyway.
+	 * We're hijacking it so that if the user is scrolling this WebView
+	 * and if ScrollSync is enabled, we can scroll the other WebView as well.
 	 */
 	@Override
-	protected void onDraw(Canvas canvas) {
-		super.onDraw(canvas);
+	public void computeScroll() {
+		// If scrolling of this webView is currently disabled, intercept it and stop it.
+		if (!doNotScrollThisWebView) {
+			super.computeScroll();
+		}
 
-		if (previousContentHeight != getContentHeight() && getProgress() == 100) {
-			if (bookPanel != null) {
-				previousContentHeight = getContentHeight();
+		// If Scroll Sync is active, the user is scrolling this WebView and his scrolling is not paused.
+		if (governor.isScrollSync() && userIsScrollingThisWebView && !userPausedScrollSync) {
 
-				bookPanel.onFinishedRenderingContent();
+			// If maxScrollY is positive.
+			int computedMaxScrollY = computeMaxScrollY();
+			if (computedMaxScrollY != 0) {
+
+				// If sisterWebView exists.
+				SelectionWebView sisterWV = getSisterWebView();
+				if (sisterWV != null) {
+
+					// Compute and set the corresponding scroll position of the other WebView.
+					//  Variables need to be long, because the multiplication gets quite large!
+					long scrollValue = 0;
+					long sisterMaxScrollY = sisterWV.computeMaxScrollY();
+					switch (scrollSyncMethod) {
+
+					// Offset - the webviews are synchronized on their % of scroll + offset pixels
+					case proportional:
+						// Because the position equation isn't symmetrical,
+						// we have to compute them differently for each panel:
+						if (panelPosition == 0) {
+							scrollValue = (getScrollY() - scrollSyncOffset)
+									* sisterMaxScrollY / computedMaxScrollY;
+						} else {
+							scrollValue = getScrollY()
+									* sisterMaxScrollY / computedMaxScrollY + scrollSyncOffset;
+						}
+
+						/*Log.v(LOG, "[" + panelPosition + "] computeScroll:  from " + getScrollY()
+								+ "  to " + scrollValue + "  offset " + scrollSyncOffset
+								+ "   (maxScrollY " + computedMaxScrollY + "  destinationMaxScrollY "
+								+ sisterWV.computeMaxScrollY() + ")"); /**/
+						break;
+
+					default:
+						break;
+					}
+
+					// Set the computed scroll to the sister webview if it falls between the
+					// minimum and maximum scroll position, otherwise return min or max.
+					sisterWV.setScrollY(Func.minMaxRange(0, (int) scrollValue, (int) sisterMaxScrollY));
+				}
 			}
 		}
 	}
+
+	/**
+	 * For the user to be able to scroll both webviews in synchronized manner,
+	 * both webviews have to be aware of the pertinent ScrollSyncMethod data.
+	 */
+	private void setCorrespondingScrollSyncDataOnSisterWebView() {
+		/* Set corresponding ScrollSyncMethod data on the sister WebView. */
+		SelectionWebView sisterWV = getSisterWebView();
+		if (sisterWV != null) {
+
+			switch (scrollSyncMethod) {
+
+			case proportional:
+				sisterWV.setCorrespondingScrollSyncOffset(scrollSyncOffset);
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Sets corresponding data for the ScrollSyncMethod offset method.
+	 */
+	public void setCorrespondingScrollSyncOffset(int offset) {
+		scrollSyncOffset = offset;
+
+		Log.d(LOG, "SelectionWebView.[" + panelPosition + "] received new offset: " + scrollSyncOffset);
+	}
+
+	/**
+	 * Overriding this method so we can stop the WebView from scrolling at any time we want.
+	 */
+	@Override
+	public boolean overScrollBy(int deltaX, int deltaY, int scrollX, int scrollY, int scrollRangeX,
+			int scrollRangeY, int maxOverScrollX, int maxOverScrollY, boolean isTouchEvent) {
+
+		if (doNotScrollThisWebView) {
+			// WebView will not scroll at all.
+			return false;
+		} else {
+			// WebView will scroll normally.
+			return super.overScrollBy(deltaX, deltaY, scrollX, scrollY, scrollRangeX,
+					scrollRangeY, maxOverScrollX, maxOverScrollY, isTouchEvent);
+		}
+	}
+
+	/**
+	 * Returns the maximal scrollY position.
+	 * If you set setScrollY() to this position, the document will be scrolled as far down as possible.
+	 */
+	public int computeMaxScrollY() {
+		// More accurate then simple getContentHeight()
+		// Deduced directly from the original code of WebView.computeMaxScrollY().
+		return Math.max(computeVerticalScrollRange() - getHeight(), 0);
+	}
+
+
+
+	// ============================================================================================
+	//		Scroll Sync - API for the outside
+	// ============================================================================================
+
+	/**
+	 * Temporarily pause ScrollSync - user is using two-finger scroll for independent scrolling.
+	 */
+	public void pauseScrollSync() {
+		// Pause only if we were really user scrolling and not paused.
+		if (userIsScrollingThisWebView && !userPausedScrollSync) {
+			Log.d(LOG, "SelectionWebView.[" + panelPosition + "] pauseScrollSync for now");
+
+			userPausedScrollSync = true;
+
+			switch (scrollSyncMethod) {
+
+			case proportional:
+				scrollYwhenScrollSyncWasPaused = getScrollY();
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Resume scrolling from temporary pause - user stopped independent scrolling.
+	 */
+	public void resumeScrollSync() {
+		// Make resume computations only if we were really user scrolling and paused.
+		if (userIsScrollingThisWebView && userPausedScrollSync) {
+			Log.d(LOG, "SelectionWebView.[" + panelPosition + "] resumeScrollSync went through");
+
+			userPausedScrollSync = false;
+
+			switch (scrollSyncMethod) {
+
+			case proportional:
+				// Because the position equation isn't symmetrical,
+				// we have to compute offset differently in each panel:
+				if (panelPosition == 0) {
+					scrollSyncOffset += getScrollY() - scrollYwhenScrollSyncWasPaused;
+				} else {
+					// If maxScrollY is positive.
+					int computedMaxScrollY = computeMaxScrollY();
+					if (computedMaxScrollY != 0) {
+
+						// If sisterWebView exists.
+						SelectionWebView sisterWV = getSisterWebView();
+						if (sisterWV != null) {
+
+							scrollSyncOffset += (scrollYwhenScrollSyncWasPaused - getScrollY())
+									* sisterWV.computeMaxScrollY() / computedMaxScrollY;
+						}
+					}
+				}
+				Log.d(LOG, "SelectionWebView.[" + panelPosition + "] new offset: " + scrollSyncOffset);
+				break;
+
+			default:
+				break;
+			}
+
+			setCorrespondingScrollSyncDataOnSisterWebView();
+		}
+	}
+
+	/**
+	 * Reset ScrollSync - for instance when new chapter is opened.
+	 */
+	public void resetScrollSync() {
+		switch (scrollSyncMethod) {
+
+		case proportional:
+			scrollSyncOffset = 0;
+			break;
+
+		default:
+			break;
+		}
+
+		setCorrespondingScrollSyncDataOnSisterWebView();
+	}
+
+	/**
+	 * Set whether the user is scrolling this WebView or not at this moment.
+	 */
+	public void setUserIsScrolling(boolean isScrolling) {
+
+		if (!governor.isScrollSync() || !isScrolling) {
+			// If ScrollSync isn't active, or if we want to disable user scrolling:
+			userIsScrollingThisWebView = false;
+		}
+		else {
+			// If ScrollSync is active and we want to activate user scrolling:
+			BookPanel thisPanel = panelHolder.getBookPanel();
+			BookPanel sisterPanel = panelHolder.getSisterBookPanel();
+
+			if (thisPanel != null && thisPanel.enumState == BookPanelState.books
+					&& sisterPanel != null && sisterPanel.enumState == BookPanelState.books) {
+
+				// If both opened panels are showing books, we can start user scrolling.
+				userIsScrollingThisWebView = true;
+			} else {
+				userIsScrollingThisWebView = false;
+			}
+		}
+
+		// Always reset Paused status.
+		userPausedScrollSync = false;
+	}
+
+	/**
+	 * Returns whether the user is scrolling this view or not.
+	 */
+	public boolean isUserScrolling() {
+		return userIsScrollingThisWebView;
+	}
+
+	/**
+	 * Set whether the WebView will react to scrolling or not scroll at all.
+	 */
+	public void setDoNotScrollThisWebView(boolean doNotScrollThisWebView) {
+		//Log.d(LOG, "[" + panelPos + "] noScrollAtAll " + doNotScrollThisWebView);
+
+		this.doNotScrollThisWebView = doNotScrollThisWebView;
+	}
+
+
+
+	// ============================================================================================
+	//		Scroll Sync - Load and save state
+	// ============================================================================================
 
 	/**
 	 * Given the offset as a fraction of the computeMaxScrollY area, returns the actual integer offset.
@@ -219,6 +482,42 @@ public class SelectionWebView extends WebView {
 				+ ", computeMaxScrollY(): " + computeMaxScrollY());
 	}
 
+
+
+	// ============================================================================================
+	//		Misc
+	// ============================================================================================
+
+	/**
+	 * Overriding onDraw is necessary, because it is a tested method (See ParagraphPositionsWebView)
+	 *  of a chance to figure out when the WebView has finished rendering its contents and we can
+	 *  obtain a new non-zero getContentHeight() value.
+	 *
+	 * Warning: getContentHeight either returns 0 when content isn't yet rendered,
+	 *  or a non-zero value that is >= the height of the WebView display area.
+	 * Therefore if user opens two pages that are shorter than the WebView display area after each other,
+	 *  we will NOT get notified that the content has finished rendering.
+	 * This is, however, not an issue, because in such short pages, loading the scroll position
+	 *   from preferences makes no sense anyway.
+	 */
+	@Override
+	protected void onDraw(Canvas canvas) {
+		super.onDraw(canvas);
+
+		if (previousContentHeight != getContentHeight() && getProgress() == 100) {
+			if (bookPanel != null) {
+				previousContentHeight = getContentHeight();
+
+				bookPanel.onFinishedRenderingContent();
+			}
+		}
+	}
+
+
+
+	// ============================================================================================
+	//		Text selection ActionMode / Custom Action Bar
+	// ============================================================================================
 
 	/**
 	 * This overrides the default action bar on long press and substitutes our own.
@@ -278,7 +577,8 @@ public class SelectionWebView extends WebView {
 	}
 
 	/**
-	 * Overriding onTouchEvent to plug in our gesture detector.
+	 * Overriding onTouchEvent to plug in our gesture detector,
+	 * so that our custom ActionMode works on older Android versions as well.
 	 */
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
@@ -328,254 +628,7 @@ public class SelectionWebView extends WebView {
 
 
 	// ============================================================================================
-	//		Synchronized Scrolling
-	// ============================================================================================
-
-	/**
-	 * Called when scroll position needs to be updated.
-	 *
-	 * If the user is scrolling this WebView and if scroll sync is enabled, scrolls the other WebView.
-	 */
-	@Override
-	public void computeScroll() {
-		if (!noScrollAtAll) {
-			super.computeScroll();
-		}
-
-		// If Scroll Sync is active, the user is scrolling this WebView and his scrolling is not paused.
-		if (governor.isScrollSync() && userIsScrolling && !userScrollingPaused) {
-
-			// If maxScrollY is positive.
-			int computedMaxScrollY = computeMaxScrollY();
-			if (computedMaxScrollY != 0) {
-
-				// If sisterWebView exists.
-				SelectionWebView sisterWV = getSisterWebView();
-				if (sisterWV != null) {
-
-					// Compute and set the corresponding scroll position of the other WebView.
-					//  Variables need to be long, because the multiplication gets quite large!
-					long scrollValue = 0;
-					long sisterMaxScrollY = sisterWV.computeMaxScrollY();
-					switch (scrollSyncMethod) {
-
-					// Offset - the webviews are synchronized on their % of scroll + offset pixels
-					case proportional:
-						// Because the position equation isn't symmetrical,
-						// we have to compute them differently for each panel:
-						if (panelPosition == 0) {
-							scrollValue = (getScrollY() - scrollSyncOffset)
-									* sisterMaxScrollY / computedMaxScrollY;
-						} else {
-							scrollValue = getScrollY()
-									* sisterMaxScrollY / computedMaxScrollY + scrollSyncOffset;
-						}
-
-						/*Log.v(LOG, "[" + panelPosition + "] computeScroll:  from " + getScrollY()
-								+ "  to " + scrollValue + "  offset " + scrollSyncOffset
-								+ "   (maxScrollY " + computedMaxScrollY + "  destinationMaxScrollY "
-								+ sisterWV.computeMaxScrollY() + ")"); /**/
-						break;
-
-					default:
-						break;
-					}
-
-					// Set the computed scroll to the sister webview if it falls between the
-					// minimum and maximum scroll position, otherwise return min or max.
-					sisterWV.setScrollY(Func.minMaxRange(0, (int) scrollValue, (int) sisterMaxScrollY));
-				}
-			}
-		}
-	}
-
-	/**
-	 * Overriding this method so we can stop the WebView from scrolling at any time we want.
-	 */
-	@Override
-	public boolean overScrollBy(int deltaX, int deltaY, int scrollX, int scrollY,
-			int scrollRangeX, int scrollRangeY, int maxOverScrollX,
-			int maxOverScrollY, boolean isTouchEvent) {
-
-		if (noScrollAtAll) {
-			// WebView will not scroll at all.
-			return false;
-		} else {
-			// WebView will scroll normally.
-			return super.overScrollBy(deltaX, deltaY, scrollX, scrollY, scrollRangeX, scrollRangeY,
-					maxOverScrollX, maxOverScrollY, isTouchEvent);
-		}
-	}
-
-	/**
-	 * Returns the maximal scrollY position.
-	 * If you set setScrollY() to this position, the document will be scrolled as far down as possible.
-	 */
-	public int computeMaxScrollY() {
-		// More accurate then simple getContentHeight()
-		// Deduced directly from the original code of WebView.computeMaxScrollY().
-		return Math.max(computeVerticalScrollRange() - getHeight(), 0);
-	}
-
-	/**
-	 * Temporarily pause ScrollSync - user is using two-finger scroll for independent scrolling.
-	 */
-	public void pauseScrollSync() {
-		// Pause only if we were really user scrolling and not paused.
-		if (userIsScrolling && !userScrollingPaused) {
-			Log.d(LOG, "SelectionWebView.[" + panelPosition + "] pauseScrollSync for now");
-
-			userScrollingPaused = true;
-
-			switch (scrollSyncMethod) {
-
-			case proportional:
-				scrollPositionYwhenPaused = getScrollY();
-				break;
-
-			default:
-				break;
-			}
-		}
-	}
-
-	/**
-	 * Resume scrolling from temporary pause - user stopped independent scrolling.
-	 */
-	public void resumeScrollSync() {
-		// Make resume computations only if we were really user scrolling and paused.
-		if (userIsScrolling && userScrollingPaused) {
-			Log.d(LOG, "SelectionWebView.[" + panelPosition + "] resumeScrollSync went through");
-
-			userScrollingPaused = false;
-
-			switch (scrollSyncMethod) {
-
-			case proportional:
-				// Because the position equation isn't symmetrical,
-				// we have to compute offset differently in each panel:
-				if (panelPosition == 0) {
-					scrollSyncOffset += getScrollY() - scrollPositionYwhenPaused;
-				} else {
-					// If maxScrollY is positive.
-					int computedMaxScrollY = computeMaxScrollY();
-					if (computedMaxScrollY != 0) {
-
-						// If sisterWebView exists.
-						SelectionWebView sisterWV = getSisterWebView();
-						if (sisterWV != null) {
-
-							scrollSyncOffset += (scrollPositionYwhenPaused - getScrollY())
-									* sisterWV.computeMaxScrollY() / computedMaxScrollY;
-						}
-					}
-				}
-				Log.d(LOG, "SelectionWebView.[" + panelPosition + "] new offset: " + scrollSyncOffset);
-				break;
-
-			default:
-				break;
-			}
-
-			setCorrespondingScrollSyncDataOnSisterWebView();
-		}
-	}
-
-	/**
-	 * Reset ScrollSync - for instance when new chapter is opened.
-	 */
-	public void resetScrollSync() {
-		switch (scrollSyncMethod) {
-
-		case proportional:
-			scrollSyncOffset = 0;
-			break;
-
-		default:
-			break;
-		}
-
-		setCorrespondingScrollSyncDataOnSisterWebView();
-	}
-
-	/**
-	 * For the user to be able to scroll both webviews in synchronized manner,
-	 * both webviews have to be aware of the pertinent ScrollSyncMethod data.
-	 */
-	private void setCorrespondingScrollSyncDataOnSisterWebView() {
-		/* Set corresponding ScrollSyncMethod data on the sister WebView. */
-		SelectionWebView sisterWV = getSisterWebView();
-		if (sisterWV != null) {
-
-			switch (scrollSyncMethod) {
-
-			case proportional:
-				sisterWV.setCorrespondingScrollSyncOffset(scrollSyncOffset);
-				break;
-
-			default:
-				break;
-			}
-		}
-	}
-
-	/**
-	 * Sets corresponding data for the ScrollSyncMethod offset method.
-	 */
-	public void setCorrespondingScrollSyncOffset(int offset) {
-		scrollSyncOffset = offset;
-
-		Log.d(LOG, "SelectionWebView.[" + panelPosition + "] received new offset: " + scrollSyncOffset);
-	}
-
-	/**
-	 * Set whether the WebView will react to scrolling or not scroll at all.
-	 */
-	public void setNoScrollAtAll(boolean noScrollAtAll) {
-		//Log.d(LOG, "[" + panelPos + "] noScrollAtAll " + noScrollAtAll);
-
-		this.noScrollAtAll = noScrollAtAll;
-	}
-
-	/**
-	 * Set whether the user is scrolling this WebView or not at this moment.
-	 */
-	public void setUserIsScrolling(boolean isScrolling) {
-
-		if (!governor.isScrollSync() || !isScrolling) {
-			// If ScrollSync isn't active, or if we want to disable user scrolling:
-			userIsScrolling = false;
-		}
-		else {
-			// If ScrollSync is active and we want to activate user scrolling:
-			BookPanel thisPanel = panelHolder.getBookPanel();
-			BookPanel sisterPanel = panelHolder.getSisterBookPanel();
-
-			if (thisPanel != null && thisPanel.enumState == BookPanelState.books
-					&& sisterPanel != null && sisterPanel.enumState == BookPanelState.books) {
-
-				// If both opened panels are showing books, we can start user scrolling.
-				userIsScrolling = true;
-			} else {
-				userIsScrolling = false;
-			}
-		}
-
-		// Always reset Paused status.
-		userScrollingPaused = false;
-	}
-
-	/**
-	 * Returns whether the user is scrolling this view or not.
-	 */
-	public boolean isUserScrolling() {
-		return userIsScrolling;
-	}
-
-
-
-	// ============================================================================================
-	//		Private inner classes for our custom ActionMode and custom GestureListener
+	//		Helper private inner classes for our custom ActionMode (and its custom GestureListener)
 	// ============================================================================================
 
 	/**
@@ -632,7 +685,6 @@ public class SelectionWebView extends WebView {
 		}
 	}
 
-
 	/**
 	 * Extending GestureDetector.SimpleOnGestureListener so we can inform ourselves that actionMode has ended.
 	 */
@@ -651,5 +703,4 @@ public class SelectionWebView extends WebView {
 			return false;
 		}
 	}
-
 }

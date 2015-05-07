@@ -340,7 +340,7 @@ public class BookPanelOnTouchListener
 		// Reset fields dealing with double tap swipe.
 		isDoubleTapSwipe = false;
 		doubleTapSwipeEscapedBounds = false;
-		webView.setNoScrollAtAll(false);  // (Re)activate WebView scrolling.
+		webView.setDoNotScrollThisWebView(false);  // (Re)activate WebView scrolling.
 		doubleTapSwipe_contentStartsAtHeight = 0; // Will be recomputed upon need, and with current values
 		doubleTapSwipe_viewHeight = 0;            // instead of saved ones that need to be updated upon change.
 		doubleTapSwipe_orientation = activity.getResources().getConfiguration().orientation;
@@ -477,7 +477,7 @@ public class BookPanelOnTouchListener
 		// This cannot be moved to onDoubleTap, because another onDown comes after it that wipes it out.
 		if (!isDoubleTapSwipe) {
 			isDoubleTapSwipe = true;
-			webView.setNoScrollAtAll(true);
+			webView.setDoNotScrollThisWebView(true);
 		}
 
 		/*
