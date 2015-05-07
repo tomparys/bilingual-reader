@@ -250,7 +250,9 @@ public class SelectionWebView extends WebView {
 	 * For the user to be able to scroll both webviews in synchronized manner,
 	 * both webviews have to be aware of the pertinent ScrollSyncMethod data.
 	 */
-	private void setCorrespondingScrollSyncDataOnSisterWebView() {
+	private void updateSisterWithNewScrollSyncData() {
+		Log.d(LOG, LOG + ".updateSisterWithNewScrollSyncData[" + panelPosition + "]");
+
 		/* Set corresponding ScrollSyncMethod data on the sister WebView. */
 		SelectionWebView sisterWV = getSisterWebView();
 		if (sisterWV != null) {
@@ -258,22 +260,13 @@ public class SelectionWebView extends WebView {
 			switch (scrollSyncMethod) {
 
 			case proportional:
-				sisterWV.setCorrespondingScrollSyncOffset(scrollSyncOffset);
+				sisterWV.scrollSyncOffset = scrollSyncOffset;
 				break;
 
 			default:
 				break;
 			}
 		}
-	}
-
-	/**
-	 * Sets corresponding data for the ScrollSyncMethod offset method.
-	 */
-	public void setCorrespondingScrollSyncOffset(int offset) {
-		scrollSyncOffset = offset;
-
-		Log.d(LOG, "SelectionWebView.[" + panelPosition + "] received new offset: " + scrollSyncOffset);
 	}
 
 	/**
@@ -369,7 +362,7 @@ public class SelectionWebView extends WebView {
 				break;
 			}
 
-			setCorrespondingScrollSyncDataOnSisterWebView();
+			updateSisterWithNewScrollSyncData();
 		}
 	}
 
@@ -387,7 +380,7 @@ public class SelectionWebView extends WebView {
 			break;
 		}
 
-		setCorrespondingScrollSyncDataOnSisterWebView();
+		updateSisterWithNewScrollSyncData();
 	}
 
 	/**
