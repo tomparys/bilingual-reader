@@ -313,26 +313,6 @@ public class Governor {
 	//		Synchronization
 	// ============================================================================================
 
-	public boolean isChapterSync() {
-		return chapterSync;
-	}
-
-	public void setChapterSync(boolean value) {
-		chapterSync = value;
-	}
-
-	/**
-	 * Flips the state of SynchronizedChapters (active -> inactive, inactive -> active).
-	 * @return If the change will be active right now or not (if only one book is open, sync does not work).
-	 */
-	public boolean flipChapterSync() {
-		if (exactlyOneBookOpen()) {
-			return false;
-		}
-		chapterSync = !chapterSync;
-		return true;
-	}
-
 	/**
 	 * Returns whether Scroll Sync is active or not.
 	 */
@@ -367,6 +347,26 @@ public class Governor {
 	}
 
 
+
+	public boolean isChapterSync() {
+		return chapterSync;
+	}
+
+	public void setChapterSync(boolean value) {
+		chapterSync = value;
+	}
+
+	/**
+	 * Flips the state of SynchronizedChapters (active -> inactive, inactive -> active).
+	 * @return If the change will be active right now or not (if only one book is open, sync does not work).
+	 */
+	public boolean flipChapterSync() {
+		if (exactlyOneBookOpen()) {
+			return false;
+		}
+		chapterSync = !chapterSync;
+		return true;
+	}
 
 	// ============================================================================================
 	//		Bilingual book handling
