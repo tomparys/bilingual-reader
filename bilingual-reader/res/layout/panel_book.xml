@@ -12,26 +12,26 @@
     tools:context=".BookPanel" >
 
     <!--
-        <cz.metaverse.android.bilingualreader.sync.ParagraphPositionsWebView
-            android:id="@+id/ParagraphPositionsViewport"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:padding="0dp" />
+    <cz.metaverse.android.bilingualreader.sync.ParagraphPositionsWebView
+        android:id="@+id/ParagraphPositionsViewport"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:padding="0dp" />
     -->
 
-        <cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView
-            android:id="@+id/Viewport"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:padding="0dp"
-            android:visibility="visible" />
+    <cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView
+        android:id="@+id/Viewport"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:padding="0dp"
+        android:visibility="visible" />
 
 </RelativeLayout>
