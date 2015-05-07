@@ -11,6 +11,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".BookPanel" >
 
+    <!--
         <cz.metaverse.android.bilingualreader.sync.ParagraphPositionsWebView
             android:id="@+id/ParagraphPositionsViewport"
             android:layout_width="match_parent"
@@ -20,6 +21,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:padding="0dp" />
+    -->
 
         <cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView
             android:id="@+id/Viewport"

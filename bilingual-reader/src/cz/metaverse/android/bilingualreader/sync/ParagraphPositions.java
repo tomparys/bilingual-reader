@@ -305,7 +305,8 @@ public class ParagraphPositions {
 		// What data to display and where
 		fileUrl = sFileurl;
 		html = new StringBuilder();
-		webView = (ParagraphPositionsWebView) fragment.getView().findViewById(R.id.ParagraphPositionsViewport);
+		webView = null; //(ParagraphPositionsWebView) fragment.getView().findViewById(R.id.ParagraphPositionsViewport);
+		                // The ParagraphPositionsViewport was disabled due to this method not being used.
 		webView.setParagraphPositionsInstance(this);
 
 		// Fields of progress

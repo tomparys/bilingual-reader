@@ -75,9 +75,7 @@ import cz.metaverse.android.bilingualreader.dialog.LanguageChooserDialog;
 import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
 import cz.metaverse.android.bilingualreader.dialog.SettingsDialog;
 import cz.metaverse.android.bilingualreader.manager.Governor;
-import cz.metaverse.android.bilingualreader.panel.BookPanel;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
-import cz.metaverse.android.bilingualreader.sync.ParagraphPositions;
 
 /**
  *
@@ -781,17 +779,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 
 		// Scroll Sync Options
 		case R.id.scroll_sync_options_menu_item:
-			// TODO Make use of the information, not just compute it.
-			Toast.makeText(this, "Computing paragraph positions.", Toast.LENGTH_SHORT).show();
-
-			// Get position of each paragraph for proper synchronized scrolling.
-			for (int panel = 0; panel < Governor.N_PANELS; panel++) {
-				ParagraphPositions ppInstance = ParagraphPositions.instance(panel);
-				if (!ppInstance.isActive()) {
-					BookPanel bookPanel = governor.getPanelHolder(panel).getBookPanel();
-					ppInstance.start(bookPanel, bookPanel.getViewedPage());
-				}
-			}
+			// TODO ScrollSync Dialog
 			return true;
 
 		// Sync Chapters
