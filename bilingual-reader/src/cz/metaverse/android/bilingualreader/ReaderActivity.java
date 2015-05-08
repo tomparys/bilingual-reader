@@ -709,6 +709,9 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		else
 			menu.findItem(R.id.change_size_menu_item).setVisible(true);
 
+		// Deactivated items:
+		menu.findItem(R.id.style_menu_item).setVisible(false);
+
 		return true;
 	}
 
