@@ -2,21 +2,21 @@
 
     <item
         android:id="@+id/scroll_sync_menu_item"
-        android:icon="@android:drawable/ic_menu_crop"
+        android:icon="@drawable/ic_menu_account_list"
         android:showAsAction="always"
         android:title="@string/De_activate_scroll_sync"
         android:visible="true">
     </item>
     <item
         android:id="@+id/scroll_sync_options_menu_item"
-        android:icon="@android:drawable/ic_menu_view"
+        android:icon="@drawable/ic_menu_preferences"
         android:showAsAction="always"
         android:title="@string/Scroll_Sync_Options"
         android:visible="true">
     </item>
     <item
         android:id="@+id/sync_chapters_menu_item"
-        android:icon="@android:drawable/ic_menu_set_as"
+        android:icon="@drawable/ic_menu_attachment"
         android:showAsAction="always"
         android:title="@string/Sync_Chapters"
         android:visible="true">
