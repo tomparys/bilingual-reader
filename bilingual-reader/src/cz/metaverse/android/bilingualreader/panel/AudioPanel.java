@@ -361,8 +361,8 @@ public class AudioPanel extends SplitPanel {
 	}
 
 	@Override
-	public void loadState(SharedPreferences preferences) {
-		super.loadState(preferences);
+	public void loadState(SharedPreferences preferences, boolean creatingActivity) {
+		super.loadState(preferences, creatingActivity);
 		actuallyPlaying = preferences.getString(panelPosition + "actualSong", null);
 		setAudioList(audio);
 

@@ -558,12 +558,13 @@ public class BookPanel extends SplitPanel {
 
 	/**
 	 * Load state and content of the page.
+	 * @param creatingActivity  Whether or not the activity is just being created.
 	 */
 	@Override
-	public void loadState(SharedPreferences preferences) {
+	public void loadState(SharedPreferences preferences, boolean creatingActivity) {
 		Log.d(LOG, "BookPanel.loadState"); //loadPosX: " + loadPositionX + ", loadPosY: " + loadPositionY
 
-		super.loadState(preferences);
+		super.loadState(preferences, creatingActivity);
 		try {
 			enumState = BookPanelState.valueOf(preferences.getString("state"+panelPosition, BookPanelState.books.name()));
 		} catch (IllegalArgumentException e) {
@@ -586,8 +587,10 @@ public class BookPanel extends SplitPanel {
 
 		loadScrollPosition(preferences);
 
-		// Set this so that WebView loads its state upon finishing rendering of content
-		firstRenderingAfterCreatingActivity = true;
+		if (creatingActivity) {
+			// Set this so that WebView loads its state upon finishing rendering of content
+			firstRenderingAfterCreatingActivity = true;
+		}
 	}
 
 	/**

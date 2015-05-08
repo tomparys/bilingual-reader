@@ -686,7 +686,7 @@ public class PanelHolder {
 					((AudioPanel) panel).setAudioList(
 							sisterPanelHolder.book.getAudio());
 				}
-				panel.loadState(preferences);
+				panel.loadState(preferences, creatingActivity);
 			}
 
 		// If the panel exists and is sound, but we're (re)creating the activity.

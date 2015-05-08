@@ -160,7 +160,7 @@ public abstract class SplitPanel extends Fragment {
 	}
 
 	// Restores the weight of this SplitPanel during saveState
-	public void loadState(SharedPreferences preferences) {
+	public void loadState(SharedPreferences preferences, boolean creatingActivity) {
 		changeWeight(preferences.getFloat("weight" + panelPosition, 0.5f));
 	}
 }
