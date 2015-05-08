@@ -73,6 +73,7 @@ import cz.metaverse.android.bilingualreader.dialog.ChangeCSSDialog;
 import cz.metaverse.android.bilingualreader.dialog.CloseOrHidePanelDialog;
 import cz.metaverse.android.bilingualreader.dialog.LanguageChooserDialog;
 import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
+import cz.metaverse.android.bilingualreader.dialog.ScrollSyncDialog;
 import cz.metaverse.android.bilingualreader.dialog.SettingsDialog;
 import cz.metaverse.android.bilingualreader.manager.Governor;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
@@ -773,13 +774,13 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			if (governor.isScrollSync()) {
 				Toast.makeText(this, getString(R.string.activated_scroll_sync), Toast.LENGTH_SHORT).show();
 			} else {
-				Toast.makeText(this, getString(R.string.deactivated_scroll_sync), Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getString(R.string.Deactivated_scroll_sync), Toast.LENGTH_SHORT).show();
 			}
 			return true;
 
 		// Scroll Sync Options
 		case R.id.scroll_sync_options_menu_item:
-			// TODO ScrollSync Dialog
+			new ScrollSyncDialog().show(getFragmentManager(), "ScrollSyncDialog");
 			return true;
 
 		// Sync Chapters

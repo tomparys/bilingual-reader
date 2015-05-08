@@ -40,7 +40,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
 	// Database info
 	private static final String DATABASE_NAME = "BILINGUAL_READER";
-	private static final int DATABASE_VERSION = 5;
+	private static final int DATABASE_VERSION = 6;
 
 
 	DatabaseManager(Context context) {

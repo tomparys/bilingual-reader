@@ -397,7 +397,7 @@ public class PanelHolder {
 	 */
 	public boolean openBook(String path) {
 		// Cancel ScrollSync if it was on.
-		governor.setScrollSync(false);
+		governor.setScrollSync(false, true);
 
 		try {
 			if (book != null) {
@@ -493,17 +493,6 @@ public class PanelHolder {
 			String cleanPath = pathOfPage.split("#", 2)[0];
 			if ((cleanPath.equals(book.getCurrentPageURL())) || (book.getPageIndex(cleanPath) >= 0)) {
 				enumState = BookPanelState.books;
-
-				// TODO Load scroll position and offset from database
-
-				if (governor.isScrollSync()) {
-					// TODO rework after we get offset loaded from database
-
-					SelectionWebView swv = getBookPanel().getWebView();
-					if (swv != null) {
-						swv.resetScrollSync();
-					}
-				}
 			}
 		}
 
@@ -558,10 +547,13 @@ public class PanelHolder {
 					}
 				}
 			} else {
-				governor.setScrollSync(false);
+				if (governor.setScrollSync(false, true)) {
+					Toast.makeText(activity, R.string.Deactivated_scroll_sync, Toast.LENGTH_SHORT).show();
+				}
 			}
 		} catch (Exception e) {
 			activity.errorMessage(activity.getString(R.string.error_cannotTurnPage));
+			Log.e(LOG, "Exception while turning page: " + e.toString());
 		}
 	}
 

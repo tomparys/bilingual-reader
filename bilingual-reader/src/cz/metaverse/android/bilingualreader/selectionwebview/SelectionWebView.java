@@ -75,14 +75,17 @@ public class SelectionWebView extends WebView {
 
 
 	/* Scroll Sync */
-	private ScrollSyncMethod scrollSyncMethod = ScrollSyncMethod.proportional;
+	private ScrollSyncMethod scrollSyncMethod = ScrollSyncMethod.none;
 
 	// Scroll Sync Offset
-	private int scrollSyncOffset;
+	private int scrollSyncOffset = 0;
+
+	// Scroll Sync Ratio - used for ScrollSyncMethod.syncPoints
+	private float scrollSyncRatio = 1;
 
 	// The scrollY position when the user activated independent scrolling.
 	// After independent scrolling ends, we use this to calculate the new Scroll Sync Offset.
-	private int scrollYwhenScrollSyncWasPaused;
+	private int scrollYwhenScrollSyncWasPaused = 0;
 
 	// If the user is currently scrolling this WebView (as opposed to the other one).
 	private boolean userIsScrollingThisWebView = false;
@@ -214,18 +217,21 @@ public class SelectionWebView extends WebView {
 					//  Variables need to be long, because the multiplication gets quite large!
 					long scrollValue = 0;
 					long sisterMaxScrollY = sisterWV.computeMaxScrollY();
+
 					switch (scrollSyncMethod) {
+					case none:
+						break;
 
 					// Offset - the webviews are synchronized on their % of scroll + offset pixels
 					case proportional:
 						// Because the position equation isn't symmetrical,
 						// we have to compute them differently for each panel:
 						if (panelPosition == 0) {
-							scrollValue = (getScrollY() - scrollSyncOffset)
+							scrollValue = (getScrollY() + scrollSyncOffset)
 									* sisterMaxScrollY / computedMaxScrollY;
 						} else {
 							scrollValue = getScrollY()
-									* sisterMaxScrollY / computedMaxScrollY + scrollSyncOffset;
+									* sisterMaxScrollY / computedMaxScrollY - scrollSyncOffset;
 						}
 
 						/*Log.v(LOG, "[" + panelPosition + "] computeScroll:  from " + getScrollY()
@@ -234,7 +240,21 @@ public class SelectionWebView extends WebView {
 								+ sisterWV.computeMaxScrollY() + ")"); /**/
 						break;
 
-					default:
+					case linear:
+						if (panelPosition == 0) {
+							scrollValue = getScrollY() + scrollSyncOffset;
+						} else {
+							scrollValue = getScrollY() - scrollSyncOffset;
+						}
+						break;
+
+					case syncPoints:
+						if (panelPosition == 0) {
+							scrollValue = Math.round(scrollSyncRatio * getScrollY() + scrollSyncOffset);
+
+						} else {
+							scrollValue = Math.round((float) (getScrollY() - scrollSyncOffset) / scrollSyncRatio);
+						}
 						break;
 					}
 
@@ -256,15 +276,18 @@ public class SelectionWebView extends WebView {
 		/* Set corresponding ScrollSyncMethod data on the sister WebView. */
 		SelectionWebView sisterWV = getSisterWebView();
 		if (sisterWV != null) {
-
 			switch (scrollSyncMethod) {
+				case none:
+					break;
 
-			case proportional:
-				sisterWV.scrollSyncOffset = scrollSyncOffset;
-				break;
+				case syncPoints:
+					sisterWV.scrollSyncRatio = scrollSyncRatio;
+					// NO BREAK - continue!
 
-			default:
-				break;
+				case proportional:
+				case linear:
+					sisterWV.scrollSyncOffset = scrollSyncOffset;
+					break;
 			}
 		}
 	}
@@ -313,13 +336,14 @@ public class SelectionWebView extends WebView {
 			userPausedScrollSync = true;
 
 			switch (scrollSyncMethod) {
+				case none:
+					break;
 
-			case proportional:
-				scrollYwhenScrollSyncWasPaused = getScrollY();
-				break;
-
-			default:
-				break;
+				case proportional:
+				case linear:
+				case syncPoints:
+					scrollYwhenScrollSyncWasPaused = getScrollY();
+					break;
 			}
 		}
 	}
@@ -335,12 +359,15 @@ public class SelectionWebView extends WebView {
 			userPausedScrollSync = false;
 
 			switch (scrollSyncMethod) {
+			case none:
+				break;
 
 			case proportional:
 				// Because the position equation isn't symmetrical,
 				// we have to compute offset differently in each panel:
 				if (panelPosition == 0) {
-					scrollSyncOffset += getScrollY() - scrollYwhenScrollSyncWasPaused;
+
+					scrollSyncOffset += scrollYwhenScrollSyncWasPaused - getScrollY();
 				} else {
 					// If maxScrollY is positive.
 					int computedMaxScrollY = computeMaxScrollY();
@@ -350,37 +377,34 @@ public class SelectionWebView extends WebView {
 						SelectionWebView sisterWV = getSisterWebView();
 						if (sisterWV != null) {
 
-							scrollSyncOffset += (scrollYwhenScrollSyncWasPaused - getScrollY())
+							scrollSyncOffset -= (scrollYwhenScrollSyncWasPaused - getScrollY())
 									* sisterWV.computeMaxScrollY() / computedMaxScrollY;
 						}
 					}
 				}
-				Log.d(LOG, "SelectionWebView.[" + panelPosition + "] new offset: " + scrollSyncOffset);
 				break;
 
-			default:
+
+			case linear:
+				if (panelPosition == 0) {
+					scrollSyncOffset += scrollYwhenScrollSyncWasPaused - getScrollY();
+				} else {
+					scrollSyncOffset -= scrollYwhenScrollSyncWasPaused - getScrollY();
+				}
+				break;
+
+			case syncPoints:
+				if (panelPosition == 0) {
+					scrollSyncOffset += (scrollYwhenScrollSyncWasPaused - getScrollY()) * scrollSyncRatio;
+				} else {
+					scrollSyncOffset -= scrollYwhenScrollSyncWasPaused - getScrollY();
+				}
 				break;
 			}
+			Log.d(LOG, LOG + ".[" + panelPosition + "] new offset: " + scrollSyncOffset);
 
 			updateSisterWithNewScrollSyncData();
 		}
-	}
-
-	/**
-	 * Reset ScrollSync - for instance when new chapter is opened.
-	 */
-	public void resetScrollSync() {
-		switch (scrollSyncMethod) {
-
-		case proportional:
-			scrollSyncOffset = 0;
-			break;
-
-		default:
-			break;
-		}
-
-		updateSisterWithNewScrollSyncData();
 	}
 
 	/**
@@ -427,6 +451,67 @@ public class SelectionWebView extends WebView {
 		this.doNotScrollThisWebView = doNotScrollThisWebView;
 	}
 
+	/**
+	 * Reset ScrollSync - for instance when new chapter is opened.
+	 */
+	public void resetScrollSync() {
+		Log.d(LOG, LOG + ".resetScrollSync");
+
+		// Set none ScrollSync as default, because it's most useful.
+		scrollSyncMethod = ScrollSyncMethod.none;
+		scrollSyncOffset = 0;
+		scrollSyncRatio = 1;
+	}
+
+	/**
+	 * Sets the appropriate ScrollSync data (but doesn't activate ScrollSync).
+	 */
+	public void initializeScrollSyncData(ScrollSyncMethod method, float floatOffset, float ratio) {
+		setScrollSyncMethod(method);
+		setScrollSyncOffsetFromFloat(floatOffset);
+		setScrollSyncRatio(ratio);
+	}
+
+	/**
+	 * Sets the appropriate ScrollSync data (but doesn't activate ScrollSync).
+	 */
+	public void initializeScrollSyncData(ScrollSyncMethod method, int offset, float ratio) {
+		setScrollSyncMethod(method);
+		setScrollSyncOffset(offset);
+		setScrollSyncRatio(ratio);
+	}
+
+	/**
+	 * Returns whether the scrollSync
+	 */
+	public boolean areScrollSyncDataCongruentWithSister() {
+		SelectionWebView sister = getSisterWebView();
+
+		// If the ScrollSyncMethods are not null and equal to each other.
+		if (scrollSyncMethod != null && scrollSyncMethod.equals(sister.scrollSyncMethod)) {
+
+			switch (scrollSyncMethod) {
+			case none:
+				return false;
+
+			case proportional:
+			case linear:
+				if (scrollSyncOffset == sister.scrollSyncOffset) {
+					return true;
+				}
+				break;
+
+			case syncPoints:
+				if (scrollSyncOffset == sister.scrollSyncOffset
+						&& scrollSyncRatio == sister.scrollSyncRatio) {
+					return true;
+				}
+				break;
+			}
+		}
+		return false;
+	}
+
 
 
 	// ============================================================================================
@@ -434,10 +519,35 @@ public class SelectionWebView extends WebView {
 	// ============================================================================================
 
 	/**
-	 * Given the offset as a fraction of the computeMaxScrollY area, returns the actual integer offset.
+	 * Returns the currently active Scroll Sync Method.
 	 */
-	public void setScrollSyncOffsetFromFloat(float floatOffset) {
-		scrollSyncOffset = Math.round(floatOffset * computeMaxScrollY());
+	public ScrollSyncMethod getScrollSyncMethod() {
+		return scrollSyncMethod;
+	}
+
+	/**
+	 * Sets the Scroll Sync Method.
+	 */
+	public void setScrollSyncMethod(ScrollSyncMethod method) {
+		scrollSyncMethod = method;
+
+		if (scrollSyncMethod == null) {
+			scrollSyncMethod = ScrollSyncMethod.none;
+		}
+	}
+	/**
+	 * Sets the Scroll Sync Method from String.
+	 */
+	private void setScrollSyncMethod(String method) {
+		setScrollSyncMethod(ScrollSyncMethod.fromString(method));
+	}
+
+	public float getScrollSyncRatio() {
+		return scrollSyncRatio;
+	}
+
+	private void setScrollSyncRatio(float ratio) {
+		scrollSyncRatio = ratio;
 	}
 
 	/**
@@ -448,17 +558,38 @@ public class SelectionWebView extends WebView {
 	}
 
 	/**
+	 * Given the offset as a fraction of the computeMaxScrollY area, sets the actual integer offset.
+	 */
+	private void setScrollSyncOffsetFromFloat(float floatOffset) {
+		scrollSyncOffset = Math.round(floatOffset * computeMaxScrollY());
+	}
+
+	/**
+	 * Set the offset directly from int to int.
+	 */
+	private void setScrollSyncOffset(int offset) {
+		scrollSyncOffset = offset;
+	}
+
+	/**
 	 * Loads the ScollSync variables from preferences.
 	 */
 	public void loadStateWhenContentRendered() {
 		SharedPreferences preferences = readerActivity.getPreferences(Context.MODE_PRIVATE);
 
-		// Load ScrollSync offset
-		float load_scrollSyncOffset = preferences.getFloat("SelectionWV_scrollSyncOffset"+panelPosition, 0f);
-		setScrollSyncOffsetFromFloat(load_scrollSyncOffset);
+		// Load ScrollSync data
+		String prefSSMethod = preferences.getString("SelectionWV_scrollSyncMethod"+panelPosition, null);
+		float prefSSOffset = preferences.getFloat("SelectionWV_scrollSyncOffset"+panelPosition, 0f);
+		float prefSSRatio = preferences.getFloat("SelectionWV_scrollSyncRatio"+panelPosition, 1f);
 
-		Log.d(LOG, "SelectionWebView.loadStateWhenContentRendered, scrollSyncOffset: " + scrollSyncOffset
-				+ ", computeMaxScrollY(): " + computeMaxScrollY());
+		setScrollSyncMethod(prefSSMethod);
+		setScrollSyncOffsetFromFloat(prefSSOffset);
+		setScrollSyncRatio(prefSSRatio);
+
+		Log.v(LOG, "SelectionWebView.loadStateWhenContentRendered"
+				+ ", scrollSyncMethod: " + scrollSyncMethod
+				+ ", scrollSyncOffset: " + scrollSyncOffset
+				+ ", scrollSyncRatio: " + scrollSyncRatio);
 	}
 
 	/**
@@ -468,11 +599,15 @@ public class SelectionWebView extends WebView {
 		// Resumes scroll sync if it was currently paused, to compute the current offset.
 		resumeScrollSync();
 
-		// Save ScrollSync offset
+		// Save ScrollSync data
+		editor.putString("SelectionWV_scrollSyncMethod"+panelPosition, scrollSyncMethod.toString());
 		editor.putFloat("SelectionWV_scrollSyncOffset"+panelPosition, getScrollSyncOffsetAsFloat());
+		editor.putFloat("SelectionWV_scrollSyncRatio"+panelPosition, getScrollSyncRatio());
 
-		Log.d(LOG, "SelectionWebView.saveState, scrollSyncOffset: " + scrollSyncOffset
-				+ ", computeMaxScrollY(): " + computeMaxScrollY());
+		Log.v(LOG, "SelectionWebView.saveState"
+				+ ", scrollSyncMethod: " + scrollSyncMethod
+				+ ", scrollSyncOffset: " + scrollSyncOffset
+				+ ", scrollSyncRatio: " + scrollSyncRatio);
 	}
 
 

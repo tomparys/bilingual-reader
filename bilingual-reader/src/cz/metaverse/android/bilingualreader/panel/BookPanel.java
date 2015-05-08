@@ -58,11 +58,13 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.db.BookPageDB;
 import cz.metaverse.android.bilingualreader.db.BookPageDB.BookPage;
 import cz.metaverse.android.bilingualreader.enums.BookPanelState;
+import cz.metaverse.android.bilingualreader.enums.ScrollSyncMethod;
 import cz.metaverse.android.bilingualreader.helper.BookPanelOnTouchListener;
 import cz.metaverse.android.bilingualreader.helper.Func;
 import cz.metaverse.android.bilingualreader.manager.Governor;
@@ -82,11 +84,13 @@ public class BookPanel extends SplitPanel {
 
 	// Prepared static variables for interaction with the DB. DB columns to be updated.
 	private static final String[] colsUpdate = new String[] {BookPageDB.COL_SCROLL_Y,
-			BookPageDB.COL_SCROLLSYNC_OFFSET, BookPageDB.COL_LAST_OPENED};
+			BookPageDB.COL_SCROLLSYNC_METHOD, BookPageDB.COL_SCROLLSYNC_OFFSET,
+			BookPageDB.COL_SCROLLSYNC_RATIO, BookPageDB.COL_LAST_OPENED};
 
 	private static final String[] colsInsert = new String[] {BookPageDB.COL_BOOK_FILENAME,
 			BookPageDB.COL_BOOK_TITLE, BookPageDB.COL_PAGE_FILENAME, BookPageDB.COL_PAGE_RELATIVE_PATH,
-			BookPageDB.COL_SCROLL_Y, BookPageDB.COL_SCROLLSYNC_OFFSET, BookPageDB.COL_LAST_OPENED};
+			BookPageDB.COL_SCROLL_Y, BookPageDB.COL_SCROLLSYNC_METHOD, BookPageDB.COL_SCROLLSYNC_OFFSET,
+			BookPageDB.COL_SCROLLSYNC_RATIO, BookPageDB.COL_LAST_OPENED};
 
 	// Information about the content
 	public BookPanelState enumState = BookPanelState.books;
@@ -95,7 +99,9 @@ public class BookPanel extends SplitPanel {
 
 	// Position within the page and ScrollSync offset loaded from before.
 	private Float loadPositionY;
+	private ScrollSyncMethod loadScrollSyncMethod;
 	private Float loadScrollSyncOffset;
+	private Float loadScrollSyncRatio;
 
 	// Fields concerning communication with the DB
 	private Long loadedFromBookPageRowId;
@@ -103,6 +109,7 @@ public class BookPanel extends SplitPanel {
 
 	// Whether the current page has been fully rendered.
 	private boolean finishedRenderingContent = false;
+	private boolean firstRenderingAfterCreatingActivity = false;
 
 	// Our customized WebView and its onTouchListener
 	protected SelectionWebView webView;
@@ -279,7 +286,13 @@ public class BookPanel extends SplitPanel {
 		// For explanation see the same section in loadPage().
 		if (finishedRenderingContent) {
 			loadPositionY = null;
+			firstRenderingAfterCreatingActivity = false;
+
+			// Scroll Sync data
+			loadScrollSyncMethod = null;
 			loadScrollSyncOffset = null;
+			loadScrollSyncRatio = null;
+
 			Log.d(LOG, "nulling load* variables");
 		}
 
@@ -311,7 +324,13 @@ public class BookPanel extends SplitPanel {
 		// for the second time, it recalculates the values and corrects the previous mistake.
 		if (finishedRenderingContent) {
 			loadPositionY = null;
+			firstRenderingAfterCreatingActivity = false;
+
+			// Scroll Sync data
+			loadScrollSyncMethod = null;
 			loadScrollSyncOffset = null;
+			loadScrollSyncRatio = null;
+
 			Log.d(LOG, "nulling load* variables");
 		}
 
@@ -331,7 +350,7 @@ public class BookPanel extends SplitPanel {
 
 
 	// ============================================================================================
-	//		Save and load state to preferences
+	//		Save and load state to preferences or database
 	// ============================================================================================
 
 	/**
@@ -343,16 +362,18 @@ public class BookPanel extends SplitPanel {
 				&& displayedBookPageKey != null) {
 
 			// Compute the values to be saved.
-			float scrollY = getPositionYAsFloat();
-			float scrollSyncOffset = webView.getScrollSyncOffsetAsFloat();
+			String scrollY = "" + getPositionYAsFloat();
+			String scrollSyncMethod = "" + webView.getScrollSyncMethod();
+			String scrollSyncOffset = "" + webView.getScrollSyncOffsetAsFloat();
+			String scrollSyncRatio = "" + webView.getScrollSyncRatio();
 
 			// Obtain database access.
 			BookPageDB bookPageDB = BookPageDB.getInstance(governor.getActivity());
 
 			if (loadedFromBookPageRowId != null) {
 				// Update the existing BookPage entry in the DB with new values.
-				String[] values = new String[] {
-						"" + scrollY, "" + scrollSyncOffset, "" + System.currentTimeMillis()};
+				String[] values = new String[] {scrollY, scrollSyncMethod, scrollSyncOffset, scrollSyncRatio,
+						"" + System.currentTimeMillis()};
 				bookPageDB.updateBookPage(loadedFromBookPageRowId, colsUpdate, values);
 			}
 			else {
@@ -360,13 +381,15 @@ public class BookPanel extends SplitPanel {
 				String[] values = new String[] {
 						displayedBookPageKey[0], displayedBookPageKey[1], displayedBookPageKey[2],
 						panelHolder.getBook().getRelativePathFromAbsolute(displayedPage),
-						"" + scrollY, "" + scrollSyncOffset, "" + System.currentTimeMillis()};
+						scrollY, scrollSyncMethod, scrollSyncOffset, scrollSyncRatio,
+						"" + System.currentTimeMillis()};
 
 				bookPageDB.insertBookPage(colsInsert, values);
 			}
 
-			Log.d(LOG, String.format("%s: Saved to DB (id: %s, ScrollY: %s, ScrollSyncOffset: %s, +time)",
-					LOG, loadedFromBookPageRowId, scrollY, scrollSyncOffset));
+			Log.d(LOG, String.format("%s: Saved to DB (id: %s, ScrollY: %s, "
+					+ "ScrollSyncMethod: %s, ScrollSyncOffset: %s, ScrollSyncRatio: %s)",
+					LOG, loadedFromBookPageRowId, scrollY, scrollSyncMethod, scrollSyncOffset, scrollSyncRatio));
 			//Toast.makeText(ReaderActivity.debugContext, "Saved page to DB", Toast.LENGTH_SHORT).show();
 
 			displayedBookPageKey = null;
@@ -410,10 +433,21 @@ public class BookPanel extends SplitPanel {
 			if (bookPage != null) {
 				loadedFromBookPageRowId = bookPage.getId();
 				loadPositionY = bookPage.getScrollY();
-				loadScrollSyncOffset = bookPage.getScrollSyncOffset();
 
-				Log.d(LOG, String.format("%s: Loaded from DB (id: %s, ScrollY: %s, ScrollSyncOffset: %s)",
-						LOG, loadedFromBookPageRowId, loadPositionY, loadScrollSyncOffset));
+				// Load ScrollSync data
+				loadScrollSyncMethod = bookPage.getScrollSyncMethod();
+				loadScrollSyncOffset = bookPage.getScrollSyncOffset();
+				loadScrollSyncRatio = bookPage.getScrollSyncRatio();
+
+				Log.d(LOG, String.format("%s: Loaded from DB (id: %s, ScrollY: %s, "
+						+ "ScrollSyncMethod: %s, ScrollSyncOffset: %s, ScrollSyncRatio: %s)",
+						LOG, loadedFromBookPageRowId, loadPositionY,
+						loadScrollSyncMethod, loadScrollSyncOffset, loadScrollSyncRatio));
+			} else {
+				// If the book page was not found in the database, reset the ScrollSync data in WebView.
+				webView.resetScrollSync();
+
+				Log.d(LOG, LOG + ": NOT Loaded from DB, so webView.resetScrollSync instead.");
 			}
 
 			/*Toast.makeText(ReaderActivity.debugContext, "Loaded page from DB: "
@@ -450,8 +484,6 @@ public class BookPanel extends SplitPanel {
 	 * Nulling of load* values was therefore moved to loadPage/loadData when the user opens another page.
 	 */
 	public void onFinishedRenderingContent() {
-		finishedRenderingContent = true;
-
 		Log.d(LOG, "BookPanel.onFinishedRenderingContent, loadY: " + loadPositionY
 				+ ", contentHeight: " + webView.getContentHeight());
 
@@ -460,9 +492,32 @@ public class BookPanel extends SplitPanel {
 			webView.setScrollY(Math.round(loadPositionY * webView.getContentHeight()));
 		}
 
-		// Load the scroll sync offset, etc.
-		if (loadScrollSyncOffset != null) {
-			webView.setScrollSyncOffsetFromFloat(loadScrollSyncOffset);
+		// Load the scroll sync data
+		if (loadScrollSyncMethod != null && loadScrollSyncOffset != null && loadScrollSyncRatio != null) {
+			webView.initializeScrollSyncData(loadScrollSyncMethod, loadScrollSyncOffset, loadScrollSyncRatio);
+		} else {
+			if (firstRenderingAfterCreatingActivity) {
+				// Load the scroll sync offset, etc.
+				webView.loadStateWhenContentRendered();
+				// Do not set this field to false here, because a second, more precise,
+				// onFinishedRenderingContent call might come afterwards.
+			}
+		}
+
+		finishedRenderingContent = true;
+
+		if (governor.isScrollSync()) {
+			BookPanel sister = panelHolder.getSisterBookPanel();
+
+			// If this panel is the one that has finished rendering last.
+			if (sister != null && sister.finishedRenderingContent) {
+				// Check if the Scroll Sync data in both WebViews are congruent.
+				if (!webView.areScrollSyncDataCongruentWithSister()) {
+					// If not, deactivate scroll sync.
+					governor.setScrollSync(false, true);
+					Toast.makeText(activity, R.string.Deactivated_scroll_sync, Toast.LENGTH_SHORT).show();
+				}
+			}
 		}
 	}
 
@@ -485,8 +540,7 @@ public class BookPanel extends SplitPanel {
 		// Save the position within the page.
 		if (webView != null) {
 			editor.putInt("positionX"+panelPosition, webView.getScrollX());
-			editor.putFloat("positionY"+panelPosition,
-					getPositionYAsFloat());
+			editor.putFloat("positionY"+panelPosition, getPositionYAsFloat());
 		}
 
 		// Load the scroll sync offset, etc.
@@ -531,6 +585,9 @@ public class BookPanel extends SplitPanel {
 		}
 
 		loadScrollPosition(preferences);
+
+		// Set this so that WebView loads its state upon finishing rendering of content
+		firstRenderingAfterCreatingActivity = true;
 	}
 
 	/**
@@ -543,7 +600,9 @@ public class BookPanel extends SplitPanel {
 		// Save the scroll variables so that if content is going to get re-rendered,
 		// we load the proper values.
 		loadPositionY = getPositionYAsFloat();
+		loadScrollSyncMethod = webView.getScrollSyncMethod();
 		loadScrollSyncOffset = webView.getScrollSyncOffsetAsFloat();
+		loadScrollSyncRatio = webView.getScrollSyncRatio();
 	}
 
 }

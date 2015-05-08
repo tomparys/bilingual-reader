@@ -118,7 +118,7 @@ public class Func {
 		filename = removeFragmentIdentifier(filename);
 
 		Log.d(LOG, LOG + ".fileNameFromPath: filePath: " + filePath);
-		Log.d(LOG, LOG + ".fileNameFromPath: filename:" + filename);
+		Log.d(LOG, LOG + ".fileNameFromPath: -> filename: " + filename);
 
 		return filename;
 	}

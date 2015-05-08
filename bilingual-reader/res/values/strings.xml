@@ -32,6 +32,41 @@
         such as an attachment in an Email client.
         \n\nExported file can be found at:\n</string>
         
+    <string name="Scroll_Sync_info_msg"><big><b>The More You Know</b></big>
+        \nIf the synchronization doesn\'t fit, use <b>two fingers to scroll</b> one of the books
+        without the other to adjust the synchronization.</string>
+        
+    <string name="Proportional_Scroll_Sync_info_msg" formatted="false">With <i>Proportional</i> synchronization
+        the books are synced in proportion to their length. If you scroll one book to 30% of its length
+        the other one will be automatically scrolled to 30% as well.
+        
+        \n\nThis method works best if both book pages contain the same amount of text. For instance the same chapter.
+        
+        \n\n<b>If the books get out of sync</b> at some point, <b>scroll one book with two fingers</b> so that
+        you can again see the same text in both panels. The synchronization will be adjusted accordingly.</string>
+        
+    <string name="Linear_Scroll_Sync_info_msg">With <i>Linear</i> synchronization
+        the books are synced 1:1. If you scroll one book X pixels, the other one will be scrolled X pixels as well.
+        
+        \n\n<b>Use this method only if the other two are unsuitable.</b>
+        
+        \n\nIf the books get <i>out of sync</i> at some point, <i>scroll one book with two fingers</i> so that
+        you can again see the same text in both panels. The synchronization will be adjusted accordingly.</string>
+        
+    <string name="Sync_Points_Scroll_Sync_info_msg">First, scroll both books to any point where
+        you can see the <i>same</i> text in both panels. For instance, find a <i>paragraph in both books</i>,
+        and scroll both panels so that it is the first paragraph visible in each of them.
+        \nThen go here to the <i>Scroll Synchronization dialog</i> and set it as <i>Sync <b>Point 1</b></i>.
+        
+        \n\nNow find a 2nd <i>Sync Point</i> far away from the first one and set it.
+        Afterwards click <i>OK</i> and synchronization will be activated.
+        
+        \n\n<i>This is the most precise method, but it takes effort to set up.</i> 
+        
+        \n\n<b>If the books get out of sync</b> at some point, you can either <b>recompute the sync by
+        setting new <i>Sync Points</i></b>, or <b>scroll one book with two fingers</b> so that
+        you can again see the same text in both panels. The synchronization will be adjusted accordingly.</string>
+        
     <string name="app_name">Bilingual Reader</string>
     <string name="Open_Book_1">Open Book 1</string>
     <string name="Open_Book_2">Open Book 2</string>
@@ -62,7 +97,7 @@
     <string name="invisible">invisible</string>
     <string name="second">second</string>
     <string name="time">time</string>
-    <string name="error_cannotTurnPage">Cannot turn Page!</string>
+    <string name="error_cannotTurnPage">Error occurred while turning Page.</string>
     <string name="tome">tome</string>
     <string name="lang">lang</string>
     <string name="error_noOtherLanguages">No other languages!</string>
@@ -70,6 +105,8 @@
     <string name="error_cannotLoadState">Cannot load the application/book state</string>
     <string name="textOrHTML">text/html</string>
     <string name="sync">sync</string>
+    <string name="chapterSync">chapterSync</string>
+    <string name="scrollSync">scrollSync</string>
     <string name="page">page</string>
     <string name="CurrentPageBook">CurrentPageBook</string>
     <string name="LanguageBook">LanguageBook</string>
@@ -188,7 +225,7 @@
     <string name="De_activate_scroll_sync">De/activate Scroll Synchronization</string>
     <string name="Scroll_Sync_Options">Scroll Synchronization Options</string>
     <string name="activated_scroll_sync">Activated Scroll synchronization.</string>
-    <string name="deactivated_scroll_sync">Deactivated Scroll synchronization.</string>
+    <string name="Deactivated_scroll_sync">Deactivated Scroll synchronization.</string>
     <string name="Panel_hidden">Panel hidden.</string>
     <string name="Reappear_panel">Reappear panel</string>
     <string name="Export">Export</string>
@@ -215,5 +252,28 @@
     <string name="Back_to_SD_card">Back to SD card</string>
     <string name="parent_folder_line">.. (Parent folder)</string>
     <string name="cant_read_folder">folder can\'t be read!</string>
+    
+    <string name="Scroll_Synchronization">Scroll Synchronization</string>
+    <string name="Info">Info</string>
+    <string name="Proportional_Scroll_Sync">Proportional Scroll Sync</string>
+    <string name="Linear_Scroll_Sync">Linear Scroll Sync</string>
+    <string name="Sync_Points_Scroll_Sync">Synchronization Points</string>
+    <string name="Sync_button_1_initial_msg">Set current book positions as Point 1</string>
+    <string name="Sync_button_2_initial_msg">Set current book positions as Point 2</string>
+    <string name="Cant_set_Sync_Point_scroll_msg">Can\'t activate <i>Synchronization Points</i>
+        if both Points aren\'t set.</string>
+    <string name="Choose_a_synchronization_method">Choose a synchronization method.</string>
+    <string name="Sync_Point_1_is_set">Point 1 is set \u00A0 \u00A0 | \u00A0 \u00A0 <i>Click to re-set it</i></string>
+    <string name="Sync_Point_2_is_set">Point 2 is set \u00A0 \u00A0 | \u00A0 \u00A0 <i>Click to re-set it</i></string>
+    <string name="Sync_Point_1_was_set">Synchronization Point 1 was set.</string>
+    <string name="Sync_Point_2_was_set">Synchronization Point 2 was set.</string>
+    <string name="scroll_sync_point_recompute_button_msg"><b>Synchronization by Points is active.</b>
+        \n<i>Click to recompute it from the points.</i></string>
+    <string name="Sync_point_just_set_msg">You\'ve already set these book positions into a Sync Point.</string>
+    <string name="Cant_activate_sync_points_msg">Can\'t activate <i>Sync Points</i> because the position
+        of one book was identical in both <i>Sync Points</i>.</string>
+    <string name="Scroll_Sync_was_activated">Scroll Synchronization was activated.</string>
+    <string name="Sync_points_were_recomputed">Synchronization Points were recomputed.</string>
+    
 
 </resources>

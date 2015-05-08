@@ -24,6 +24,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
+import cz.metaverse.android.bilingualreader.enums.ScrollSyncMethod;
 
 /**
  *
@@ -49,17 +50,17 @@ public class BookPageDB {
 	public static final String COL_PAGE_FILENAME = "PAGE_FILENAME";
 	public static final String COL_PAGE_RELATIVE_PATH = "PAGE_RELATIVE_PATH";
 	public static final String COL_SCROLL_Y = "SCROLL_Y";
+	public static final String COL_SCROLLSYNC_METHOD = "SCROLLSYNC_METHOD";
 	public static final String COL_SCROLLSYNC_OFFSET = "SCROLLSYNC_OFFSET";
+	public static final String COL_SCROLLSYNC_RATIO = "SCROLLSYNC_RATIO";
 	public static final String COL_PARAGRAPHS_COUNT = "PARAGRAPHS_COUNT";
 	public static final String COL_LAST_OPENED = "LAST_OPENED";
 
 	// Array of all available columns to be used for results.
 	public static final String [] allColumns = new String[] {COL_ROWID,
 			COL_BOOK_FILENAME, COL_BOOK_TITLE, COL_PAGE_FILENAME, COL_PAGE_RELATIVE_PATH, COL_SCROLL_Y,
-			COL_SCROLLSYNC_OFFSET, COL_PARAGRAPHS_COUNT, COL_LAST_OPENED};
-	public static final String [] dataColumns = new String[] {
-			COL_BOOK_FILENAME, COL_BOOK_TITLE, COL_PAGE_FILENAME, COL_PAGE_RELATIVE_PATH, COL_SCROLL_Y,
-			COL_SCROLLSYNC_OFFSET, COL_PARAGRAPHS_COUNT, COL_LAST_OPENED};
+			COL_SCROLLSYNC_METHOD, COL_SCROLLSYNC_OFFSET, COL_SCROLLSYNC_RATIO,
+			COL_PARAGRAPHS_COUNT, COL_LAST_OPENED};
 
 	/* Database table */
 	protected static final String TABLE_NAME = "BOOKPAGE";
@@ -71,7 +72,9 @@ public class BookPageDB {
 			+ COL_PAGE_FILENAME + " text not null, "
 			+ COL_PAGE_RELATIVE_PATH + " text not null, "
 			+ COL_SCROLL_Y + " real, "
+			+ COL_SCROLLSYNC_METHOD + " text, "
 			+ COL_SCROLLSYNC_OFFSET + " real, "
+			+ COL_SCROLLSYNC_RATIO + " real, "
 			+ COL_PARAGRAPHS_COUNT + " integer, "
 			+ COL_LAST_OPENED + " integer)";
 
@@ -254,8 +257,17 @@ public class BookPageDB {
 			return cursor.getFloat(cursor.getColumnIndex(COL_SCROLL_Y));
 		}
 
+		public ScrollSyncMethod getScrollSyncMethod() {
+			return ScrollSyncMethod.fromString(
+					cursor.getString(cursor.getColumnIndex(COL_SCROLLSYNC_METHOD)));
+		}
+
 		public float getScrollSyncOffset() {
 			return cursor.getFloat(cursor.getColumnIndex(COL_SCROLLSYNC_OFFSET));
+		}
+
+		public float getScrollSyncRatio() {
+			return cursor.getFloat(cursor.getColumnIndex(COL_SCROLLSYNC_RATIO));
 		}
 
 		public int getParagraphsCount() {

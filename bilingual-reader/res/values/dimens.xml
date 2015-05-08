@@ -9,5 +9,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="panels_divider_thickness">3dp</dimen>
+    <dimen name="dialog_scroll_sync_radio_button_margin">5dp</dimen>
 
 </resources>

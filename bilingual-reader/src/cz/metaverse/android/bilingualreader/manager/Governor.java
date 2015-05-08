@@ -48,9 +48,12 @@ package cz.metaverse.android.bilingualreader.manager;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Log;
+import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.enums.BookPanelState;
+import cz.metaverse.android.bilingualreader.enums.ScrollSyncMethod;
+import cz.metaverse.android.bilingualreader.helper.ScrollSyncPoint;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
 import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 
@@ -82,9 +85,13 @@ public class Governor {
 	private PanelHolder[] panelHolder;
 
 	/* Sync */
-	private boolean scrollSync;
 	private boolean chapterSync;
 	private boolean readingBilingualEbook;
+
+	// Scroll Sync
+	private boolean scrollSync;
+	private ScrollSyncPoint[] scrollSyncPoint;
+
 
 	/* State holding - these fields are public, because they serve to interconnect with other classes.
 	 * And because unnecessary getters and setters are costly on Android. */
@@ -310,7 +317,7 @@ public class Governor {
 
 
 	// ============================================================================================
-	//		Synchronization
+	//		Scroll Sync
 	// ============================================================================================
 
 	/**
@@ -320,33 +327,143 @@ public class Governor {
 		return scrollSync;
 	}
 
-	public void setScrollSync(boolean value) {
-		scrollSync = value;
+	/**
+	 *
+	 *
+	 */
+	/**
+	 * Activates or deactivates ScrollSync.
+	 * @param setScrollSync  The new state we're switching to.
+	 * @param checkSyncData  If we're switching Sync ON, this indicates whether we should check if the
+	 *         scroll sync data in both WebViews agree with each other, and if they don't reset them.
+	 *       - If you've just used the setScrollSyncMethod(), feel free to put false here.
+	 *       - If you're setting first boolean to false, put this one true, in case you change
+	 *           the original false to true. Just to be safe.
+	 * @return  True if a change of state happened, false otherwise.
+	 */
+	public boolean setScrollSync(boolean setScrollSync, boolean checkSyncData) {
+		if (!exactlyOneBookOpen()) {
 
-		if (scrollSync) {
-			if (getPanelHolder(0).isBookPanel()) {
-				SelectionWebView selectionWebView = getPanelHolder(0).getBookPanel().getWebView();
-				if (selectionWebView != null) {
-					// Reset scroll sync offset
-					selectionWebView.resetScrollSync();
+			// If we're to check the data, if we're switching scrollSync ON and if it hasn't been before now.
+			if (checkSyncData && setScrollSync && !scrollSync) {
+				SelectionWebView[] webView = getTwinWebViews();
+
+				if (webView != null) {
+					// If the Scroll Sync methods and data loaded in the two panels don't agree
+					// with each other, reset them out.
+					if (!webView[0].areScrollSyncDataCongruentWithSister()) {
+						webView[0].resetScrollSync();
+						webView[1].resetScrollSync();
+					}
 				}
 			}
+
+			// If we did change the scrollSync value, return true that a change happened.
+			if (scrollSync != setScrollSync) {
+				scrollSync = setScrollSync;
+				return true;
+			}
 		}
+		return false;
 	}
 
 	/**
-	 * Flips the state of ScrollSync (active -> inactive, inactive -> active).
-	 * @return If the change will be active right now or not (if only one book is open, sync does not work).
+	 * Flips the state of ScrollSync (active -> inactive, inactive -> active) if possible.
+	 * @return If the sync was flipped or not.
 	 */
 	public boolean flipScrollSync() {
-		if (exactlyOneBookOpen()) {
-			return false;
+		if (!exactlyOneBookOpen()) {
+			setScrollSync(!scrollSync, true);
+			return true;
 		}
-		scrollSync = !scrollSync;
-		return true;
+		return false;
+	}
+
+	/**
+	 * Get the currently used ScrollSync method. Returns null if method isn't set yet.
+	 */
+	public ScrollSyncMethod getScrollSyncMethod() {
+		SelectionWebView[] webView = getTwinWebViews();
+		if (webView != null) {
+
+			// If ScrollSync is active we can be sure that ScrollSync method and data are the same
+			// in both WebViews, so grab it from the first one.
+			if (isScrollSync()) {
+				return webView[0].getScrollSyncMethod();
+			}
+			// If ScrollSync isn't active, check first if the ScrollSync data are congruent in both WebViews,
+			// if not, we're going to reset the method and data when ScrollSync is activated,
+			// thus in that case we return null.
+			else {
+				if (webView[0].areScrollSyncDataCongruentWithSister()) {
+					return webView[0].getScrollSyncMethod();
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Sets the Scroll Sync method.
+	 * @return True if the Scroll Sync data was successfully set, false otherwise.
+	 */
+	public boolean setScrollSyncMethod(ScrollSyncMethod ssMethod) {
+		if (!exactlyOneBookOpen()) {
+			SelectionWebView[] webView = getTwinWebViews();
+			if (webView != null) {
+
+				if (ssMethod == ScrollSyncMethod.syncPoints) {
+					if (scrollSyncPoint != null && scrollSyncPoint[0] != null && scrollSyncPoint[1] != null) {
+
+						if (scrollSyncPoint[0].computeAndActivateScrollSync(scrollSyncPoint[1], webView)) {
+							// If the computation was successful, activate ScrollSync.
+							return true;
+						}
+						else {
+							// Position of one book was identical in both books, can't activate.
+							Toast.makeText(activity, R.string.Cant_activate_sync_points_msg, Toast.LENGTH_LONG).show();
+							return false;
+						}
+					}
+				}
+				// Method is NOT syncPoints.
+				else {
+					webView[0].resetScrollSync();
+					webView[1].resetScrollSync();
+
+					webView[0].setScrollSyncMethod(ssMethod);
+					webView[1].setScrollSyncMethod(ssMethod);
+
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Take the current Scroll positions of both WebViews and save them as a ScrollSyncPoint.
+	 */
+	public void setScrollSyncPointNow(int point) {
+		if (scrollSyncPoint == null) {
+			scrollSyncPoint = new ScrollSyncPoint[N_PANELS];
+		}
+
+		SelectionWebView[] webView = getTwinWebViews();
+		if (webView != null) {
+			scrollSyncPoint[point] = new ScrollSyncPoint(webView[0].getScrollY(), webView[1].getScrollY());
+		}
+	}
+
+	public ScrollSyncPoint[] getScrollSyncPoints() {
+		return scrollSyncPoint;
 	}
 
 
+
+	// ============================================================================================
+	//		Chapter Sync
+	// ============================================================================================
 
 	public boolean isChapterSync() {
 		return chapterSync;
@@ -462,7 +579,8 @@ public class Governor {
 	 */
 	public void saveState(Editor editor) {
 
-		editor.putBoolean(getS(R.string.sync), chapterSync);
+		editor.putBoolean(getS(R.string.scrollSync), scrollSync);
+		editor.putBoolean(getS(R.string.chapterSync), chapterSync);
 		editor.putBoolean(getS(R.string.readingBilingualEbookBool), readingBilingualEbook);
 
 		editor.putInt(getS(R.string.HiddenPanelPosition), hiddenPanel != null ? hiddenPanel.getPosition() : -1);
@@ -479,7 +597,8 @@ public class Governor {
 	 * @return				successfulness
 	 */
 	public boolean loadState(SharedPreferences preferences, boolean creatingActivity) {
-		chapterSync = preferences.getBoolean(getS(R.string.sync), false);
+		scrollSync = preferences.getBoolean(getS(R.string.scrollSync), false);
+		chapterSync = preferences.getBoolean(getS(R.string.chapterSync), false);
 		readingBilingualEbook = preferences.getBoolean(getS(R.string.readingBilingualEbookBool), false);
 		boolean ok = true;
 
@@ -502,6 +621,21 @@ public class Governor {
 	// ============================================================================================
 	//		Misc
 	// ============================================================================================
+
+	private SelectionWebView[] getTwinWebViews() {
+		BookPanel[] bookPanels = new BookPanel[] {
+				panelHolder[0].getBookPanel(), panelHolder[1].getBookPanel()};
+
+		if (bookPanels[0] != null && bookPanels[1] != null) {
+			SelectionWebView[] webViews = new SelectionWebView[] {
+					bookPanels[0].getWebView(), bookPanels[1].getWebView()};
+
+			if (webViews[0] != null && webViews[1] != null) {
+				return webViews;
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Shorthand for context.getResources().getString(id)

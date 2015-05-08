@@ -25,5 +25,21 @@ package cz.metaverse.android.bilingualreader.enums;
  *
  */
 public enum ScrollSyncMethod {
-	proportional, linear, syncPoints
+	none, proportional, linear, syncPoints;
+
+
+	/**
+	 * Converts string to the appropriate enum. Or null.
+	 */
+	public static ScrollSyncMethod fromString(String string) {
+		ScrollSyncMethod method;
+
+		try {
+			method = ScrollSyncMethod.valueOf(string);
+		} catch (IllegalArgumentException e) {
+			method = null;
+		}
+
+		return method;
+	}
 }
