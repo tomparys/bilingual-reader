@@ -45,6 +45,8 @@ THE SOFTWARE.
 
 package cz.metaverse.android.bilingualreader.panel;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -79,6 +81,7 @@ import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 public class BookPanel extends SplitPanel {
 
 	private static final String LOG = "BookPanel";
+	private String LOGID = "BookPageDB[?]";
 
 	private ReaderActivity activity;
 
@@ -108,7 +111,7 @@ public class BookPanel extends SplitPanel {
 	private String[] displayedBookPageKey;
 
 	// Whether the current page has been fully rendered.
-	private boolean finishedRenderingContent = false;
+	private AtomicBoolean finishedRenderingContent = new AtomicBoolean(false);
 	private boolean firstRenderingAfterCreatingActivity = false;
 
 	// Our customized WebView and its onTouchListener
@@ -125,7 +128,8 @@ public class BookPanel extends SplitPanel {
 	public BookPanel(Governor governor, PanelHolder panelHolder, int position) {
 		super(governor, panelHolder, position); // Invokes changePosition(position)
 
-		Log.d(LOG, "BookPanel.new BookPanel (note. constructor)");
+		LOGID = LOG + "[" + position + "]";
+		Log.d(LOG, LOGID + ".new BookPanel (note. constructor)");
 	}
 
 	/**
@@ -143,12 +147,13 @@ public class BookPanel extends SplitPanel {
 		// page, not after opening the first, due to how loading these values in loadState() works.
 		//   - For more information see comment inside loadPage().
 		if (creatingActivity) {
-			finishedRenderingContent = false;
+			//finishedRenderingContent = false;
+			finishedRenderingContent.set(false);
 		}
 
 		boolean ok = super.selfCheck(creatingActivity) && webView != null && onTouchListener != null && enumState != null;
 
-		Log.d(LOG, "BookPanel.selfCheck - " + ok);
+		Log.d(LOG, LOGID + ".selfCheck - " + ok);
 		return ok;
 	}
 
@@ -166,7 +171,7 @@ public class BookPanel extends SplitPanel {
 	@SuppressLint("SetJavaScriptEnabled") // Our opensource application has literally nothing to hide.
 	@Override
 	public void onActivityCreated(Bundle saved) {
-		//Log.d(LOG, "BookPanel onActivityCreated");
+		Log.d(LOG, LOGID + ".onActivityCreated, Bundle saved - " + (saved != null ? "filled" : "empty"));
 		super.onActivityCreated(saved);
 
 		// Our panels are designed to work strictly with our ReaderActivity.
@@ -232,14 +237,22 @@ public class BookPanel extends SplitPanel {
 			}
 		});
 
+		// Because Activity is just being created, set finishedRenderingContent to false.
+		finishedRenderingContent.set(false);
+
+		// Because this OnActivityCreated method might just be launched because of
+		// a runtime change, make sure all is prepared for it.
+		//onRuntimeChange();
+
 		// Load the page.
 		if (enumState == BookPanelState.metadata) {
 			loadData(displayedData, displayedPage);
 		} else {
+			Log.d(LOG, LOGID + ".onActivityCreated() calling loadPage(" + displayedPage + ")");
 			loadPage(displayedPage);
 		}
 
-		//Log.d(LOG, "BookPanel onActivityCreated finished");
+		//Log.d(LOG, LOGID + ".onActivityCreated finished");
 	}
 
 	/**
@@ -268,6 +281,8 @@ public class BookPanel extends SplitPanel {
 			webView.updatePanelPosition(position);
 			onTouchListener.updatePanelPosition(position);
 		}
+
+		LOGID = LOG + "[" + position + "]";
 	}
 
 
@@ -281,10 +296,10 @@ public class BookPanel extends SplitPanel {
 	 * @param baseUrl	URL of any file from the associated epub to get proper encoding from it.
 	 */
 	public void loadData(String data, String baseUrl) {
-		Log.d(LOG, LOG + ".loadData");
+		Log.d(LOG, LOGID + ".loadData");
 
 		// For explanation see the same section in loadPage().
-		if (finishedRenderingContent) {
+		if (finishedRenderingContent.get()) {
 			loadPositionY = null;
 			firstRenderingAfterCreatingActivity = false;
 
@@ -293,13 +308,13 @@ public class BookPanel extends SplitPanel {
 			loadScrollSyncOffset = null;
 			loadScrollSyncRatio = null;
 
-			Log.d(LOG, "nulling load* variables");
+			Log.d(LOG, LOGID + " nulling load* variables");
 		}
 
 		saveBookPageToDb();
 
 		// This needs to be set only *after* calling saveBookPageToDb().
-		finishedRenderingContent = false;
+		finishedRenderingContent.set(false);
 
 		/* Save the data to be loaded and display them if possible. */
 		displayedPage = baseUrl;
@@ -316,13 +331,13 @@ public class BookPanel extends SplitPanel {
 	 * @param path to load
 	 */
 	public void loadPage(String path) {
-		Log.d(LOG, LOG + ".loadPage, created: " + created);
+		Log.d(LOG, LOGID + ".loadPage, created: " + created + ", finishedRenderingContent: " + finishedRenderingContent);
 
 		// We have to null these fields here, because onFinishedRenderingContent() might very rarely get
 		// called twice, first time with wrong content height, and nulling the variables then would mean
 		// that when it gets called for the second time, it wouldn't do anything. Now when it gets called
 		// for the second time, it recalculates the values and corrects the previous mistake.
-		if (finishedRenderingContent) {
+		if (finishedRenderingContent.get()) {
 			loadPositionY = null;
 			firstRenderingAfterCreatingActivity = false;
 
@@ -331,7 +346,7 @@ public class BookPanel extends SplitPanel {
 			loadScrollSyncOffset = null;
 			loadScrollSyncRatio = null;
 
-			Log.d(LOG, "nulling load* variables");
+			Log.d(LOG, LOGID + " nulling load* variables");
 		}
 
 		saveBookPageToDb();
@@ -345,7 +360,7 @@ public class BookPanel extends SplitPanel {
 		loadBookPageFromDb(null);
 
 		// This needs to be set only after calling both saveBookPageToDb() and loadBookPageFromDb().
-		finishedRenderingContent = false;
+		finishedRenderingContent.set(false);
 	}
 
 
@@ -358,7 +373,7 @@ public class BookPanel extends SplitPanel {
 	 */
 	public void saveBookPageToDb() {
 		// Only save when there is something to save and if it's a book page.
-		if (displayedPage != null && webView != null && finishedRenderingContent
+		if (displayedPage != null && webView != null && finishedRenderingContent.get()
 				&& displayedBookPageKey != null) {
 
 			// Compute the values to be saved.
@@ -369,6 +384,8 @@ public class BookPanel extends SplitPanel {
 
 			// Obtain database access.
 			BookPageDB bookPageDB = BookPageDB.getInstance(governor.getActivity());
+
+			//Log.d(LOG, LOGID + " loadedFromBookPageRowId: " + loadedFromBookPageRowId);
 
 			if (loadedFromBookPageRowId != null) {
 				// Update the existing BookPage entry in the DB with new values.
@@ -389,7 +406,7 @@ public class BookPanel extends SplitPanel {
 
 			Log.d(LOG, String.format("%s: Saved to DB (id: %s, ScrollY: %s, "
 					+ "ScrollSyncMethod: %s, ScrollSyncOffset: %s, ScrollSyncRatio: %s)",
-					LOG, loadedFromBookPageRowId, scrollY, scrollSyncMethod, scrollSyncOffset, scrollSyncRatio));
+					LOGID, loadedFromBookPageRowId, scrollY, scrollSyncMethod, scrollSyncOffset, scrollSyncRatio));
 			//Toast.makeText(ReaderActivity.debugContext, "Saved page to DB", Toast.LENGTH_SHORT).show();
 
 			displayedBookPageKey = null;
@@ -417,7 +434,7 @@ public class BookPanel extends SplitPanel {
 
 		// Load page only if this isn't the first time we're opening any page in this run of the app,
 		// in which case we're loading the data from preferences, and loading from DB would be redundant.
-		if ((latestBookPage != null || finishedRenderingContent) && enumState == BookPanelState.books) {
+		if ((latestBookPage != null || finishedRenderingContent.get()) && enumState == BookPanelState.books) {
 
 			BookPage bookPage;
 			if (latestBookPage != null) {
@@ -441,18 +458,18 @@ public class BookPanel extends SplitPanel {
 
 				Log.d(LOG, String.format("%s: Loaded from DB (id: %s, ScrollY: %s, "
 						+ "ScrollSyncMethod: %s, ScrollSyncOffset: %s, ScrollSyncRatio: %s)",
-						LOG, loadedFromBookPageRowId, loadPositionY,
+						LOGID, loadedFromBookPageRowId, loadPositionY,
 						loadScrollSyncMethod, loadScrollSyncOffset, loadScrollSyncRatio));
 			} else {
 				// If the book page was not found in the database, reset the ScrollSync data in WebView.
 				webView.resetScrollSync();
 
-				Log.d(LOG, LOG + ": NOT Loaded from DB, so webView.resetScrollSync instead.");
+				Log.d(LOG, LOGID + ": NOT Loaded from DB, so webView.resetScrollSync instead.");
 			}
 
 			/*Toast.makeText(ReaderActivity.debugContext, "Loaded page from DB: "
 					+ (bookPage != null ? "found" : "not found"), Toast.LENGTH_SHORT).show(); /**/
-			/*Log.v(LOG, String.format("%s: Searching DB for BookPage with these values: (%s, %s, %s)", LOG,
+			/*Log.v(LOG, String.format("%s: Searching DB for BookPage with these values: (%s, %s, %s)", LOGID,
 					Func.fileNameFromPath(panelHolder.getBook().getFilePath()),
 					panelHolder.getBook().getTitle(),
 					Func.fileNameFromPath(displayedPageFilename))); /**/
@@ -484,7 +501,7 @@ public class BookPanel extends SplitPanel {
 	 * Nulling of load* values was therefore moved to loadPage/loadData when the user opens another page.
 	 */
 	public void onFinishedRenderingContent() {
-		Log.d(LOG, "BookPanel.onFinishedRenderingContent, loadY: " + loadPositionY
+		Log.d(LOG, LOGID + ".onFinishedRenderingContent, loadY: " + loadPositionY
 				+ ", contentHeight: " + webView.getContentHeight());
 
 		// Load position from before if this is a page opening from before.
@@ -504,13 +521,14 @@ public class BookPanel extends SplitPanel {
 			}
 		}
 
-		finishedRenderingContent = true;
+		Log.d(LOG, LOGID + ".onFinishedRenderingContent: setting finishedRenderingContent = true");
+		finishedRenderingContent.set(true);
 
 		if (governor.isScrollSync() && enumState == BookPanelState.books) {
 			BookPanel sister = panelHolder.getSisterBookPanel();
 
 			// If this panel is the one that has finished rendering last.
-			if (sister != null && sister.finishedRenderingContent) {
+			if (sister != null && sister.finishedRenderingContent.get()) {
 				// Check if the Scroll Sync data in both WebViews are congruent.
 				if (!webView.areScrollSyncDataCongruentWithSister()) {
 					// If not, deactivate scroll sync.
@@ -562,7 +580,7 @@ public class BookPanel extends SplitPanel {
 	 */
 	@Override
 	public void loadState(SharedPreferences preferences, boolean creatingActivity) {
-		Log.d(LOG, "BookPanel.loadState"); //loadPosX: " + loadPositionX + ", loadPosY: " + loadPositionY
+		Log.d(LOG, LOGID + ".loadState"); //loadPosX: " + loadPositionX + ", loadPosY: " + loadPositionY
 
 		super.loadState(preferences, creatingActivity);
 		try {
@@ -582,6 +600,7 @@ public class BookPanel extends SplitPanel {
 		if (enumState == BookPanelState.metadata) {
 			loadData(preferences.getString("displayedData"+panelPosition, ""), page);
 		} else {
+			Log.d(LOG, LOGID + ".loadState() calling loadPage(" + page + ")");
 			loadPage(page);
 		}
 
@@ -598,14 +617,16 @@ public class BookPanel extends SplitPanel {
 	 * Examples: Screen orientation changed, entered/exited fullscreen, etc.
 	 */
 	public void onRuntimeChange() {
-		Log.d(LOG, LOG + ".onOrientationChanged");
+		Log.d(LOG, LOGID + ".onOrientationChanged");
 
 		// Save the scroll variables so that if content is going to get re-rendered,
 		// we load the proper values.
 		loadPositionY = getPositionYAsFloat();
-		loadScrollSyncMethod = webView.getScrollSyncMethod();
-		loadScrollSyncOffset = webView.getScrollSyncOffsetAsFloat();
-		loadScrollSyncRatio = webView.getScrollSyncRatio();
+		if (webView != null) {
+			loadScrollSyncMethod = webView.getScrollSyncMethod();
+			loadScrollSyncOffset = webView.getScrollSyncOffsetAsFloat();
+			loadScrollSyncRatio = webView.getScrollSyncRatio();
+		}
 	}
 
 }

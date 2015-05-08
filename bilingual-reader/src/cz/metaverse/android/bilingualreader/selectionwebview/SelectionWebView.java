@@ -456,6 +456,15 @@ public class SelectionWebView extends WebView {
 	}
 
 	/**
+	 * Reset ScrollSync into a given ScrollSync method.
+	 * Used mainly with Method.proportional to start scroll sync for the first time.
+	 */
+	public void resetScrollSync(ScrollSyncMethod method) {
+		resetScrollSync();
+		setScrollSyncMethod(method);
+	}
+
+	/**
 	 * Reset ScrollSync - for instance when new chapter is opened.
 	 */
 	public void resetScrollSync() {

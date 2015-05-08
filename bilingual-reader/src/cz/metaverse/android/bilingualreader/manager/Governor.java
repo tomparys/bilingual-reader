@@ -352,8 +352,8 @@ public class Governor {
 					// If the Scroll Sync methods and data loaded in the two panels don't agree
 					// with each other, reset them out.
 					if (!webView[0].areScrollSyncDataCongruentWithSister()) {
-						webView[0].resetScrollSync();
-						webView[1].resetScrollSync();
+						webView[0].resetScrollSync(ScrollSyncMethod.proportional);
+						webView[1].resetScrollSync(ScrollSyncMethod.proportional);
 					}
 				}
 			}

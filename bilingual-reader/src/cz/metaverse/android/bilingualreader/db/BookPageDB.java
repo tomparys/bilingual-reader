@@ -19,6 +19,8 @@ Contact: gpl at orsava.cz
 
 package cz.metaverse.android.bilingualreader.db;
 
+import java.util.Arrays;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -132,13 +134,17 @@ public class BookPageDB {
 			editValues.put(cols[i], values[i]);
 		}
 
-		if (id != null) {
+		Log.d(LOG, "id: " + id);
+
+		if (id == null) {
+			Log.w(LOG, "   Warning!   BookPageDB.updateBookPage() launched with NULL id! "
+					+ "{values: " + Arrays.asList(values) + "}!");
+			return -1;
+		} else {
 			String where = COL_ROWID + " = ?";
 			String[] whereArgs = new String[] {"" + id};
 
 			return dbManager.getWritableDatabase().update(TABLE_NAME, editValues, where, whereArgs);
-		} else {
-			return dbManager.getWritableDatabase().insert(TABLE_NAME, null, editValues);
 		}
 
 	}

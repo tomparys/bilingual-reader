@@ -117,8 +117,7 @@ public class Func {
 		// Remove everything after and including the first '#' (AKA the Fragment Identifier).
 		filename = removeFragmentIdentifier(filename);
 
-		Log.d(LOG, LOG + ".fileNameFromPath: filePath: " + filePath);
-		Log.d(LOG, LOG + ".fileNameFromPath: -> filename: " + filename);
+		Log.d(LOG, LOG + ".fileNameFromPath: filePath: " + filePath + " -> filename: " + filename);
 
 		return filename;
 	}

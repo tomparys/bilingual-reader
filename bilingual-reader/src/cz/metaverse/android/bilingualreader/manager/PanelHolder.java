@@ -247,12 +247,15 @@ public class PanelHolder {
 				// Change the content of the BookPanel back to the book.
 				BookPanel bookPanel = getBookPanel();
 				bookPanel.enumState = BookPanelState.books;
+
+				Log.d(LOG, LOG + ".closePanel() calling (v1) bookPanel.loadPage(" + book.getCurrentPageURL() + ")");
 				bookPanel.loadPage(book.getCurrentPageURL());
 				// setBookPage(books[index].getCurrentPageURL(), index);*/
 			} else {
 				// Make this panel into a BookView with the opened book instead of closing it.
 				BookPanel v = new BookPanel(governor, this, position);
 				changePanel(v);
+				Log.d(LOG, LOG + ".closePanel() calling (v2) bookPanel.loadPage(" + book.getCurrentPageURL() + ")");
 				v.loadPage(book.getCurrentPageURL());
 			}
 		}
@@ -330,6 +333,15 @@ public class PanelHolder {
 
 		// Detach and re-attach the panel that is after the newly changed one.
 		if (position == 0 && sisterPanelHolder.hasOpenPanel()) {
+
+			// Because the sister panel will be reAttached, its "onActivityCreated" method will be
+			// re-launched. And thus we need to inform it in advance so he can save state variables
+			// (scroll position and ScrollSync data) so that it remains in the same state as before.
+			BookPanel sister = getSisterBookPanel();
+			if (sister != null) {
+				sister.onRuntimeChange();
+			}
+
 			sisterPanelHolder.reAttachPanel();
 		}
 	}
@@ -514,6 +526,7 @@ public class PanelHolder {
 
 		// Set state and load appropriate page.
 		((BookPanel) panel).enumState = enumState;
+		Log.d(LOG, LOG + ".loadPageIntoView() calling bookPanel.loadPage(" + pathOfPage + ")");
 		((BookPanel) panel).loadPage(pathOfPage);
 
 		// If the panel is indeed now displaying *notes* or *metadata*
