@@ -541,32 +541,59 @@ public class PanelHolder {
 	 * If ChapterSync is active, change chapter in both books/panels.
 	 */
 	public void changeChapter(boolean forward) {
+		boolean changedChapter = false;
+		boolean changedChapterInSync = false;
 		try {
 			if (forward) {
 				if (book.hasNextChapter()) {
 					setBookPage(book.goToNextChapter());
+					changedChapter = true;
 				} else {
 					Toast.makeText(activity, R.string.This_is_the_last_page, Toast.LENGTH_SHORT).show();
 				}
 			} else {
 				if (book.hasPreviousChapter()) {
 					setBookPage(book.goToPreviousChapter());
+					changedChapter = true;
 				} else {
 					Toast.makeText(activity, R.string.This_is_the_first_page, Toast.LENGTH_SHORT).show();
 				}
 			}
 
-			if (governor.isChapterSync()) {
-				if (sisterPanelHolder.book != null) {
-					if (forward) {
-						sisterPanelHolder.setBookPage(sisterPanelHolder.book.goToNextChapter());
-					} else {
-						sisterPanelHolder.setBookPage(sisterPanelHolder.book.goToPreviousChapter());
+			if (changedChapter) {
+				if (governor.isChapterSync()) {
+					if (sisterPanelHolder.book != null) {
+						if (forward) {
+							if (sisterPanelHolder.book.hasNextChapter()) {
+								sisterPanelHolder.setBookPage(sisterPanelHolder.book.goToNextChapter());
+								changedChapterInSync = true;
+							}
+						} else {
+							if (sisterPanelHolder.book.hasPreviousChapter()) {
+								sisterPanelHolder.setBookPage(sisterPanelHolder.book.goToPreviousChapter());
+								changedChapterInSync = true;
+							}
+						}
 					}
-				}
-			} else {
-				if (governor.setScrollSync(false, true)) {
-					Toast.makeText(activity, R.string.Deactivated_scroll_sync, Toast.LENGTH_SHORT).show();
+
+					// If this book chapter has been changed, but the sister book's chapter hasn't:
+					if (!changedChapterInSync) {
+						// Deactivate Chapter sync AND Scroll Sync.
+						governor.setChapterSync(false);
+
+						if (governor.setScrollSync(false, true)) {
+							// If ScrollSync was active:
+							Toast.makeText(activity, R.string.Deactivated_Chapter_and_Scroll_sync, Toast.LENGTH_SHORT).show();
+						} else {
+							// If ScrollSync wasn't active:
+							Toast.makeText(activity, R.string.Deactivated_Chapter_sync, Toast.LENGTH_SHORT).show();
+						}
+					}
+
+				} else {
+					if (governor.setScrollSync(false, true)) {
+						Toast.makeText(activity, R.string.Deactivated_scroll_sync, Toast.LENGTH_SHORT).show();
+					}
 				}
 			}
 		} catch (Exception e) {

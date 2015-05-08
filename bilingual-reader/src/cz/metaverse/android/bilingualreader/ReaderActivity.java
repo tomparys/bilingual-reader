@@ -791,7 +791,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			if (governor.isChapterSync()) {
 				Toast.makeText(this, getString(R.string.activated_sync_chapters), Toast.LENGTH_SHORT).show();
 			} else {
-				Toast.makeText(this, getString(R.string.deactivated_sync_chapters), Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getString(R.string.Deactivated_Chapter_sync), Toast.LENGTH_SHORT).show();
 			}
 			return true;
 
