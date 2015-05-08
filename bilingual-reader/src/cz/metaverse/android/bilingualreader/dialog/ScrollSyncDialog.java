@@ -273,9 +273,6 @@ public class ScrollSyncDialog extends DialogFragment
 	private class ScrollPointButtonOnClickListener implements View.OnClickListener {
 		@Override
 		public void onClick(View v) {
-			// Set the "Synchronization Points" radio button as checked.
-			radioButton[2].setChecked(true);
-
 			if (justSetSyncPoint) {
 				// User already set a SyncPoint while in this dialog.
 				Toast.makeText(getActivity(), R.string.Sync_point_just_set_msg, Toast.LENGTH_LONG).show();
@@ -291,6 +288,13 @@ public class ScrollSyncDialog extends DialogFragment
 				Toast.makeText(getActivity(),
 						point == 0 ? R.string.Sync_Point_1_was_set : R.string.Sync_Point_2_was_set,
 						Toast.LENGTH_SHORT).show();
+			}
+
+			// If both Scroll Points are now set:
+			ScrollSyncPoint[] scrollSyncPoint = getGovernor().getScrollSyncPoints();
+			if (scrollSyncPoint != null && scrollSyncPoint[0] != null && scrollSyncPoint[1] != null) {
+				// Set the "Synchronization Points" radio button as checked.
+				radioButton[2].setChecked(true);
 			}
 		}
 	}
