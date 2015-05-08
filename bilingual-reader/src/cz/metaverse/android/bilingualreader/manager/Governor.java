@@ -459,6 +459,14 @@ public class Governor {
 		return scrollSyncPoint;
 	}
 
+	/**
+	 * Erases both Scroll Sync Points.
+	 * Done when changing pages or books.
+	 */
+	public void resetScrollSyncPoints() {
+		scrollSyncPoint = null;
+	}
+
 
 
 	// ============================================================================================

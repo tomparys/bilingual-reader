@@ -492,7 +492,12 @@ public class PanelHolder {
 			// Split the #... part from the URL so we can get a match.
 			String cleanPath = pathOfPage.split("#", 2)[0];
 			if ((cleanPath.equals(book.getCurrentPageURL())) || (book.getPageIndex(cleanPath) >= 0)) {
+
+				// This is a newly opening book page (not Metadata or ToC)
 				enumState = BookPanelState.books;
+
+				// Reset Scroll Sync Points, because they're now relevant to a different set of two books.
+				governor.resetScrollSyncPoints();
 			}
 		}
 
