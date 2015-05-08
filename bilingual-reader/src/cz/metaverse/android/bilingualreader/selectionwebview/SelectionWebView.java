@@ -203,15 +203,16 @@ public class SelectionWebView extends WebView {
 		}
 
 		// If Scroll Sync is active, the user is scrolling this WebView and his scrolling is not paused.
-		if (governor.isScrollSync() && userIsScrollingThisWebView && !userPausedScrollSync) {
+		if (governor.isScrollSync() && bookPanel.enumState == BookPanelState.books
+				&& userIsScrollingThisWebView && !userPausedScrollSync) {
 
-			// If maxScrollY is positive.
-			int computedMaxScrollY = computeMaxScrollY();
-			if (computedMaxScrollY != 0) {
+			// If sisterWebView exists.
+			SelectionWebView sisterWV = getSisterWebView();
+			if (sisterWV != null && sisterWV.bookPanel.enumState == BookPanelState.books) {
 
-				// If sisterWebView exists.
-				SelectionWebView sisterWV = getSisterWebView();
-				if (sisterWV != null) {
+				// If maxScrollY is positive.
+				int computedMaxScrollY = computeMaxScrollY();
+				if (computedMaxScrollY != 0) {
 
 					// Compute and set the corresponding scroll position of the other WebView.
 					//  Variables need to be long, because the multiplication gets quite large!
@@ -261,6 +262,9 @@ public class SelectionWebView extends WebView {
 					// Set the computed scroll to the sister webview if it falls between the
 					// minimum and maximum scroll position, otherwise return min or max.
 					sisterWV.setScrollY(Func.minMaxRange(0, (int) scrollValue, (int) sisterMaxScrollY));
+
+					/*Log.v(LOG, "[" + panelPosition + "] computeScroll:  from " + getScrollY()
+							+ "  to " + scrollValue + "  offset " + scrollSyncOffset + ")"); /**/
 				}
 			}
 		}

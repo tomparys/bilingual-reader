@@ -506,7 +506,7 @@ public class BookPanel extends SplitPanel {
 
 		finishedRenderingContent = true;
 
-		if (governor.isScrollSync()) {
+		if (governor.isScrollSync() && enumState == BookPanelState.books) {
 			BookPanel sister = panelHolder.getSisterBookPanel();
 
 			// If this panel is the one that has finished rendering last.
