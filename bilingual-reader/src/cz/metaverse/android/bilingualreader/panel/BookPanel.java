@@ -75,7 +75,48 @@ import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 
 /**
  *
+ *                                                       /===-_---~~~~~~~~~------____
+ *                                                      |===-~___                _,-'
+ *                       -==\\                         `//~\\   ~~~~`---.___.-~~
+ *                   ______-==|                         | |  \\           _-~`
+ *             __--~~~  ,-/-==\\                        | |   `\        ,'
+ *          _-~       /'    |  \\                      / /      \      /
+ *        .'        /       |   \\                   /' /        \   /'
+ *       /  ____  /         |    \`\.__/-~~ ~ \ _ _/'  /          \/'
+ *      /-'~    ~~~~~---__  |     ~-/~         ( )   /'        _--~`
+ *                        \_|      /        _)   ;  ),   __--~~
+ *                          '~~--_/      _-~/-  / \   '-~ \
+ *                         {\__--_/}    / \\_>- )<__\      \
+ *                         /'   (_/  _-~  | |__>--<__|      |
+ *                        |0  0 _/) )-~     | |__>--<__|     |
+ *                        / /~ ,_/       / /__>---<__/      |
+ *                       o o _//        /-~_>---<__-~      /
+ *                       (^(~          /~_>---<__-      _-~
+ *                      ,/|           /__>--<__/     _-~
+ *                   ,//('(          |__>--<__|     /                  .----_
+ *                  ( ( '))          |__>--<__|    |                 /' _---_~\
+ *               `-)) )) (           |__>--<__|    |               /'  /     ~\`\
+ *              ,/,'//( (             \__>--<__\    \            /'  //        ||
+ *            ,( ( ((, ))              ~-__>--<_~-_  ~--____---~' _/'/        /'
+ *          `~/  )` ) ,/|                 ~-_~>--<_/-__       __-~ _/
+ *        ._-~//( )/ )) `                    ~~-'_/_/ /~~~~~~~__--~
+ *         ;'( ')/ ,)(                              ~~~~~~~~~~
+ *        ' ') '( (/
+ *          '   '  `
+ *
+ *                                HERE BE DRAGONS
+ *
+ *
+ *
+ * Be warned, stranger, editing this class is perilous.
+ * Editing one functionality can and will have unforeseen adverse effects in other areas.
+ * Test your changes profusely.
+ *
+ *
+ *
  * An Extension of the SplitPanel Panel specialized in visualizing EPUB pages.
+ * This class' complexity arises from not knowing when a page has finished loading in WebView,
+ * so be aware of the sequence of events and watch the log messages before changing anything.
  *
  */
 public class BookPanel extends SplitPanel {
