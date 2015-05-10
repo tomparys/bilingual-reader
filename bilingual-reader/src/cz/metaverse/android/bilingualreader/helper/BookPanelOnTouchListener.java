@@ -285,6 +285,10 @@ public class BookPanelOnTouchListener
 					newPanelsWeight = 0.5f;
 				}
 
+				// Assure that the weight is between the allowed minimum and maximum.
+				newPanelsWeight = Func.minMaxRange(Func.PANEL_WEIGHT_MIN, newPanelsWeight,
+						Func.PANEL_WEIGHT_MAX);
+
 				// Change relative panel size on the fly.
 				governor.changePanelsWeight(newPanelsWeight);
 

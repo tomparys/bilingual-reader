@@ -60,6 +60,7 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
+import cz.metaverse.android.bilingualreader.helper.Func;
 
 /**
  *
@@ -130,14 +131,17 @@ public class PanelSizeDialog extends DialogFragment {
 	 * @param seekBarProgress
 	 */
 	protected void applyAndSave(int seekBarProgress) {
-		// Compute and set the weight of the panels from the seekbar value
+		// Compute the fraction the user set
 		panelWeight = (float) seekBarProgress / (float) seekbar.getMax();
-		if (panelWeight <= 0.1) {
-			panelWeight = 0.1f;
-		}
-		if (panelWeight >= 0.9) {
-			panelWeight = 0.9f;
-		}
+
+		// Compute the actual weight of the panels from the seekbar fraction.
+		panelWeight = (Func.PANEL_WEIGHT_MAX - Func.PANEL_WEIGHT_MIN) * panelWeight + Func.PANEL_WEIGHT_MIN;
+
+		// Assure that the weight is between the allowed minimum and maximum.
+		panelWeight = Func.minMaxRange(Func.PANEL_WEIGHT_MIN, panelWeight,
+				Func.PANEL_WEIGHT_MAX);
+
+		// Set the weight
 		((ReaderActivity) getActivity()).changePanelsWeight(panelWeight);
 
 		// Save the value on the seek bar to preferences

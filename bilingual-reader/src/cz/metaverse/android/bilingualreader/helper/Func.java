@@ -33,6 +33,11 @@ import android.util.TypedValue;
  */
 public class Func {
 
+	/** Minimal and maximal allowed panel weight */
+	public static final float PANEL_WEIGHT_MIN = 0.3f;
+	public static final float PANEL_WEIGHT_MAX = 0.7f;
+
+
 	private static final String LOG = "Func";
 
 	/**
@@ -95,6 +100,18 @@ public class Func {
 	 * Returns the closest number to the *value* in a range (min, max).
 	 */
 	public static int minMaxRange(int min, int value, int max) {
+		if (value < min) {
+			value = min;
+		} else if (value > max) {
+			value = max;
+		}
+		return value;
+	}
+
+	/**
+	 * Returns the closest number to the *value* in a range (min, max).
+	 */
+	public static float minMaxRange(float min, float value, float max) {
 		if (value < min) {
 			value = min;
 		} else if (value > max) {
