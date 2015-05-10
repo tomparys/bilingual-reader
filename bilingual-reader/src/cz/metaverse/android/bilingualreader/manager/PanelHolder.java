@@ -584,10 +584,14 @@ public class PanelHolder {
 
 						if (governor.setScrollSync(false, true)) {
 							// If ScrollSync was active:
-							Toast.makeText(activity, R.string.Deactivated_Chapter_and_Scroll_sync, Toast.LENGTH_SHORT).show();
+							Toast.makeText(activity,
+									R.string.Other_book_has_no_more_chapters_Deactivated_Chapter_and_Scroll_sync,
+									Toast.LENGTH_LONG).show();
 						} else {
 							// If ScrollSync wasn't active:
-							Toast.makeText(activity, R.string.Deactivated_Chapter_sync, Toast.LENGTH_SHORT).show();
+							Toast.makeText(activity,
+									R.string.Other_book_has_no_more_chapters_Deactivated_Chapter_sync,
+									Toast.LENGTH_LONG).show();
 						}
 					}
 

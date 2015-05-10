@@ -188,7 +188,9 @@
     <string name="drawer_close">Close drawer</string>
     <string name="activated_sync_chapters">Activated synchronized chapters.</string>
     <string name="Deactivated_Chapter_sync">Deactivated Chapter sync.</string>
+    <string name="Other_book_has_no_more_chapters_Deactivated_Chapter_sync">The other book has no more chapters. Deactivated Chapter sync.</string>
     <string name="Deactivated_Chapter_and_Scroll_sync">Deactivated Chapter and Scroll sync.</string>
+    <string name="Other_book_has_no_more_chapters_Deactivated_Chapter_and_Scroll_sync">The other book has no more chapters. Deactivated Chapter and Scroll sync.</string>
     <string name="default_dictionary_colon">Default dictionary:</string>
     <string name="Settings">Settings</string>
     <string name="Set_default_dictionary">Pick a default dictionary in the settings.</string>
