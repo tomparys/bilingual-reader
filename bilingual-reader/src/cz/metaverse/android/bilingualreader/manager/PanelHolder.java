@@ -339,7 +339,7 @@ public class PanelHolder {
 			// (scroll position and ScrollSync data) so that it remains in the same state as before.
 			BookPanel sister = getSisterBookPanel();
 			if (sister != null) {
-				sister.onRuntimeChange();
+				sister.prepareForReloadOfTheSamePage();
 			}
 
 			sisterPanelHolder.reAttachPanel();

@@ -619,6 +619,17 @@ public class BookPanel extends SplitPanel {
 	public void onRuntimeChange() {
 		Log.d(LOG, LOGID + ".onOrientationChanged");
 
+		prepareForReloadOfTheSamePage();
+	}
+
+	/**
+	 * When the same page is going to get reloaded in this Book Panel for some reason
+	 * (e.g. reattaching the panel, change of orientation, ...), we save the current state variables
+	 * to be loaded after the reload in onFinishedRenderingContent().
+	 */
+	public void prepareForReloadOfTheSamePage() {
+		Log.d(LOG, LOGID + ".prepareForSamePageReload");
+
 		// Save the scroll variables so that if content is going to get re-rendered,
 		// we load the proper values.
 		loadPositionY = getPositionYAsFloat();
@@ -627,6 +638,7 @@ public class BookPanel extends SplitPanel {
 			loadScrollSyncOffset = webView.getScrollSyncOffsetAsFloat();
 			loadScrollSyncRatio = webView.getScrollSyncRatio();
 		}
+
 	}
 
 }
