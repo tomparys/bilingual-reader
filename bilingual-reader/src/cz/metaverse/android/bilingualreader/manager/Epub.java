@@ -50,6 +50,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -373,7 +374,7 @@ public class Epub {
 		List<String> zipFiles = new ArrayList<String>();
 		File sourceZipFile = new File(inputZip);
 		File unzipDestinationDirectory = new File(destinationDirectory);
-		unzipDestinationDirectory.mkdir();
+		unzipDestinationDirectory.mkdirs();
 
 		ZipFile zipFile;
 		zipFile = new ZipFile(sourceZipFile, ZipFile.OPEN_READ);
@@ -400,17 +401,22 @@ public class Epub {
 				// buffer for writing file
 				byte data[] = new byte[BUFFER];
 
-				FileOutputStream fos = new FileOutputStream(destFile);
-				BufferedOutputStream dest = new BufferedOutputStream(fos,
-						BUFFER);
+				try {
+					FileOutputStream fos = new FileOutputStream(destFile);
+					BufferedOutputStream dest = new BufferedOutputStream(fos,
+							BUFFER);
 
-				while ((currentByte = is.read(data, 0, BUFFER)) != -1) {
-					dest.write(data, 0, currentByte);
+					while ((currentByte = is.read(data, 0, BUFFER)) != -1) {
+						dest.write(data, 0, currentByte);
+					}
+					dest.flush();
+					dest.close();
 				}
-				dest.flush();
-				dest.close();
-				is.close();
+				// File cannot be opened for writing - a problem of Android system,
+				// we can't do nothing about it, it is solved by user restarting his device.
+				catch (FileNotFoundException e) {}
 
+				is.close();
 			}
 
 		}

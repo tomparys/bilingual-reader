@@ -464,6 +464,7 @@ public class PanelHolder {
 		} catch (Exception e) {
 			Toast.makeText(activity, "Exception while opening a book. Please open a different one.", Toast.LENGTH_LONG).show();
 			Log.e(LOG, "Exception while opening a book (path: " + path + "): " + e.toString());
+			e.printStackTrace();
 			return false;
 		}
 	}
