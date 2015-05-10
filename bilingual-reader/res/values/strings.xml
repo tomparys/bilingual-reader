@@ -23,6 +23,10 @@
         \nYou can switch to and from the fullscreen mode by single tapping
         anywhere on the text in the panels!</string>
         
+    <string name="Dictionary_dialog_info_msg"><big><b>The More You Know</b></big>
+        \nBy long pressing your finger on a word on the screen, you will open a new menu with the option
+        to open a dictionary in search of the selected text.</string>
+        
     <string name="export_srs_dialog_info_text"><big><b>Do not change</b></big>
         \nthe following export settings unless you <i>really</i> know what you\'re doing.
         The default settings should work without problem with most SRS programs (such as Anki).</string>

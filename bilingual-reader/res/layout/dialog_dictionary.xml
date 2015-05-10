@@ -4,20 +4,28 @@
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="7dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="7dp"
-        android:orientation="horizontal" >
+        android:text="@string/Dictionary_dialog_info_msg" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/Description_of_dictionary_functionality" />
-    </LinearLayout>
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:background="?android:attr/dividerVertical" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="7dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="7dp"
+        android:text="@string/Description_of_dictionary_functionality" />
 
     <LinearLayout
         android:layout_width="match_parent"
