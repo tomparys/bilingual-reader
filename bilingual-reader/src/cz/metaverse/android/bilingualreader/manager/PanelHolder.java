@@ -547,6 +547,10 @@ public class PanelHolder {
 		try {
 			if (forward) {
 				if (book.hasNextChapter()) {
+					// Set the appropriate slide-in animation
+					if (isBookPanel()) {
+						getBookPanel().setSlideInAnimation(false);
+					}
 					setBookPage(book.goToNextChapter());
 					changedChapter = true;
 				} else {
@@ -554,6 +558,10 @@ public class PanelHolder {
 				}
 			} else {
 				if (book.hasPreviousChapter()) {
+					// Set the appropriate slide-in animation
+					if (isBookPanel()) {
+						getBookPanel().setSlideInAnimation(true);
+					}
 					setBookPage(book.goToPreviousChapter());
 					changedChapter = true;
 				} else {
@@ -566,11 +574,19 @@ public class PanelHolder {
 					if (sisterPanelHolder.book != null) {
 						if (forward) {
 							if (sisterPanelHolder.book.hasNextChapter()) {
+								// Set the appropriate slide-in animation
+								if (sisterPanelHolder.isBookPanel()) {
+									sisterPanelHolder.getBookPanel().setSlideInAnimation(false);
+								}
 								sisterPanelHolder.setBookPage(sisterPanelHolder.book.goToNextChapter());
 								changedChapterInSync = true;
 							}
 						} else {
 							if (sisterPanelHolder.book.hasPreviousChapter()) {
+								// Set the appropriate slide-in animation
+								if (sisterPanelHolder.isBookPanel()) {
+									sisterPanelHolder.getBookPanel().setSlideInAnimation(true);
+								}
 								sisterPanelHolder.setBookPage(sisterPanelHolder.book.goToPreviousChapter());
 								changedChapterInSync = true;
 							}

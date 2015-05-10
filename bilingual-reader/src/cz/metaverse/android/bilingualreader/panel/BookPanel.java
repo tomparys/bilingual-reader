@@ -58,6 +58,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
@@ -159,6 +161,12 @@ public class BookPanel extends SplitPanel {
 	protected SelectionWebView webView;
 	private BookPanelOnTouchListener onTouchListener;
 
+	// Slide in from the side animation - when switching chapters.
+	private boolean animate = false;
+	private boolean animateFromLeft = false;
+	private Animation animationSlideInLeft;
+	private Animation animationSlideInRigth;
+
 
 	/**
 	 * Constructor for our BookPanel.
@@ -227,6 +235,9 @@ public class BookPanel extends SplitPanel {
 		onTouchListener = new BookPanelOnTouchListener(activity, governor, panelHolder, this, webView, panelPosition);
 		webView.setOnTouchListener(onTouchListener);
 
+		animationSlideInLeft = AnimationUtils.loadAnimation(activity.getBaseContext(), android.R.anim.slide_in_left);
+		animationSlideInRigth = AnimationUtils.loadAnimation(activity.getBaseContext(), R.anim.slide_in_right);
+
 		// Set a custom WebViewClient that has overwritten method for loading URLs.
 		webView.setWebViewClient(new WebViewClient() {
 			@Override
@@ -241,7 +252,24 @@ public class BookPanel extends SplitPanel {
 				} catch (Exception e) {
 					errorMessage(getString(R.string.error_LoadPage));
 				}
+
+				// Set WebView invisible so we can animate it back into view in onPageFinished()
+				if (animate) {
+					view.setVisibility(View.GONE);
+				}
+
 				return true;
+			}
+
+			@Override
+			public void onPageFinished(WebView view, String url) {
+				// Set appropriate animation if desired.
+				if (animate) {
+					view.startAnimation(animateFromLeft ? animationSlideInLeft : animationSlideInRigth);
+				}
+				view.setVisibility(View.VISIBLE);
+
+				super.onPageFinished(view, url);
 			}
 		});
 
@@ -324,6 +352,14 @@ public class BookPanel extends SplitPanel {
 		}
 
 		LOGID = LOG + "[" + position + "]";
+	}
+
+	/**
+	 * Sets the slide-in animation for the next loaded page.
+	 */
+	public void setSlideInAnimation(boolean fromLeft) {
+		animate = true;
+		animateFromLeft = fromLeft;
 	}
 
 
@@ -544,6 +580,9 @@ public class BookPanel extends SplitPanel {
 	public void onFinishedRenderingContent() {
 		Log.d(LOG, LOGID + ".onFinishedRenderingContent, loadY: " + loadPositionY
 				+ ", contentHeight: " + webView.getContentHeight());
+
+		// Null out the animation, because it already happened.
+		animate = false;
 
 		// Load position from before if this is a page opening from before.
 		if (loadPositionY != null) {
