@@ -32,12 +32,12 @@ public enum ScrollSyncMethod {
 	 * Converts string to the appropriate enum. Or null.
 	 */
 	public static ScrollSyncMethod fromString(String string) {
-		ScrollSyncMethod method;
+		ScrollSyncMethod method = null;
 
-		try {
-			method = ScrollSyncMethod.valueOf(string);
-		} catch (IllegalArgumentException e) {
-			method = null;
+		if (string != null) {
+			try {
+				method = ScrollSyncMethod.valueOf(string);
+			} catch (IllegalArgumentException e) {}
 		}
 
 		return method;

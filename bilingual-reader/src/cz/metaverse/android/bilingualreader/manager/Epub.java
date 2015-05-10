@@ -450,12 +450,17 @@ public class Epub {
 	 * @param f	Directory to delete
 	 */
 	private void deleteDir(File f) {
-		if (f.isDirectory()) {
-			for (File child : f.listFiles()) {
-				deleteDir(child);
+		if (f != null) {
+			if (f.isDirectory()) {
+				File[] list = f.listFiles();
+				if (list != null && list.length > 0) {
+					for (File child : f.listFiles()) {
+						deleteDir(child);
+					}
+				}
 			}
+			f.delete();
 		}
-		f.delete();
 	}
 
 	/**
