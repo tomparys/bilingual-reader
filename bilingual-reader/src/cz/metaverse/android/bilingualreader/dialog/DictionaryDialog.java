@@ -42,7 +42,7 @@ import cz.metaverse.android.bilingualreader.helper.Dictionary;
  *  to the Spaced Repetition Software (SRS) database of our application.
  *
  */
-public class SettingsDialog extends DialogFragment implements DialogInterface.OnClickListener {
+public class DictionaryDialog extends DialogFragment implements DialogInterface.OnClickListener {
 
 	// The XML form containing elements that user fills with data
 	private View form;
@@ -58,7 +58,7 @@ public class SettingsDialog extends DialogFragment implements DialogInterface.On
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		// Inflate the form with EditTexts for data
-		form = getActivity().getLayoutInflater().inflate(R.layout.dialog_settings, null);
+		form = getActivity().getLayoutInflater().inflate(R.layout.dialog_dictionary, null);
 		spinner = (Spinner) form.findViewById(R.id.default_dict_spinner);
 		Button button = (Button) form.findViewById(R.id.see_dictionaries_that_work_with_this_app);
 
@@ -81,7 +81,7 @@ public class SettingsDialog extends DialogFragment implements DialogInterface.On
 
 		// Use builder to create the rest of the Dialog
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle(R.string.Settings)
+		builder.setTitle(R.string.Dictionary)
 				.setView(form)
 				.setPositiveButton(android.R.string.ok, this)
 				.setNegativeButton(android.R.string.cancel, null);

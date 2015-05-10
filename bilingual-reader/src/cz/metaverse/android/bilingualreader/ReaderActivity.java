@@ -71,10 +71,10 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.dialog.ChangeCSSDialog;
 import cz.metaverse.android.bilingualreader.dialog.CloseOrHidePanelDialog;
+import cz.metaverse.android.bilingualreader.dialog.DictionaryDialog;
 import cz.metaverse.android.bilingualreader.dialog.LanguageChooserDialog;
 import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
 import cz.metaverse.android.bilingualreader.dialog.ScrollSyncDialog;
-import cz.metaverse.android.bilingualreader.dialog.SettingsDialog;
 import cz.metaverse.android.bilingualreader.manager.Governor;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
 
@@ -546,8 +546,8 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			startActivityForResult(new Intent(this, SRSDatabaseActivity.class), ACTIVITY_RESULT_SRS_DATABASE);
 			break;
 
-		// Settings
-		case R.id.drawer_settings_button:
+		// Dictionary
+		case R.id.drawer_dictionary_button:
 			openSettings();
 			break;
 
@@ -1042,7 +1042,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	 * Opens the Settings dialog.
 	 */
 	public void openSettings() {
-		new SettingsDialog().show(getFragmentManager(), "settings_dialog");
+		new DictionaryDialog().show(getFragmentManager(), "settings_dialog");
 	}
 
 	/**
