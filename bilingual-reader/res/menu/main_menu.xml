@@ -18,7 +18,7 @@
         android:id="@+id/sync_chapters_menu_item"
         android:icon="@drawable/ic_menu_attachment"
         android:showAsAction="always"
-        android:title="@string/Sync_Chapters"
+        android:title="@string/De_activate_chapter_sync"
         android:visible="true">
     </item>
     <item
