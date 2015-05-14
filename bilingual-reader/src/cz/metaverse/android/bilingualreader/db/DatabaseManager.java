@@ -40,7 +40,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
 	// Database info
 	private static final String DATABASE_NAME = "BILINGUAL_READER";
-	private static final int DATABASE_VERSION = 6;
+	private static final int DATABASE_VERSION = 7;
 
 
 	DatabaseManager(Context context) {
@@ -52,7 +52,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		database = db;
 		database.execSQL(SRSDB.FTS_TABLE_CREATE);
-		database.execSQL(BookDB.FTS_TABLE_CREATE);
+		database.execSQL(BookDB.TABLE_CREATE);
 		database.execSQL(BookPageDB.TABLE_CREATE);
 	}
 
@@ -61,7 +61,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 		Log.w(LOG, "Upgrading database from version " + oldVersion + " to "
 				+ newVersion + ", which will destroy all old data");
 		db.execSQL("DROP TABLE IF EXISTS " + SRSDB.VIRTUAL_TABLE_NAME);
-		db.execSQL("DROP TABLE IF EXISTS " + BookDB.VIRTUAL_TABLE_NAME);
+		db.execSQL("DROP TABLE IF EXISTS " + BookDB.TABLE_NAME);
 		db.execSQL("DROP TABLE IF EXISTS " + BookPageDB.TABLE_NAME);
 		onCreate(db);
 	}

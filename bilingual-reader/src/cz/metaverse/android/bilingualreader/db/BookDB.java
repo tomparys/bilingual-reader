@@ -23,7 +23,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.text.TextUtils;
 import android.util.Log;
 
 /**
@@ -44,27 +43,25 @@ public class BookDB {
 	private static final String LOG = "BookDB";
 
 	// The columns of the SRS table
+	public static final String COL_ROWID = "_id";
 	public static final String COL_BOOK_FILENAME = "BOOK_FILENAME";
 	public static final String COL_BOOK_TITLE = "BOOK_TITLE";
 	public static final String COL_BOOK_FILE_PATH = "BOOK_FILE_PATH";
 	public static final String COL_LAST_OPENED = "LAST_OPENED";
 
-	// The implicit rowid column that gets automatically created for the FTS table
-	public static final String COL_ROWID = "rowid";
-	// Column that returns the automatically generated row _id necessary for CursorLoader to operate.
-	public static final String COL_HELP_ID = COL_ROWID + " AS _id";
-
 	// Array of all available columns to be used for results.
 	private static final String [] allColumns = new String[] {
-		COL_HELP_ID, COL_BOOK_FILENAME, COL_BOOK_TITLE, COL_BOOK_FILE_PATH, COL_LAST_OPENED};
+		COL_ROWID, COL_BOOK_FILENAME, COL_BOOK_TITLE, COL_BOOK_FILE_PATH, COL_LAST_OPENED};
 
 	/* Database table */
-	protected static final String VIRTUAL_TABLE_NAME = "BOOKS"; // We're creating a virtual SQLite FTS3 table
+	protected static final String TABLE_NAME = "BOOKS"; // We're creating a virtual SQLite FTS3 table
 	// SQL command that creates the database.
-	protected static final String FTS_TABLE_CREATE =
-				"CREATE VIRTUAL TABLE " + VIRTUAL_TABLE_NAME +
-				" USING fts3 (" + COL_BOOK_FILENAME + ", " + COL_BOOK_TITLE + ", " +
-					COL_BOOK_FILE_PATH + ", " + COL_LAST_OPENED + ")";
+	protected static final String TABLE_CREATE = "CREATE TABLE " + TABLE_NAME +" ("
+			+ COL_ROWID + " integer primary key autoincrement, "
+			+ COL_BOOK_FILENAME + " text not null, "
+			+ COL_BOOK_TITLE + " text, "
+			+ COL_BOOK_FILE_PATH + " text, "
+			+ COL_LAST_OPENED + " integer)";
 
 	// The class does most of the interaction with the database.
 	private final DatabaseManager dbManager;
@@ -115,9 +112,9 @@ public class BookDB {
 			String where = COL_ROWID + " = ?";
 			String[] whereArgs = new String[] {"" + bookId};
 
-			return dbManager.getWritableDatabase().update(VIRTUAL_TABLE_NAME, values, where, whereArgs);
+			return dbManager.getWritableDatabase().update(TABLE_NAME, values, where, whereArgs);
 		} else {
-			return dbManager.getWritableDatabase().insert(VIRTUAL_TABLE_NAME, null, values);
+			return dbManager.getWritableDatabase().insert(TABLE_NAME, null, values);
 		}
 	}
 
@@ -127,11 +124,10 @@ public class BookDB {
 			return null;
 		}
 
-		String selection = VIRTUAL_TABLE_NAME + " MATCH ?";
-		String match = COL_BOOK_FILENAME + ": \"" + filename + "\" " + COL_BOOK_TITLE + ": \"" + title + "\"";
-		String[] selectionArgs = new String[] {match};
+		String selection = COL_BOOK_FILENAME + " = ? AND " + COL_BOOK_TITLE + " = ?";
+		String[] selectionArgs = new String[] {filename, title};
 
-		Log.d(LOG, LOG + ".findBookId: match: " + match);
+		Log.d(LOG, LOG + ".findBookId: selectionArgs: " + selectionArgs[0] + "; " + selectionArgs[1]);
 
 		Cursor cur = query(selection, selectionArgs, allColumns);
 		if (cur == null) {
@@ -146,17 +142,17 @@ public class BookDB {
 	}
 
 	/**
-	 * Deletes an SRS card.
+	 * Deletes a book entry from DB.
 	 */
 	public long deleteCard(long id) {
 		String where = COL_ROWID + " = ?";
 		String[] whereArgs = new String[] {"" + id};
 
-		return dbManager.getWritableDatabase().delete(VIRTUAL_TABLE_NAME, where, whereArgs);
+		return dbManager.getWritableDatabase().delete(TABLE_NAME, where, whereArgs);
 	}
 
 	/**
-	 * Deletes several SRS cards at once.
+	 * Deletes several book entries from DB.
 	 */
 	public void deleteCards(long[] ids) {
 		for (long id : ids) {
@@ -165,21 +161,14 @@ public class BookDB {
 	}
 
 	/**
-	 * 1. Splits the query into *words* separated by whitespace.
-	 * 2. Searches the database for any row that contains words that contain *words* as prefixes.
+	 * Searches for a given text in columns bookTitle and bookFilename.
 	 *
-	 * E.g. query = "alb hu" will match a row that has
-	 *  "Mighty Albrecht" in one column and "Happy Hugo" in another.
-	 *
-	 * @param query		List of word-prefixes to be searched for.
+	 * @param query		String to be searched for.
 	 * @return			Cursor to the results
 	 */
 	public Cursor getMatches(String query) {
-		String[] words = query.split("\\s+");
-		String match = TextUtils.join("* ", words) + "*";
-
-		String selection = VIRTUAL_TABLE_NAME + " MATCH ?";
-		String[] selectionArgs = new String[] {match};
+		String selection = COL_BOOK_TITLE + " LIKE ? OR " + COL_BOOK_FILENAME + " LIKE ?";
+		String[] selectionArgs = new String[] {"%" + query + "%", "%" + query + "%"};
 
 		return query(selection, selectionArgs, allColumns);
 	}
@@ -197,7 +186,7 @@ public class BookDB {
 	 */
 	private Cursor query(String selection, String[] selectionArgs, String[] columns) {
 		SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-		builder.setTables(VIRTUAL_TABLE_NAME);
+		builder.setTables(TABLE_NAME);
 
 		Cursor cursor = builder.query(dbManager.getReadableDatabase(),
 				columns, selection, selectionArgs, null, null, chosenSortOrder);
