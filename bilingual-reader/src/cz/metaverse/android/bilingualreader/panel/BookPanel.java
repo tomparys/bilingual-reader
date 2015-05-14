@@ -500,7 +500,7 @@ public class BookPanel extends SplitPanel {
 		// Only prepare displayedBookPageKey if enumState=books, because when saveBookPageToDb() gets
 		// called, the enumState will be already changed to the new one. This way, we can test
 		// whether displayedBookPageKey!=null to achieve the same effect.
-		if (enumState == BookPanelState.books) {
+		if (enumState == BookPanelState.books && panelHolder.getBook() != null) {
 
 			// Compute the unique identifier of a book page: (bookFilename, bookTitle, pageFilename).
 			displayedBookPageKey = new String[] {
@@ -511,7 +511,7 @@ public class BookPanel extends SplitPanel {
 
 		// Load page only if this isn't the first time we're opening any page in this run of the app,
 		// in which case we're loading the data from preferences, and loading from DB would be redundant.
-		if ((latestBookPage != null || finishedRenderingContent.get()) && enumState == BookPanelState.books) {
+		if ((latestBookPage != null || finishedRenderingContent.get()) && displayedBookPageKey != null) {
 
 			BookPage bookPage;
 			if (latestBookPage != null) {

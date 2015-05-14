@@ -748,12 +748,17 @@ public class PanelHolder {
 
 			panel = newPanelByClassName(preferences.getString(getS(R.string.ViewType) + position, ""));
 			if (panel != null) {
-				panel.updatePosition(position);
-				if (panel instanceof AudioPanel) {
-					((AudioPanel) panel).setAudioList(
-							sisterPanelHolder.book.getAudio());
+				if (panel instanceof BookPanel && book == null) {
+					// If this is a book panel, but the book isn't yet opened, close it again.
+					panel = null;
+				} else {
+					panel.updatePosition(position);
+					if (panel instanceof AudioPanel) {
+						((AudioPanel) panel).setAudioList(
+								sisterPanelHolder.book.getAudio());
+					}
+					panel.loadState(preferences, creatingActivity);
 				}
-				panel.loadState(preferences, creatingActivity);
 			}
 
 		// If the panel exists and is sound, but we're (re)creating the activity.
