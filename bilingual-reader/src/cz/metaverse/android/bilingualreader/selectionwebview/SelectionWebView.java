@@ -211,13 +211,13 @@ public class SelectionWebView extends WebView {
 			if (sisterWV != null && sisterWV.bookPanel.enumState == BookPanelState.books) {
 
 				// If maxScrollY is positive.
-				int computedMaxScrollY = computeMaxScrollY();
+				int computedMaxScrollY = customComputeMaxScrollY();
 				if (computedMaxScrollY != 0) {
 
 					// Compute and set the corresponding scroll position of the other WebView.
 					//  Variables need to be long, because the multiplication gets quite large!
 					long scrollValue = 0;
-					long sisterMaxScrollY = sisterWV.computeMaxScrollY();
+					long sisterMaxScrollY = sisterWV.customComputeMaxScrollY();
 
 					switch (scrollSyncMethod) {
 					case none:
@@ -317,7 +317,7 @@ public class SelectionWebView extends WebView {
 	 * Returns the maximal scrollY position.
 	 * If you set setScrollY() to this position, the document will be scrolled as far down as possible.
 	 */
-	public int computeMaxScrollY() {
+	public int customComputeMaxScrollY() {
 		// More accurate then simple getContentHeight()
 		// Deduced directly from the original code of WebView.computeMaxScrollY().
 		return Math.max(computeVerticalScrollRange() - getHeight(), 0);
@@ -374,7 +374,7 @@ public class SelectionWebView extends WebView {
 					scrollSyncOffset += scrollYwhenScrollSyncWasPaused - getScrollY();
 				} else {
 					// If maxScrollY is positive.
-					int computedMaxScrollY = computeMaxScrollY();
+					int computedMaxScrollY = customComputeMaxScrollY();
 					if (computedMaxScrollY != 0) {
 
 						// If sisterWebView exists.
@@ -382,7 +382,7 @@ public class SelectionWebView extends WebView {
 						if (sisterWV != null) {
 
 							scrollSyncOffset -= (scrollYwhenScrollSyncWasPaused - getScrollY())
-									* sisterWV.computeMaxScrollY() / computedMaxScrollY;
+									* sisterWV.customComputeMaxScrollY() / computedMaxScrollY;
 						}
 					}
 				}
@@ -567,14 +567,14 @@ public class SelectionWebView extends WebView {
 	 * Given the actual integer offset, returns the offset as a fraction of the computeMaxScrollY area.
 	 */
 	public float getScrollSyncOffsetAsFloat() {
-		return (float) scrollSyncOffset / (float) computeMaxScrollY();
+		return (float) scrollSyncOffset / (float) customComputeMaxScrollY();
 	}
 
 	/**
 	 * Given the offset as a fraction of the computeMaxScrollY area, sets the actual integer offset.
 	 */
 	private void setScrollSyncOffsetFromFloat(float floatOffset) {
-		scrollSyncOffset = Math.round(floatOffset * computeMaxScrollY());
+		scrollSyncOffset = Math.round(floatOffset * customComputeMaxScrollY());
 	}
 
 	/**
