@@ -138,7 +138,7 @@ public class AddToSRSDialog extends DialogFragment implements DialogInterface.On
 
 		// Use builder to create the rest of the Dialog
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle(R.string.add_to_srs)
+		builder.setTitle(R.string.add_to_srs_database)
 				.setView(form)
 				.setPositiveButton(android.R.string.ok, this)
 				.setNegativeButton(android.R.string.cancel, null);
