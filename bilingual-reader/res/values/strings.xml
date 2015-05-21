@@ -284,6 +284,7 @@
     <string name="Scroll_Sync_was_activated">Scroll Synchronization was activated.</string>
     <string name="Sync_points_were_recomputed">Synchronization Points were recomputed.</string>
     <string name="Dictionary">Dictionary</string>
+    <string name="Dictionary_Settings">Dictionary Settings</string>
     
 
 </resources>

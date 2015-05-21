@@ -22,6 +22,6 @@
     <item
         android:id="@+id/settings_menu_item"
         android:showAsAction="ifRoom"
-        android:title="@string/Settings"/>
+        android:title="@string/Dictionary_Settings"/>
 
 </menu>
