@@ -47,7 +47,7 @@ public class Func {
 	 */
 	public static class Paths {
 
-		private static final String EPUBS_SEARCH_DIR = "/_Tom/dip"; // TODO Change
+		private static final String EPUBS_SEARCH_DIR_ON_SDCARD = ""; // Leave blank for entire SD card.
 
 		private static final String EPUBS_UNPACK_DIR = "/BilingualReader/epubtemp/"; // Trailing / needed
 
@@ -58,8 +58,8 @@ public class Func {
 		 * @return Directory file where to search for epubs in FileChooserActivity.
 		 */
 		public static File getEpubsSearchDir() {
-			String root = Environment.getExternalStorageDirectory().toString();
-			File ebooksDir = new File(root + EPUBS_SEARCH_DIR);
+			String sdCard = Environment.getExternalStorageDirectory().toString();
+			File ebooksDir = new File(sdCard + EPUBS_SEARCH_DIR_ON_SDCARD);
 
 			if(ebooksDir.exists()) {
 				return ebooksDir;
