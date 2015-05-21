@@ -613,7 +613,7 @@ public class BookPanel extends SplitPanel {
 				if (!webView.areScrollSyncDataCongruentWithSister()) {
 					// If not, deactivate scroll sync.
 					governor.setScrollSync(false, true);
-					Toast.makeText(activity, R.string.Deactivated_scroll_sync, Toast.LENGTH_SHORT).show();
+					Toast.makeText(activity, R.string.Deactivated_Scroll_sync, Toast.LENGTH_SHORT).show();
 				}
 			}
 		}

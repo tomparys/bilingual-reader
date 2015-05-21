@@ -775,9 +775,9 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 				errorMessage(getString(R.string.error_onlyOneBookOpen));
 			}
 			if (governor.isScrollSync()) {
-				Toast.makeText(this, getString(R.string.activated_scroll_sync), Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getString(R.string.Activated_Scroll_sync), Toast.LENGTH_SHORT).show();
 			} else {
-				Toast.makeText(this, getString(R.string.Deactivated_scroll_sync), Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getString(R.string.Deactivated_Scroll_sync), Toast.LENGTH_SHORT).show();
 			}
 			return true;
 

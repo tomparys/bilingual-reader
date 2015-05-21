@@ -477,8 +477,15 @@ public class Governor {
 		return chapterSync;
 	}
 
-	public void setChapterSync(boolean value) {
-		chapterSync = value;
+	/**
+	 * @return Whether the state was changed or if it was already like that.
+	 */
+	public boolean setChapterSync(boolean value) {
+		if (chapterSync != value) {
+			chapterSync = value;
+			return true;
+		}
+		return false;
 	}
 
 	/**

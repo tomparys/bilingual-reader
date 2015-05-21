@@ -233,8 +233,8 @@
     <string name="De_activate_scroll_sync">De/Activate Scroll Synchronization</string>
     <string name="De_activate_chapter_sync">De/Activate Chapter Synchronization</string>
     <string name="Scroll_Sync_Options">Scroll Synchronization Options</string>
-    <string name="activated_scroll_sync">Activated Scroll synchronization.</string>
-    <string name="Deactivated_scroll_sync">Deactivated Scroll synchronization.</string>
+    <string name="Activated_Scroll_sync">Activated Scroll sync.</string>
+    <string name="Deactivated_Scroll_sync">Deactivated Scroll sync.</string>
     <string name="Panel_hidden">Panel hidden.</string>
     <string name="Reappear_panel">Reappear panel</string>
     <string name="Export">Export</string>
