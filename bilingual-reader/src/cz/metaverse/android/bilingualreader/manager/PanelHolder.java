@@ -410,14 +410,14 @@ public class PanelHolder {
 	public boolean openBook(String path) {
 		/* Cancel ChapterSync and ScrollSync if they were on and announce the changes. */
 		boolean changedChapterSync = governor.setChapterSync(false);
-		boolean changedScrollSync = governor.setScrollSync(false, true);
+		Boolean changedScrollSync = governor.setScrollSync(false, true); // returns null if no change.
 		Integer messageResource = null;
 
-		if (changedChapterSync && changedScrollSync) {
+		if (changedChapterSync && changedScrollSync != null) {
 			messageResource = R.string.Deactivated_Chapter_and_Scroll_sync;
 		} else if (changedChapterSync) {
 			messageResource = R.string.Deactivated_Chapter_sync;
-		} else if (changedScrollSync) {
+		} else if (changedScrollSync != null) {
 			messageResource = R.string.Deactivated_Scroll_sync;
 		}
 
@@ -614,7 +614,7 @@ public class PanelHolder {
 						// Deactivate Chapter sync AND Scroll Sync.
 						governor.setChapterSync(false);
 
-						if (governor.setScrollSync(false, true)) {
+						if (governor.setScrollSync(false, true) != null) {
 							// If ScrollSync was active:
 							Toast.makeText(activity,
 									R.string.Other_book_has_no_more_chapters_Deactivated_Chapter_and_Scroll_sync,
@@ -628,7 +628,7 @@ public class PanelHolder {
 					}
 
 				} else {
-					if (governor.setScrollSync(false, true)) {
+					if (governor.setScrollSync(false, true) != null) {
 						Toast.makeText(activity, R.string.Deactivated_Scroll_sync, Toast.LENGTH_SHORT).show();
 					}
 				}

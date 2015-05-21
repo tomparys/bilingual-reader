@@ -285,6 +285,7 @@
     <string name="Sync_points_were_recomputed">Synchronization Points were recomputed.</string>
     <string name="Dictionary">Dictionary</string>
     <string name="Dictionary_Settings">Dictionary Settings</string>
+    <string name="Activated_Default_Scroll_sync_method">Activated Scroll Sync using\nProportional Synchronization.</string>
     
 
 </resources>

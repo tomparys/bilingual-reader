@@ -339,10 +339,11 @@ public class Governor {
 	 *       - If you've just used the setScrollSyncMethod(), feel free to put false here.
 	 *       - If you're setting first boolean to false, put this one true, in case you change
 	 *           the original false to true. Just to be safe.
-	 * @return  True if a change of state happened, false otherwise.
+	 * @return  Null if change was not made, if it was, returns whether a new default sync method was set.
 	 */
-	public boolean setScrollSync(boolean setScrollSync, boolean checkSyncData) {
+	public Boolean setScrollSync(boolean setScrollSync, boolean checkSyncData) {
 		if (!exactlyOneBookOpen()) {
+			boolean defaultScrollSyncMethodStarted = false;
 
 			// If we're to check the data, if we're switching scrollSync ON and if it hasn't been before now.
 			if (checkSyncData && setScrollSync && !scrollSync) {
@@ -354,6 +355,7 @@ public class Governor {
 					if (!webView[0].areScrollSyncDataCongruentWithSister()) {
 						webView[0].resetScrollSync(ScrollSyncMethod.proportional);
 						webView[1].resetScrollSync(ScrollSyncMethod.proportional);
+						defaultScrollSyncMethodStarted = true;
 					}
 				}
 			}
@@ -361,22 +363,21 @@ public class Governor {
 			// If we did change the scrollSync value, return true that a change happened.
 			if (scrollSync != setScrollSync) {
 				scrollSync = setScrollSync;
-				return true;
+				return defaultScrollSyncMethodStarted;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	/**
 	 * Flips the state of ScrollSync (active -> inactive, inactive -> active) if possible.
-	 * @return If the sync was flipped or not.
+	 * @return Passes results from setScrollSync() (possibly including null) or null if the flip was not attempted.
 	 */
-	public boolean flipScrollSync() {
+	public Boolean flipScrollSync() {
 		if (!exactlyOneBookOpen()) {
-			setScrollSync(!scrollSync, true);
-			return true;
+			return setScrollSync(!scrollSync, true);
 		}
-		return false;
+		return null;
 	}
 
 	/**

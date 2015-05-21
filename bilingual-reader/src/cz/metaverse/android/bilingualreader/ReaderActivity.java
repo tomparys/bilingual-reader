@@ -771,11 +771,14 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 
 		// Toggle Scroll Sync
 		case R.id.scroll_sync_menu_item:
-			if (!governor.flipScrollSync()) {
-				errorMessage(getString(R.string.error_onlyOneBookOpen));
-			}
+			Boolean newDefaultScrollSyncMethodSet = governor.flipScrollSync();
+
 			if (governor.isScrollSync()) {
-				Toast.makeText(this, getString(R.string.Activated_Scroll_sync), Toast.LENGTH_SHORT).show();
+				if (newDefaultScrollSyncMethodSet != null && newDefaultScrollSyncMethodSet) {
+					Toast.makeText(this, getString(R.string.Activated_Default_Scroll_sync_method), Toast.LENGTH_LONG).show();
+				} else {
+					Toast.makeText(this, getString(R.string.Activated_Scroll_sync), Toast.LENGTH_SHORT).show();
+				}
 			} else {
 				Toast.makeText(this, getString(R.string.Deactivated_Scroll_sync), Toast.LENGTH_SHORT).show();
 			}

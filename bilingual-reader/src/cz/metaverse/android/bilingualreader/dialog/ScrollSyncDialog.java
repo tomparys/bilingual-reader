@@ -186,7 +186,7 @@ public class ScrollSyncDialog extends DialogFragment
 					// If the syncPoints was already set before.
 					if (selectedMethod == originalScrollSyncMethod) {
 						// We switch ScrollSync on, and if it has changed state, we give a toast.
-						if (getGovernor().setScrollSync(true, true)) {
+						if (getGovernor().setScrollSync(true, true) != null) {
 							displaySyncActivatedToast();
 						}
 						dismiss();
@@ -205,7 +205,7 @@ public class ScrollSyncDialog extends DialogFragment
 				// If method is NOT syncPoints, start Scroll Sync.
 				else {
 					if (selectedMethod == originalScrollSyncMethod) {
-						if (getGovernor().setScrollSync(true, true)) {
+						if (getGovernor().setScrollSync(true, true) != null) {
 							displaySyncActivatedToast();
 						}
 					} else {
