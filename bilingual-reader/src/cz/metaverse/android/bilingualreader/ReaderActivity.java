@@ -66,6 +66,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -397,20 +398,28 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		getActionBar().hide();
 
 		if (setFlags) {
-			// Set basic fullscreen flags
-			int flags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION  // Hides the system navigation
-					| View.SYSTEM_UI_FLAG_FULLSCREEN;  // Hides the status bar
-
-			// Set flags for devices with support for immersive fullscreen.
-			if (Build.VERSION.SDK_INT >= 19) {
-				// The last two flags make for a smoother transition in android versions with IMMERSIVE fullscreen.
-				flags = flags
-						| View.SYSTEM_UI_FLAG_IMMERSIVE  // Ensures that no touch events won't cancel fullscreen mode.
-						| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION  // Ensures more seamless transition.
-						| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;  // Ensures more seamless transition.
+			// Android 4.0 and before have a different mechanism for fullscreen:
+			if (Build.VERSION.SDK_INT < 16) {
+				getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+				getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			}
+			// Android 4.1 JellyBean and newer:
+			else {
+				// Set basic fullscreen flags
+				int flags = View.SYSTEM_UI_FLAG_FULLSCREEN;  // Hides the status bar
 
-			decorView.setSystemUiVisibility(flags);
+				// Set flags for devices with support for immersive fullscreen.
+				if (Build.VERSION.SDK_INT >= 19) {
+					// The last two flags make for a smoother transition between states.
+					flags = flags
+							| View.SYSTEM_UI_FLAG_IMMERSIVE  // Ensures that no touch events won't cancel fullscreen mode.
+							| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION  // Hides the system navigation
+							| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION  // Ensures more seamless transition.
+							| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;  // Ensures more seamless transition.
+				}
+
+				decorView.setSystemUiVisibility(flags);
+			}
 		}
 
 		// Signal to the Governor that a runtime change has occurred.
@@ -423,7 +432,16 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	public void deactivateFullscreen() {
 		fullscreenMode = false;
 		getActionBar().show();
-		decorView.setSystemUiVisibility(0); // Setting no flags returns all to normal.
+
+		// Android 4.0 and before have a different mechanism for fullscreen:
+		if (Build.VERSION.SDK_INT < 16) {
+			getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+		}
+		// Android 4.1 JellyBean and newer:
+		else {
+			decorView.setSystemUiVisibility(0); // Setting no flags returns all to normal.
+		}
 
 		// Signal to the Governor that a runtime change has occurred.
 		governor.onRuntimeChange();
