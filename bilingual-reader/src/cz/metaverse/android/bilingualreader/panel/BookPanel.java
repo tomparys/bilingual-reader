@@ -166,6 +166,8 @@ public class BookPanel extends SplitPanel {
 	private boolean animateFromLeft = false;
 	private Animation animationSlideInLeft;
 	private Animation animationSlideInRigth;
+	private Animation animationSlideOutLeft;
+	private Animation animationSlideOutRigth;
 
 
 	/**
@@ -235,8 +237,10 @@ public class BookPanel extends SplitPanel {
 		onTouchListener = new BookPanelOnTouchListener(activity, governor, panelHolder, this, webView, panelPosition);
 		webView.setOnTouchListener(onTouchListener);
 
-		animationSlideInLeft = AnimationUtils.loadAnimation(activity.getBaseContext(), android.R.anim.slide_in_left);
-		animationSlideInRigth = AnimationUtils.loadAnimation(activity.getBaseContext(), R.anim.slide_in_right);
+		animationSlideInLeft = AnimationUtils.loadAnimation(activity, android.R.anim.slide_in_left);
+		animationSlideInRigth = AnimationUtils.loadAnimation(activity, R.anim.slide_in_right);
+		animationSlideOutLeft = AnimationUtils.loadAnimation(activity, R.anim.slide_out_left);
+		animationSlideOutRigth = AnimationUtils.loadAnimation(activity, android.R.anim.slide_out_right);
 
 		// Set a custom WebViewClient that has overwritten method for loading URLs.
 		webView.setWebViewClient(new WebViewClient() {
@@ -253,10 +257,7 @@ public class BookPanel extends SplitPanel {
 					errorMessage(getString(R.string.error_LoadPage));
 				}
 
-				// Set WebView invisible so we can animate it back into view in onPageFinished()
-				if (animate) {
-					view.setVisibility(View.GONE);
-				}
+				Log.d(LOG, LOGID + ":WebViewClient.shouldOverrideUrlLoading");
 
 				return true;
 			}
@@ -268,6 +269,8 @@ public class BookPanel extends SplitPanel {
 					view.startAnimation(animateFromLeft ? animationSlideInLeft : animationSlideInRigth);
 				}
 				view.setVisibility(View.VISIBLE);
+
+				Log.d(LOG, LOGID + ":WebViewClient.onPageFinished - view.setVisibility VISIBLE");
 
 				super.onPageFinished(view, url);
 			}
@@ -423,7 +426,7 @@ public class BookPanel extends SplitPanel {
 			loadScrollSyncOffset = null;
 			loadScrollSyncRatio = null;
 
-			Log.d(LOG, LOGID + " nulling load* variables");
+			Log.d(LOG, LOGID + ".loadPage: nulling load* variables");
 		}
 
 		saveBookPageToDb();
@@ -438,6 +441,15 @@ public class BookPanel extends SplitPanel {
 
 		// This needs to be set only after calling both saveBookPageToDb() and loadBookPageFromDb().
 		finishedRenderingContent.set(false);
+
+		if (animate) {
+			// Animate WebView out of visibility
+			// so we can animate it back into view in WebViewClient.onPageFinished().
+			webView.startAnimation(animateFromLeft ? animationSlideOutRigth : animationSlideOutLeft);
+			webView.setVisibility(View.GONE);
+
+			Log.d(LOG, LOGID + ".loadPage: webView.setVisibility GONE");
+		}
 	}
 
 
@@ -601,7 +613,7 @@ public class BookPanel extends SplitPanel {
 			}
 		}
 
-		Log.d(LOG, LOGID + ".onFinishedRenderingContent: setting finishedRenderingContent = true");
+		//Log.d(LOG, LOGID + ".onFinishedRenderingContent: setting finishedRenderingContent = true");
 		finishedRenderingContent.set(true);
 
 		if (governor.isScrollSync() && enumState == BookPanelState.books) {
