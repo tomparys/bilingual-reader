@@ -73,6 +73,7 @@ import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.dialog.ChangeCSSDialog;
 import cz.metaverse.android.bilingualreader.dialog.CloseOrHidePanelDialog;
 import cz.metaverse.android.bilingualreader.dialog.DictionaryDialog;
+import cz.metaverse.android.bilingualreader.dialog.InfotextBrowserDialog;
 import cz.metaverse.android.bilingualreader.dialog.InfotextDialog;
 import cz.metaverse.android.bilingualreader.dialog.LanguageChooserDialog;
 import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
@@ -569,6 +570,11 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		// Dictionary
 		case R.id.drawer_dictionary_button:
 			openSettings();
+			break;
+
+		// Info Texts
+		case R.id.drawer_infotext_button:
+			new InfotextBrowserDialog().show(getFragmentManager(), "InfotextBrowserDialog");
 			break;
 
 		// Exit

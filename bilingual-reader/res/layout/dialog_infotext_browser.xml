@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <LinearLayout
+        android:id="@+id/infotext_browser_buttons_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:divider="?android:attr/dividerHorizontal"
+        android:orientation="horizontal"
+        android:showDividers="middle"
+        android:weightSum="1.5" >
+
+        <Button
+            android:id="@+id/infotext_browser_previous_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:text="@string/Previous"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/infotext_browser_ok_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:text="@string/OK"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/infotext_browser_next_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:text="@string/Next"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/infotext_browser_divider"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_above="@id/infotext_browser_buttons_layout"
+        android:background="?android:attr/dividerVertical" />
+
+    <ScrollView
+        android:id="@+id/infotext_browser_scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/infotext_browser_divider"
+        android:layout_alignParentTop="true" >
+
+        <TextView
+            android:id="@+id/infotext_browser_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="7dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="7dp"
+            android:textSize="16sp" />
+    </ScrollView>
+
+</RelativeLayout>

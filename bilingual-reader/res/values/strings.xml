@@ -331,6 +331,9 @@
     <string name="Dictionary_Settings">Dictionary Settings</string>
     <string name="Activated_Default_Scroll_sync_method">Proportional Scroll Sync method activated.</string>
     <string name="Dont_show_this_again">Don\'t show this again.</string>
+    <string name="Previous">Previous</string>
+    <string name="Next">Next</string>
+    <string name="Info_Texts">Info Texts</string>
     
 
 </resources>
