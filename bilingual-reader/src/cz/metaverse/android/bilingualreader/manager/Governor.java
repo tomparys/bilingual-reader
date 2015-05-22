@@ -53,6 +53,7 @@ import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.enums.BookPanelState;
 import cz.metaverse.android.bilingualreader.enums.ScrollSyncMethod;
+import cz.metaverse.android.bilingualreader.helper.DontShowAgain;
 import cz.metaverse.android.bilingualreader.helper.ScrollSyncPoint;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
 import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
@@ -83,6 +84,7 @@ public class Governor {
 	/* Dynamic */
 	private ReaderActivity activity;
 	private PanelHolder[] panelHolder;
+	public DontShowAgain dontDisplayAgain;
 
 	/* Sync */
 	private boolean chapterSync;
@@ -131,7 +133,7 @@ public class Governor {
 	 * @param a  The ReaderActivity from which this is launched
 	 */
 	private Governor(ReaderActivity activity) {
-		preparePanelHolders();
+		prepareComplexClasses();
 
 		// Activity is set right after the constructor in the getSingleton() method, no need to do it here.
 	}
@@ -154,15 +156,17 @@ public class Governor {
 	}
 
 	/**
-	 * Creates and saves two PanelHolders for basic operation of our application.
+	 * Creates and saves two PanelHolders and one DontDisplayAgain class for basic operation of our application.
 	 * Invoked upon creation or if Android system closed one of the instances to free memory.
 	 */
-	private void preparePanelHolders() {
+	private void prepareComplexClasses() {
 		panelHolder = new PanelHolder[] {
 				new PanelHolder(0, activity, this),
 				new PanelHolder(1, activity, this)};
 		panelHolder[0].setSisterPanelHolder(panelHolder[1]);
 		panelHolder[1].setSisterPanelHolder(panelHolder[0]);
+
+		dontDisplayAgain = DontShowAgain.getInstance();
 	}
 
 	/**
@@ -171,7 +175,8 @@ public class Governor {
 	 * @return true if everything appears to be sound
 	 */
 	private boolean selfCheck() {
-		return panelHolder != null && panelHolder[0] != null && panelHolder[1] != null;
+		return panelHolder != null && panelHolder[0] != null && panelHolder[1] != null
+				&& dontDisplayAgain != null;
 	}
 
 
@@ -598,8 +603,9 @@ public class Governor {
 		editor.putBoolean(getS(R.string.scrollSync), scrollSync);
 		editor.putBoolean(getS(R.string.chapterSync), chapterSync);
 		editor.putBoolean(getS(R.string.readingBilingualEbookBool), readingBilingualEbook);
-
 		editor.putInt(getS(R.string.HiddenPanelPosition), hiddenPanel != null ? hiddenPanel.getPosition() : -1);
+
+		dontDisplayAgain.saveState(editor);
 
 		for (PanelHolder ph : panelHolder) {
 			ph.saveState(editor);
@@ -620,8 +626,10 @@ public class Governor {
 
 		// Check if everything is as it should, if not recreate it.
 		if (!selfCheck()) {
-			preparePanelHolders();
+			prepareComplexClasses();
 		}
+
+		ok = ok && dontDisplayAgain.loadState(preferences, creatingActivity);
 
 		for (PanelHolder ph : panelHolder) {
 			if (!ph.loadState(preferences, creatingActivity)) {

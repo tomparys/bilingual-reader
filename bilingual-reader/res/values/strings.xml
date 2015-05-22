@@ -71,6 +71,50 @@
         setting new <i>Sync Points</i></b>, or <b>scroll one book with two fingers</b> so that
         you can again see the same text in both panels. The synchronization will be adjusted accordingly.</string>
         
+    <string name="infobox_recently_opened_books"><big><b>Welcome to Bilingual Reader</b></big>
+        \nIf you have two ebooks each with different translation of the same book,
+        please open one of them now.
+        \n\nWe support ebooks in the EPUB format, if the ebook is in a different one,
+        please use any convertor (such as Calibre) to convert it to EPUB.</string>
+        
+    <string name="infobox_reader_activity"><big><b>Ebook opened</b></big>
+        \nIf you\'ve just opened the first ebook, click on the app logo and open a 2nd ebook with
+        the other translation!
+        
+        \n\n<big><b>Navigation</b></big>
+        \nTo move between pages of the ebook, swipe your finger left or right over the page.
+        
+        \n\n<big><b>Synchronization</b></big>
+        \nTo help with bilingual synchronization, try the 3 buttons on the panel above.
+        <i>First the left one</i>, then the second from the left.</string>
+        
+    <string name="infobox_metadata_or_toc"><big><b>Get back</b></big>
+        \nRemember, to get back to reading the book just press the
+        <b><i>Back button</i></b> on your device!</string>
+        
+    <string name="infobox_chapter_sync"><big><b>Chapter Sync was activated</b></big>
+        \nThis button activates or <i>de</i>activates <b><i>Chapter Synchronization</i></b>.
+        
+        \n\nWhen <i>Chapter Sync</i> is active, if you move to the <b>next or previous page in one book</b>
+        (by swiping your finger left or right), the <b>other book will change page as well</b>.
+        
+        \n\n<big><b>Best use</b></big>
+        \nWhile Chapter Sync is off, find the same chapter in both books, for example the <b>first chapter</b>,
+        and then <b>activate Chapter Sync</b>. From then on, the chapters will be synchronized.</string>
+        
+    <string name="infobox_scroll_sync"><big><b>Scroll Sync was activated</b></big>
+        \nThis button activates or <i>de</i>activates <b><i>Scroll Synchronization</i></b>.
+        
+        \n\nWhen <i>Scroll Sync</i> is active, if you <b>scroll one of the books</b> up or down,
+        the <b>other one will be scrolled as well</b>.
+        
+        \n\n<big><b>Scroll Sync Methods</b></big>
+        \nKnowing how much to scroll the other book is difficult, so there are several methods we can use.
+        Use the <b>second button (Wrench)</b> to chose between scroll sync methods.
+        
+        \n\nIf you activate scroll sync without picking a method, the
+        <b>default <i>Proportional Sync</i> method</b> will be used.</string>
+        
     <string name="app_name">Bilingual Reader</string>
     <string name="Open_Book_1">Open Book 1</string>
     <string name="Open_Book_2">Open Book 2</string>
@@ -285,7 +329,8 @@
     <string name="Sync_points_were_recomputed">Synchronization Points were recomputed.</string>
     <string name="Dictionary">Dictionary</string>
     <string name="Dictionary_Settings">Dictionary Settings</string>
-    <string name="Activated_Default_Scroll_sync_method">Activated Scroll Sync using\nProportional Synchronization.</string>
+    <string name="Activated_Default_Scroll_sync_method">Proportional Scroll Sync method activated.</string>
+    <string name="Dont_show_this_again">Don\'t show this again.</string>
     
 
 </resources>

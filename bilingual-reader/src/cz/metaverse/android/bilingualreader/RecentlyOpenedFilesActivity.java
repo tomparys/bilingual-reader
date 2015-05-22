@@ -44,7 +44,9 @@ import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import cz.metaverse.android.bilingualreader.db.BookDB;
+import cz.metaverse.android.bilingualreader.dialog.InfotextDialog;
 import cz.metaverse.android.bilingualreader.dialog.file.FileDialog;
+import cz.metaverse.android.bilingualreader.helper.DontShowAgain;
 
 
 /**
@@ -108,6 +110,8 @@ public class RecentlyOpenedFilesActivity extends ListActivity
 
 		// Start re/loading data in a background thread.
 		reloadData();
+
+		InfotextDialog.showIfAppropriate(this, DontShowAgain.RECENTLY_OPENED_BOOKS);
 	}
 
 	/**

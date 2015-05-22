@@ -57,7 +57,9 @@ import cz.metaverse.android.bilingualreader.ReaderActivity;
 import cz.metaverse.android.bilingualreader.db.BookDB;
 import cz.metaverse.android.bilingualreader.db.BookPageDB;
 import cz.metaverse.android.bilingualreader.db.BookPageDB.BookPage;
+import cz.metaverse.android.bilingualreader.dialog.InfotextDialog;
 import cz.metaverse.android.bilingualreader.enums.BookPanelState;
+import cz.metaverse.android.bilingualreader.helper.DontShowAgain;
 import cz.metaverse.android.bilingualreader.helper.Func;
 import cz.metaverse.android.bilingualreader.panel.AudioPanel;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
@@ -425,6 +427,9 @@ public class PanelHolder {
 			Toast.makeText(activity, messageResource, Toast.LENGTH_LONG).show();
 		}
 
+		// Display infotext if appropriate.
+		InfotextDialog.showIfAppropriate(activity, DontShowAgain.READER_ACTIVITY);
+
 
 		try {
 			if (book != null) {
@@ -671,6 +676,9 @@ public class PanelHolder {
 	 * @return true if metadata are available, false otherwise
 	 */
 	public boolean displayMetadata() {
+		// Display infotext if appropriate.
+		InfotextDialog.showIfAppropriate(activity, DontShowAgain.METADATA_OR_TOC);
+
 		governor.notesDisplayedLastIn = this;
 
 		if (book != null) {
@@ -696,6 +704,9 @@ public class PanelHolder {
 	 * @return true if TOC is available, false otherwise
 	 */
 	public boolean displayToC() {
+		// Display infotext if appropriate.
+		InfotextDialog.showIfAppropriate(activity, DontShowAgain.METADATA_OR_TOC);
+
 		if (book != null) {
 			//Log.d(LOG, "[" + position + "] Displaying ToC at " + book.tableOfContents());
 

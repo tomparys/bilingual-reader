@@ -72,9 +72,11 @@ import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.dialog.ChangeCSSDialog;
 import cz.metaverse.android.bilingualreader.dialog.CloseOrHidePanelDialog;
 import cz.metaverse.android.bilingualreader.dialog.DictionaryDialog;
+import cz.metaverse.android.bilingualreader.dialog.InfotextDialog;
 import cz.metaverse.android.bilingualreader.dialog.LanguageChooserDialog;
 import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
 import cz.metaverse.android.bilingualreader.dialog.ScrollSyncDialog;
+import cz.metaverse.android.bilingualreader.helper.DontShowAgain;
 import cz.metaverse.android.bilingualreader.manager.Governor;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
 
@@ -774,8 +776,12 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			Boolean newDefaultScrollSyncMethodSet = governor.flipScrollSync();
 
 			if (governor.isScrollSync()) {
+				// Display infotext if appropriate.
+				InfotextDialog.showIfAppropriate(this, DontShowAgain.SCROLL_SYNC);
+
 				if (newDefaultScrollSyncMethodSet != null && newDefaultScrollSyncMethodSet) {
-					Toast.makeText(this, getString(R.string.Activated_Default_Scroll_sync_method), Toast.LENGTH_LONG).show();
+					Toast.makeText(this, getString(R.string.Activated_Default_Scroll_sync_method),
+							Toast.LENGTH_LONG).show();
 				} else {
 					Toast.makeText(this, getString(R.string.Activated_Scroll_sync), Toast.LENGTH_SHORT).show();
 				}
@@ -795,7 +801,11 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 				errorMessage(getString(R.string.error_onlyOneBookOpen));
 			}
 			if (governor.isChapterSync()) {
-				Toast.makeText(this, getString(R.string.activated_sync_chapters), Toast.LENGTH_SHORT).show();
+				// Display infotext if appropriate.
+				if (!InfotextDialog.showIfAppropriate(this, DontShowAgain.CHAPTER_SYNC)) {
+					// If infotext was not shown, show at least a toast.
+					Toast.makeText(this, getString(R.string.activated_sync_chapters), Toast.LENGTH_SHORT).show();
+				}
 			} else {
 				Toast.makeText(this, getString(R.string.Deactivated_Chapter_sync), Toast.LENGTH_SHORT).show();
 			}
