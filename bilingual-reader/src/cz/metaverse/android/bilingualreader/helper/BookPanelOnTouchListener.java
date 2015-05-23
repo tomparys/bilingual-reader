@@ -173,6 +173,7 @@ public class BookPanelOnTouchListener
 
 	// For fullscreen.
 	private boolean justClickedOnUrlLink = false;
+	private long justClickedOnUrlLinkTimestamp;
 
 
 	public BookPanelOnTouchListener(ReaderActivity readerActivity, Governor governor,
@@ -219,6 +220,7 @@ public class BookPanelOnTouchListener
 	 */
 	public void setJustClickedOnUrlLink() {
 		justClickedOnUrlLink = true;
+		justClickedOnUrlLinkTimestamp = System.currentTimeMillis();
 	}
 
 
@@ -532,14 +534,16 @@ public class BookPanelOnTouchListener
 	public boolean onSingleTapConfirmed(MotionEvent event) {
 		Log.d(LOG,"[" + panelPosition + "] onSingleTapConfirmed"); //: " + event.toString());
 
-		// The user just clicked on a URL link, therefore do nothing with this click.
-		if (justClickedOnUrlLink) {
-			justClickedOnUrlLink = false;
+		// If the user hasn't just clicked on a URL link, or if he has clicked on it, but more than 250ms ago:
+		if (!justClickedOnUrlLink || System.currentTimeMillis() - justClickedOnUrlLinkTimestamp > 250) {
+
+			// If we are displaying a book page, but aren't in selection mode:
+			if (bookPanel.enumState == BookPanelState.books && !webView.inSelectionActionMode()) {
+				activity.switchFullscreen();
+			}
 		}
-		// If we aren't in selection mode, switch fullscreen modes.
-		else if (!webView.inSelectionActionMode()) {
-			activity.switchFullscreen();
-		}
+
+		justClickedOnUrlLink = false;
 		return true;
 	}
 

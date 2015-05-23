@@ -246,18 +246,20 @@ public class BookPanel extends SplitPanel {
 		webView.setWebViewClient(new WebViewClient() {
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				Log.d(LOG, LOGID + ":WebViewClient.shouldOverrideUrlLoading");
+
+				// Inform our onTouchListener to ignore this click, since it was meant
+				//  to click on this URL link.
+				// Warning: on slower devices, this method is called LATER than
+				//    the onSingleTapConfirmed gesture is evaluated, rendering this sadly useless.
+				onTouchListener.setJustClickedOnUrlLink();
+
 				// Set book page through the governor if possible.
 				try {
-					// Inform our onTouchListener to ignore this click, since it was ment
-					// to click on this URL link.
-					onTouchListener.setJustClickedOnUrlLink();
-
 					panelHolder.setBookPage(url);
 				} catch (Exception e) {
 					errorMessage(getString(R.string.error_LoadPage));
 				}
-
-				Log.d(LOG, LOGID + ":WebViewClient.shouldOverrideUrlLoading");
 
 				return true;
 			}
