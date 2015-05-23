@@ -324,7 +324,7 @@ public class PanelHolder {
 		}
 
 		// If the given panel is already open, remove it.
-		// TODO ??????????????????????????? Why??
+		// TODO
 		if (p.isAdded()) {
 			activity.removePanel(p);
 		}
@@ -437,9 +437,8 @@ public class PanelHolder {
 			}
 
 			book = new Epub(path, "" + position, activity);
-			changeCSS(); // Apply the visual options the user has set.
-
 			changePanel(new BookPanel(governor, this, position));
+			changeCSS(); // Apply the visual options the user has set.
 
 			/* Database. */
 			String[] bookUniqueKey = new String[] {
@@ -657,6 +656,11 @@ public class PanelHolder {
 	 * or 2. when opening new book, so that the Visual Options is applied to it.
 	 */
 	public void changeCSS() {
+		// Change the background of the BookPanel if it is one, so transitions are smooth.
+		if (isBookPanel()) {
+			getBookPanel().changeCSS(governor.getVisualOptions());
+		}
+
 		book.changeCSS(governor.getVisualOptions(), activity);
 		loadPageIntoView(book.getCurrentPageURL());
 	}

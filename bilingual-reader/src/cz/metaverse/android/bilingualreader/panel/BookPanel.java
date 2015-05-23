@@ -50,6 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -62,6 +63,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.ReaderActivity;
@@ -71,6 +73,7 @@ import cz.metaverse.android.bilingualreader.enums.BookPanelState;
 import cz.metaverse.android.bilingualreader.enums.ScrollSyncMethod;
 import cz.metaverse.android.bilingualreader.helper.BookPanelOnTouchListener;
 import cz.metaverse.android.bilingualreader.helper.Func;
+import cz.metaverse.android.bilingualreader.helper.VisualOptions;
 import cz.metaverse.android.bilingualreader.manager.Governor;
 import cz.metaverse.android.bilingualreader.manager.PanelHolder;
 import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
@@ -128,7 +131,7 @@ public class BookPanel extends SplitPanel {
 
 	private ReaderActivity activity;
 
-	// Prepared static variables for interaction with the DB. DB columns to be updated.
+	/* Prepared static variables for interaction with the DB. DB columns to be updated.*/
 	private static final String[] colsUpdate = new String[] {BookPageDB.COL_SCROLL_Y,
 			BookPageDB.COL_SCROLLSYNC_METHOD, BookPageDB.COL_SCROLLSYNC_OFFSET,
 			BookPageDB.COL_SCROLLSYNC_RATIO, BookPageDB.COL_LAST_OPENED};
@@ -137,6 +140,9 @@ public class BookPanel extends SplitPanel {
 			BookPageDB.COL_BOOK_TITLE, BookPageDB.COL_PAGE_FILENAME, BookPageDB.COL_PAGE_RELATIVE_PATH,
 			BookPageDB.COL_SCROLL_Y, BookPageDB.COL_SCROLLSYNC_METHOD, BookPageDB.COL_SCROLLSYNC_OFFSET,
 			BookPageDB.COL_SCROLLSYNC_RATIO, BookPageDB.COL_LAST_OPENED};
+
+	// Graphical elements
+	private RelativeLayout panelRelativeLayout;
 
 	// Information about the content
 	public BookPanelState enumState = BookPanelState.books;
@@ -227,6 +233,10 @@ public class BookPanel extends SplitPanel {
 
 		// Our panels are designed to work strictly with our ReaderActivity.
 		activity = (ReaderActivity) getActivity();
+
+		// Find the RelativeLayout which contains this all
+		panelRelativeLayout = (RelativeLayout) getView().findViewById(R.id.GeneralLayout);
+		changeCSS(governor.getVisualOptions());
 
 		// Find our customized web view that will server as our viewport
 		webView = (SelectionWebView) getView().findViewById(R.id.Viewport);
@@ -365,6 +375,21 @@ public class BookPanel extends SplitPanel {
 	public void setSlideInAnimation(boolean fromLeft) {
 		animate = true;
 		animateFromLeft = fromLeft;
+	}
+
+	/**
+	 * Changes the background of the BookPanel to match the background of the book page,
+	 * so that transitions between pages are smooth.
+	 * @param visualOptions  Visual options for displaying of the book.
+	 */
+	public void changeCSS(VisualOptions visualOptions) {
+		if (panelRelativeLayout != null) {
+			if (visualOptions.applyOptions) {
+				panelRelativeLayout.setBackgroundColor(visualOptions.getBgColorAsColorInt(governor.getActivity()));
+			} else {
+				panelRelativeLayout.setBackgroundColor(Color.WHITE);
+			}
+		}
 	}
 
 

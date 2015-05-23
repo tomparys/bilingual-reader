@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.util.Log;
 import cz.metaverse.android.bilingualreader.R;
 
@@ -64,6 +65,13 @@ public class VisualOptions {
 			css = constructCSS(context);
 		}
 		return css;
+	}
+
+	/**
+	 * Returns the bgColor as an int value that can be used in view.setBackgroundColor().
+	 */
+	public int getBgColorAsColorInt(Context context) {
+		return Color.parseColor(context.getResources().getStringArray(R.array.bgColor_value)[bgColor]);
 	}
 
 	/**
