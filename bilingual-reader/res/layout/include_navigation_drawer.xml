@@ -175,7 +175,7 @@
             android:onClick="onDrawerButtonClicked"
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
-            android:text="@string/Info_Texts"
+            android:text="@string/Would_You_Like_to_Know_More"
             android:textSize="18sp" />
 
         <View

@@ -75,7 +75,7 @@ public class InfotextBrowserDialog extends DialogFragment implements Button.OnCl
 
 		// Use builder to create the rest of the Dialog
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle(R.string.Info)
+		builder.setTitle(R.string.Would_You_Like_to_Know_More)
 				.setView(form);
 		return builder.create();
 	}
