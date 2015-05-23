@@ -11,13 +11,14 @@
         \n\n2. Instead of closing a panel, you can temporarily <i>hide it!</i></string>
         
     <string name="hide_panel_info_notice"><big><b>The More You Know</b></big>
-        \nYou can hide a panel by double tapping in it, <i>holding that second tap,</i> and swiping
-        left or right! (Up or down in landscape mode.)
+        \nYou can hide a panel by double tapping in it, <i>leaving the finger on the screen after that second tap,</i>
+        and swiping left or right! (Up or down in landscape mode.)
         \n\nAnd that same gesture will bring it back up.</string>
         
     <string name="panel_size_dialog_info_notice"><big><b>The More You Know</b></big>
         \nYou can change panel size by double tapping anywhere on the text in the panels,
-        <i>holding that second tap,</i> and swiping up or down! (Left or right in landscape mode.)</string>
+        <i>leaving the finger on the screen after that second tap,</i> and swiping up or down!
+        (Left or right in landscape mode.)</string>
         
     <string name="fullscreen_dialog_info_notice"><big><b>The More You Know</b></big>
         \nYou can switch to and from the fullscreen mode by single tapping
