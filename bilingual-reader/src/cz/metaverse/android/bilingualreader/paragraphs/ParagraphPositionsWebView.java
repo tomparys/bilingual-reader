@@ -17,7 +17,7 @@ program (see the LICENSE.html file). If not, see http://www.gnu.org/licenses/.
 Contact: gpl at orsava.cz
  */
 
-package cz.metaverse.android.bilingualreader.sync;
+package cz.metaverse.android.bilingualreader.paragraphs;
 
 import android.content.Context;
 import android.util.AttributeSet;
