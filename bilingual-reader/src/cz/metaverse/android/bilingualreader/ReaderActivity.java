@@ -70,7 +70,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-import cz.metaverse.android.bilingualreader.dialog.ChangeCSSDialog;
 import cz.metaverse.android.bilingualreader.dialog.CloseOrHidePanelDialog;
 import cz.metaverse.android.bilingualreader.dialog.DictionaryDialog;
 import cz.metaverse.android.bilingualreader.dialog.InfotextBrowserDialog;
@@ -78,6 +77,7 @@ import cz.metaverse.android.bilingualreader.dialog.InfotextDialog;
 import cz.metaverse.android.bilingualreader.dialog.LanguageChooserDialog;
 import cz.metaverse.android.bilingualreader.dialog.PanelSizeDialog;
 import cz.metaverse.android.bilingualreader.dialog.ScrollSyncDialog;
+import cz.metaverse.android.bilingualreader.dialog.VisualOptionsDialog;
 import cz.metaverse.android.bilingualreader.helper.DontShowAgain;
 import cz.metaverse.android.bilingualreader.manager.Governor;
 import cz.metaverse.android.bilingualreader.panel.SplitPanel;
@@ -95,7 +95,6 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	public Governor governor;
 	protected int bookSelector;
 	protected int panelCount;
-	protected String[] cssSettings;
 
 	// Navigation Drawer
 	private DrawerLayout navigationDrawerLayout;
@@ -188,10 +187,6 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			// When trying to use "getString(R.string.nonPersistentState_panelCount)" as key, the value is
 			//  just NOT retrieved. The same if the key is too long, e.g. "nonPersistentState_panelCount".
 			fullscreenMode = savedInstanceState.getBoolean("nps_fullscreenMode", false);
-			cssSettings = savedInstanceState.getStringArray("nps_cssSettings");
-		}
-		if (cssSettings == null) {
-			cssSettings = new String[8];
 		}
 
 		debugContext = getBaseContext();
@@ -245,7 +240,6 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		//  When trying to use "getString(R.string.nonPersistentState_panelCount)" as key, the value is
 		//  just NOT retrieved. The same if the key is too long, e.g. "nonPersistentState_panelCount".
 		outState.putBoolean("nps_fullscreenMode", fullscreenMode);
-		outState.putStringArray("nps_cssSettings", cssSettings);
 		outState.putStringArray("nps_drawerBookButtonText", drawerBookButtonText);
 
 		// In case it is ever needed, this is the best place to remove panels FragmentManager
@@ -572,9 +566,14 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 			openSettings();
 			break;
 
-		// Info Texts
+		// Would You Like To Know More? - Info Texts
 		case R.id.drawer_infotext_button:
 			new InfotextBrowserDialog().show(getFragmentManager(), "InfotextBrowserDialog");
+			break;
+
+		// Visual Options
+		case R.id.drawer_visual_options_button:
+			new VisualOptionsDialog().show(getFragmentManager(), "InfotextBrowserDialog");
 			break;
 
 		// Exit
@@ -895,12 +894,12 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 				errorMessage(getString(R.string.error_tocNotFound));
 			return true;
 
-		// Change style
+		// Change style -- deprecated, replaced by Visual Options button in the navigation drawer.
 		case R.id.style_menu_item:
 			try {
 				// Display the style dialog.
 				if (governor.exactlyOneBookOpen() == true) {
-					DialogFragment newFragment = new ChangeCSSDialog();
+					DialogFragment newFragment = new VisualOptionsDialog();
 					newFragment.show(getFragmentManager(), "");
 					bookSelector = 0;
 				}
@@ -912,7 +911,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		case R.id.style_1_menu_item:
 			try {
 				// Display the style dialog.
-				DialogFragment newFragment = new ChangeCSSDialog();
+				DialogFragment newFragment = new VisualOptionsDialog();
 				newFragment.show(getFragmentManager(), "");
 				bookSelector = 0;
 			} catch (Exception e) {
@@ -923,7 +922,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		case R.id.style_2_menu_item:
 			try {
 				// Display the style dialog.
-				DialogFragment newFragment = new ChangeCSSDialog();
+				DialogFragment newFragment = new VisualOptionsDialog();
 				newFragment.show(getFragmentManager(), "");
 				bookSelector = 1;
 			} catch (Exception e) {
@@ -1142,50 +1141,6 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 	public void startParallelText(int book, int first, int second) {
 		governor.activateBilingualEbook(book, first, second);
 	}
-
-
-	// ---- Change CSS Style section
-
-	/**
-	 * Activate the CSS settings after they have been filled in.
-	 */
-	public void setCSS() {
-		governor.getPanelHolder(bookSelector).changeCSS(cssSettings);
-	}
-
-	public void setBackColor(String my_backColor) {
-		cssSettings[1] = my_backColor;
-	}
-
-	public void setColor(String my_color) {
-		cssSettings[0] = my_color;
-	}
-
-	public void setFontType(String my_fontFamily) {
-		cssSettings[2] = my_fontFamily;
-	}
-
-	public void setFontSize(String my_fontSize) {
-		cssSettings[3] = my_fontSize;
-	}
-
-	public void setLineHeight(String my_lineHeight) {
-		if (my_lineHeight != null)
-			cssSettings[4] = my_lineHeight;
-	}
-
-	public void setAlign(String my_Align) {
-		cssSettings[5] = my_Align;
-	}
-
-	public void setMarginLeft(String mLeft) {
-		cssSettings[6] = mLeft;
-	}
-
-	public void setMarginRight(String mRight) {
-		cssSettings[7] = mRight;
-	}
-
 
 	/**
 	 * Change the relative weight of the two panels, this change their relative size.

@@ -2,5 +2,8 @@
 <resources>
     <string name="putString_defaultDictionary">defaultDictionary</string>
     <string name="pref_file_dialog_last_path">pref_file_dialog_last_path</string>
+    
+    <integer name="dialog_visual_options_column_1_weight">6</integer>
+    <integer name="dialog_visual_options_column_2_weight">4</integer>
 
 </resources>

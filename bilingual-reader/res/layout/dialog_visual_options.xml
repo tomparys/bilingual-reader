@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="?android:attr/dividerHorizontal"
+            android:orientation="horizontal"
+            android:showDividers="middle"
+            android:weightSum="10" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@integer/dialog_visual_options_column_1_weight"
+                android:paddingLeft="@dimen/dialog_visual_options_text_padding"
+                android:paddingRight="@dimen/dialog_visual_options_text_padding"
+                android:text="@string/change_Font_Color"
+                android:textSize="18sp" />
+
+            <Spinner
+                android:id="@+id/spinnerTextColor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@integer/dialog_visual_options_column_2_weight"
+                android:entries="@array/textColor"
+                android:paddingBottom="@dimen/dialog_visual_options_item_vertical_padding"
+                android:paddingLeft="@dimen/dialog_visual_options_editarea_padding"
+                android:paddingRight="@dimen/dialog_visual_options_editarea_padding"
+                android:paddingTop="@dimen/dialog_visual_options_item_vertical_padding" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="?android:attr/dividerVertical" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="?android:attr/dividerHorizontal"
+            android:orientation="horizontal"
+            android:showDividers="middle"
+            android:weightSum="10" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@integer/dialog_visual_options_column_1_weight"
+                android:paddingLeft="@dimen/dialog_visual_options_text_padding"
+                android:paddingRight="@dimen/dialog_visual_options_text_padding"
+                android:text="@string/ChangeBackgroundColor"
+                android:textSize="18sp" />
+
+            <Spinner
+                android:id="@+id/spinnerBgColor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@integer/dialog_visual_options_column_2_weight"
+                android:entries="@array/bgColor"
+                android:paddingBottom="@dimen/dialog_visual_options_item_vertical_padding"
+                android:paddingLeft="@dimen/dialog_visual_options_editarea_padding"
+                android:paddingRight="@dimen/dialog_visual_options_editarea_padding"
+                android:paddingTop="@dimen/dialog_visual_options_item_vertical_padding" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="?android:attr/dividerVertical" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="?android:attr/dividerHorizontal"
+            android:orientation="horizontal"
+            android:showDividers="middle"
+            android:weightSum="10" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@integer/dialog_visual_options_column_1_weight"
+                android:paddingLeft="@dimen/dialog_visual_options_text_padding"
+                android:paddingRight="@dimen/dialog_visual_options_text_padding"
+                android:text="@string/ChangeFont"
+                android:textSize="18sp" />
+
+            <Spinner
+                android:id="@+id/spinnerFont"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@integer/dialog_visual_options_column_2_weight"
+                android:entries="@array/font"
+                android:paddingBottom="@dimen/dialog_visual_options_item_vertical_padding"
+                android:paddingLeft="@dimen/dialog_visual_options_editarea_padding"
+                android:paddingRight="@dimen/dialog_visual_options_editarea_padding"
+                android:paddingTop="@dimen/dialog_visual_options_item_vertical_padding" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="?android:attr/dividerVertical" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="?android:attr/dividerHorizontal"
+            android:orientation="horizontal"
+            android:showDividers="middle"
+            android:weightSum="10" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@integer/dialog_visual_options_column_1_weight"
+                android:paddingLeft="@dimen/dialog_visual_options_text_padding"
+                android:paddingRight="@dimen/dialog_visual_options_text_padding"
+                android:text="@string/FontSize"
+                android:textSize="18sp" />
+
+            <Spinner
+                android:id="@+id/spinnerFontSize"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@integer/dialog_visual_options_column_2_weight"
+                android:entries="@array/fontSize"
+                android:paddingBottom="@dimen/dialog_visual_options_item_vertical_padding"
+                android:paddingLeft="@dimen/dialog_visual_options_editarea_padding"
+                android:paddingRight="@dimen/dialog_visual_options_editarea_padding"
+                android:paddingTop="@dimen/dialog_visual_options_item_vertical_padding" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="?android:attr/dividerVertical" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="?android:attr/dividerHorizontal"
+            android:orientation="horizontal"
+            android:showDividers="middle"
+            android:weightSum="10" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@integer/dialog_visual_options_column_1_weight"
+                android:paddingLeft="@dimen/dialog_visual_options_text_padding"
+                android:paddingRight="@dimen/dialog_visual_options_text_padding"
+                android:text="@string/LineHeight"
+                android:textSize="18sp" />
+
+            <Spinner
+                android:id="@+id/spinnerLineHeight"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@integer/dialog_visual_options_column_2_weight"
+                android:entries="@array/lineHeight"
+                android:paddingBottom="@dimen/dialog_visual_options_item_vertical_padding"
+                android:paddingLeft="@dimen/dialog_visual_options_editarea_padding"
+                android:paddingRight="@dimen/dialog_visual_options_editarea_padding"
+                android:paddingTop="@dimen/dialog_visual_options_item_vertical_padding" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="?android:attr/dividerVertical" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="?android:attr/dividerHorizontal"
+            android:orientation="horizontal"
+            android:showDividers="middle"
+            android:weightSum="10" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@integer/dialog_visual_options_column_1_weight"
+                android:paddingLeft="@dimen/dialog_visual_options_text_padding"
+                android:paddingRight="@dimen/dialog_visual_options_text_padding"
+                android:text="@string/TextAlign"
+                android:textSize="18sp" />
+
+            <Spinner
+                android:id="@+id/spinnerTextAlign"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@integer/dialog_visual_options_column_2_weight"
+                android:entries="@array/textAlign"
+                android:paddingBottom="@dimen/dialog_visual_options_item_vertical_padding"
+                android:paddingLeft="@dimen/dialog_visual_options_editarea_padding"
+                android:paddingRight="@dimen/dialog_visual_options_editarea_padding"
+                android:paddingTop="@dimen/dialog_visual_options_item_vertical_padding" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="?android:attr/dividerVertical" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="?android:attr/dividerHorizontal"
+            android:orientation="horizontal"
+            android:showDividers="middle"
+            android:weightSum="10" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@integer/dialog_visual_options_column_1_weight"
+                android:paddingLeft="@dimen/dialog_visual_options_text_padding"
+                android:paddingRight="@dimen/dialog_visual_options_text_padding"
+                android:text="@string/Margin_left_and_right"
+                android:textSize="18sp" />
+
+            <Spinner
+                android:id="@+id/spinnerMargins"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@integer/dialog_visual_options_column_2_weight"
+                android:entries="@array/margins"
+                android:paddingBottom="@dimen/dialog_visual_options_item_vertical_padding"
+                android:paddingLeft="@dimen/dialog_visual_options_editarea_padding"
+                android:paddingRight="@dimen/dialog_visual_options_editarea_padding"
+                android:paddingTop="@dimen/dialog_visual_options_item_vertical_padding" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="?android:attr/dividerVertical" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="?android:attr/dividerHorizontal"
+            android:orientation="horizontal"
+            android:showDividers="middle"
+            android:weightSum="10" >
+
+            <CheckBox
+                android:id="@+id/d_vo_remove_original_styles"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="10"
+                android:paddingBottom="@dimen/dialog_visual_options_item_vertical_padding"
+                android:layout_marginLeft="@dimen/dialog_visual_options_text_padding"
+                android:layout_marginStart="@dimen/dialog_visual_options_text_padding"
+                android:paddingRight="@dimen/dialog_visual_options_text_padding"
+                android:paddingEnd="@dimen/dialog_visual_options_text_padding"
+                android:paddingTop="@dimen/dialog_visual_options_item_vertical_padding"
+                android:text="@string/Remove_original_styles" />
+
+            <Button
+                android:id="@+id/d_vo_remove_original_styles_info_button"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/Info"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

@@ -115,6 +115,12 @@
         \n\nIf you activate scroll sync without picking a method, the
         <b>default <i>Proportional Sync</i> method</b> will be used.</string>
         
+    <string name="Remove_original_styles_info_msg"><big><b>Remove original styles</b></big>
+        \nIf you\'ve set some visual options, but they aren\'t changed in the book,
+        it is because they <i>conflict</i> with the default visual options contained in the e-book.
+        
+        \n\nIf you <b>enable this option</b>, the original styles will be removed and <b>your settings will work</b>.</string>
+        
     <string name="app_name">Bilingual Reader</string>
     <string name="Open_Book_1">Open Book 1</string>
     <string name="Open_Book_2">Open Book 2</string>
@@ -179,11 +185,6 @@
     <string name="change_Font">Change Font</string>
     <string name="change_Font_Color">Font Color:</string>
     <string name="Change_Style">Change Style</string>
-    <string name="blue_rgb">#0000ff</string>
-    <string name="red_rgb">#ff0000</string>
-    <string name="green_rgb">#00ff00</string>
-    <string name="black_rgb">#000000</string>
-    <string name="white_rgb">#ffffff</string>
     <string name="error_CannotChangeStyle">Cannot Change Style!</string>
     <string name="OK">OK</string>
     <string name="Cancel">Cancel</string>
@@ -193,20 +194,14 @@
     <string name="ChangeBackgroundColor">Background Color:</string>
     <string name="Sync_Scroll">Sync Scroll</string>
     <string name="ChangeFont">Font:</string>
-    <string name="Arial">Sans Serif</string>
-    <string name="Serif">Serif</string>
-    <string name="Monospace">Monospace</string>
     <string name="FontSize">Font Size:</string>
     <string name="LineHeight">Line Height:</string>
     <string name="TextAlign">Alignment:</string>
-    <string name="Left_Align">Left</string>
-    <string name="Center_Align">Center</string>
-    <string name="Right_Align">Right</string>
     <string name="DefaultSettings">Reset to default</string>
     <string name="px">px</string>
     <string name="open">Open...</string>
-    <string name="Margin">Margin left, right (px):</string>
-    <string name="Justify">Justify</string>
+    <string name="Margin_left_and_right">Margin:</string>
+    <string name="Remove_original_styles">Remove original styles</string>
     <string name="title_activity_split_panel">SplitPanel</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
@@ -334,6 +329,7 @@
     <string name="Previous">Previous</string>
     <string name="Next">Next</string>
     <string name="Would_You_Like_to_Know_More">Would You Like to Know More?</string>
+    <string name="Visual_Options">Visual Options</string>
     
 
 </resources>

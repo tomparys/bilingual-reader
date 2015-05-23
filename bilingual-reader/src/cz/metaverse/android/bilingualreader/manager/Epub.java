@@ -76,6 +76,7 @@ import android.content.Context;
 import android.util.Log;
 import cz.metaverse.android.bilingualreader.R;
 import cz.metaverse.android.bilingualreader.helper.Func;
+import cz.metaverse.android.bilingualreader.helper.VisualOptions;
 
 /**
  *
@@ -102,7 +103,6 @@ public class Epub {
 
 	private String filePath;
 	FileInputStream fileInputStream;
-	private String actualCSS = "";
 	private String[][] audio;
 
 	// Static variables
@@ -834,52 +834,62 @@ public class Epub {
 	}
 
 	/**
-	 * Set the CSS according to the settings
-	 * @param settings
+	 * Set new Visual Options throughout the book.
 	 */
-	// TODO work in progress
-	public void addCSS(String[] settings) {
-		// CSS
-		String css = "<style type=\"text/css\">\n";
+	public void changeCSS(VisualOptions visualOptions, Context context) {
+		// Obtain the CSS styles we'll be inserting (if any)
+		String css = visualOptions.getCSS(context);
 
-		if (!settings[0].isEmpty()) {
-			css = css + "body{color:" + settings[0] + ";}";
-			css = css + "a:link{color:" + settings[0] + ";}";
-		}
-
-		if (!settings[1].isEmpty())
-			css = css + "body {background-color:" + settings[1] + ";}";
-
-		if (!settings[2].isEmpty())
-			css = css + "p{font-family:" + settings[2] + ";}";
-
-		if (!settings[3].isEmpty())
-			css = css + "p{\n\tfont-size:" + settings[3] + "%\n}\n";
-
-		if (!settings[4].isEmpty())
-			css = css + "p{line-height:" + settings[4] + "em;}";
-
-		if (!settings[5].isEmpty())
-			css = css + "p{text-align:" + settings[5] + ";}";
-
-		if (!settings[6].isEmpty())
-			css = css + "body{margin-left:" + settings[6] + "%;}";
-
-		if (!settings[7].isEmpty())
-			css = css + "body{margin-right:" + settings[7] + "%;}";
-
-		css = css + "</style>";
-
+		/* For each page in the book. */
 		for (int i = 0; i < spineElementPaths.length; i++) {
 			String path = spineElementPaths[i].replace("file:///", "");
-			String source = readPage(path);
 
-			source = source.replace(actualCSS + "</head>", css + "</head>");
+			/* If the html file isn't yet present in the originalCssPath, move it there. */
+			File originalCssFile = new File(originalCssPath(path));
+			if(!originalCssFile.exists()) {
+				Log.d(LOG, LOG + ".changeCSS - moving HTML file to a new originalCssPath: " + path);
+				File originalFile = new File(path);
+				originalFile.renameTo(originalCssFile);
+			}
 
-			writePage(path, source);
+			// Open the HTML page in its original CSS styles.
+			String html = readPage(originalCssPath(path));
+
+			// If the visual styles asks for some visual settings to be set:
+			if (visualOptions.applyOptions) {
+				if (visualOptions.removeOriginalStyles) {
+					Log.d(LOG, LOG + ".changeCSS - removing CSS: " + path);
+
+					html = removeCSSFromHTML(html);
+				} else {
+					Log.d(LOG, LOG + ".changeCSS - NOT removing CSS: " + path);
+				}
+
+				html = html.replace("</head>", css + "</head>");
+			}
+
+			writePage(path, html);
 		}
-		actualCSS = css;
+	}
 
+	/**
+	 * Returns the path where the original version of the HTML file will be stored,
+	 * before it is parsed and all CSS is removed from it.
+	 */
+	private String originalCssPath(String path) {
+		return path + ".original_css.html";
+	}
+
+	/**
+	 * Given a HTML code, returns all references to any CSS styles.
+	 */
+	private String removeCSSFromHTML(String html) {
+		html = html.replace("\n", "");
+		html = html.replaceAll("<style [^<>]*/>", "");
+		html = html.replaceAll("<style>[^<>]*</style>", "");
+		html = html.replaceAll("<style[^<>/]*>[^<>]*</style>", "");
+		html = html.replaceAll("<link [^<>]*css[^<>]*>", "");
+		return html;
 	}
 
 	/**

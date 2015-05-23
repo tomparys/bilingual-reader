@@ -15,29 +15,35 @@
         <item>No available dictionaries,</item>
         <item>please install some.</item>
     </string-array>
-    <string-array name="ColorFont">
+    
+    <string-array name="textColor">
         <item>Black</item>
-        <item>Red</item>
-        <item>Green</item>
-        <item>Blue</item>
-        <item>White</item>
-    </string-array>
-    <string-array name="ColorBack">
         <item>White</item>
         <item>Red</item>
         <item>Green</item>
         <item>Blue</item>
+    </string-array>
+    <string-array name="textColor_value">
+        <item>#000000</item>
+        <item>#ffffff</item>
+        <item>#ff0000</item>
+        <item>#00ff00</item>
+        <item>#0000ff</item>
+    </string-array>
+    <string-array name="bgColor">
+        <item>White</item>
         <item>Black</item>
     </string-array>
-    <string-array name="Margin">
-        <item>0</item>
-        <item>5</item>
-        <item>10</item>
-        <item>15</item>
-        <item>20</item>
-        <item>25</item>
+    <string-array name="bgColor_value">
+        <item>#ffffff</item>
+        <item>#000000</item>
     </string-array>
-    <string-array name="FontSize">
+    <string-array name="font">
+        <item>Sans Serif</item>
+        <item>Serif</item>
+        <item>Monospace</item>
+    </string-array>
+    <string-array name="fontSize">
         <item>100%</item>
         <item>125%</item>
         <item>150%</item>
@@ -45,24 +51,30 @@
         <item>200%</item>
         <item>90%</item>
     </string-array>
-    <string-array name="LineHeight">
-        <item>1em</item>
-        <item>1.25em</item>
-        <item>1.5em</item>
-        <item>1.75em</item>
-        <item>2em</item>
-        <item>0.9em</item>
-    </string-array>
-    <string-array name="testAlignOption">
+    <string-array name="textAlign">
         <item>Left</item>
         <item>Center</item>
         <item>Right</item>
         <item>Justify</item>
     </string-array>
-    <string-array name="FontStyle">
-        <item>Sans Serif</item>
-        <item>Serif</item>
-        <item>Monospace</item>
+    <string-array name="lineHeight">
+        <item>100%</item>
+        <item>105%</item>
+        <item>110%</item>
+        <item>115%</item>
+        <item>125%</item>
+        <item>150%</item>
+        <item>175%</item>
+        <item>200%</item>
+        <item>90%</item>
+    </string-array>
+    <string-array name="margins">
+        <item>0pt</item>
+        <item>5pt</item>
+        <item>10pt</item>
+        <item>15pt</item>
+        <item>20pt</item>
+        <item>25pt</item>
     </string-array>
 
 </resources>

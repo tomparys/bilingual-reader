@@ -10,5 +10,9 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="panels_divider_thickness">3dp</dimen>
     <dimen name="dialog_scroll_sync_radio_button_margin">5dp</dimen>
+    
+    <dimen name="dialog_visual_options_item_vertical_padding">10dp</dimen>
+    <dimen name="dialog_visual_options_text_padding">10dp</dimen>
+    <dimen name="dialog_visual_options_editarea_padding">10dp</dimen>
 
 </resources>

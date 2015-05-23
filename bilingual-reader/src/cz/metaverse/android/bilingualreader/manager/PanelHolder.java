@@ -437,6 +437,8 @@ public class PanelHolder {
 			}
 
 			book = new Epub(path, "" + position, activity);
+			changeCSS(); // Apply the visual options the user has set.
+
 			changePanel(new BookPanel(governor, this, position));
 
 			/* Database. */
@@ -651,10 +653,11 @@ public class PanelHolder {
 	// ============================================================================================
 
 	/**
-	 * Passes CSS data to the book, redisplays the page.
+	 * Called either 1. to notify the Visual Options have changed to refresh them,
+	 * or 2. when opening new book, so that the Visual Options is applied to it.
 	 */
-	public void changeCSS(String[] settings) {
-		book.addCSS(settings);
+	public void changeCSS() {
+		book.changeCSS(governor.getVisualOptions(), activity);
 		loadPageIntoView(book.getCurrentPageURL());
 	}
 

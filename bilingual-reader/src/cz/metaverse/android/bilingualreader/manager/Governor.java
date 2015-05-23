@@ -55,6 +55,7 @@ import cz.metaverse.android.bilingualreader.enums.BookPanelState;
 import cz.metaverse.android.bilingualreader.enums.ScrollSyncMethod;
 import cz.metaverse.android.bilingualreader.helper.DontShowAgain;
 import cz.metaverse.android.bilingualreader.helper.ScrollSyncPoint;
+import cz.metaverse.android.bilingualreader.helper.VisualOptions;
 import cz.metaverse.android.bilingualreader.panel.BookPanel;
 import cz.metaverse.android.bilingualreader.selectionwebview.SelectionWebView;
 
@@ -84,7 +85,8 @@ public class Governor {
 	/* Dynamic */
 	private ReaderActivity activity;
 	private PanelHolder[] panelHolder;
-	public DontShowAgain dontDisplayAgain;
+	// Visual Options for displaying of the e-books
+	private VisualOptions visualOptions;
 
 	/* Sync */
 	private boolean chapterSync;
@@ -103,10 +105,13 @@ public class Governor {
 	// For hiding panels.
 	public PanelHolder hiddenPanel;
 
+	// For knowing if we should open specific info text dialogs.
+	public DontShowAgain dontDisplayAgain;
+
 
 
 	// ============================================================================================
-	//		Singleton pattern and constructor
+	//		Singleton pattern, constructor and basic setup.
 	// ============================================================================================
 
 	/**
@@ -167,6 +172,7 @@ public class Governor {
 		panelHolder[1].setSisterPanelHolder(panelHolder[0]);
 
 		dontDisplayAgain = DontShowAgain.getInstance();
+		visualOptions = new VisualOptions();
 	}
 
 	/**
@@ -176,7 +182,7 @@ public class Governor {
 	 */
 	private boolean selfCheck() {
 		return panelHolder != null && panelHolder[0] != null && panelHolder[1] != null
-				&& dontDisplayAgain != null;
+				&& dontDisplayAgain != null && visualOptions != null;
 	}
 
 
@@ -319,6 +325,24 @@ public class Governor {
 		return openedBooks == 1;
 	}
 
+	/**
+	 * Set and activate new VisualOptions in the two e-books.
+	 */
+	public void setVisualOptions(VisualOptions vo) {
+		visualOptions = vo;
+
+		for (PanelHolder ph : panelHolder) {
+			ph.changeCSS();
+		}
+	}
+
+	/**
+	 * Returns the active VisualOptions for the two e-books.
+	 */
+	public VisualOptions getVisualOptions() {
+		return visualOptions;
+	}
+
 
 
 	// ============================================================================================
@@ -332,10 +356,6 @@ public class Governor {
 		return scrollSync;
 	}
 
-	/**
-	 *
-	 *
-	 */
 	/**
 	 * Activates or deactivates ScrollSync.
 	 * @param setScrollSync  The new state we're switching to.
@@ -606,6 +626,7 @@ public class Governor {
 		editor.putInt(getS(R.string.HiddenPanelPosition), hiddenPanel != null ? hiddenPanel.getPosition() : -1);
 
 		dontDisplayAgain.saveState(editor);
+		visualOptions.saveState(editor);
 
 		for (PanelHolder ph : panelHolder) {
 			ph.saveState(editor);
@@ -630,6 +651,7 @@ public class Governor {
 		}
 
 		ok = ok && dontDisplayAgain.loadState(preferences, creatingActivity);
+		ok = ok && visualOptions.loadState(preferences, creatingActivity);
 
 		for (PanelHolder ph : panelHolder) {
 			if (!ph.loadState(preferences, creatingActivity)) {
