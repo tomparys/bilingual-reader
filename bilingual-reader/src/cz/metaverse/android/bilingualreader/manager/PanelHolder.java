@@ -136,7 +136,7 @@ public class PanelHolder {
 
 		if (book != null) {
 			try {
-				book.changeDirName(position + "");
+				book.changeDirName(position + "", governor.getVisualOptions());
 			} catch (Exception e) {
 				Log.e(LOG, "Exception in changeDirName while reopening a book: " + e.toString());
 			}
@@ -436,7 +436,7 @@ public class PanelHolder {
 				book.destroy();
 			}
 
-			book = new Epub(path, "" + position, activity);
+			book = new Epub(path, "" + position, activity, governor.getVisualOptions());
 			changePanel(new BookPanel(governor, this, position));
 			changeCSS(); // Apply the visual options the user has set.
 
@@ -697,7 +697,9 @@ public class PanelHolder {
 				changePanel(bookPanel);
 			}
 
-			bookPanel.loadData(book.metadata(), book.tableOfContents());
+			// Display metadata prefixed with the CSS styles from current Visual Options.
+			bookPanel.loadData(governor.getVisualOptions().getCSS(activity) + book.metadata(),
+					book.tableOfContents());
 			bookPanel.enumState = BookPanelState.metadata;
 
 			return true;
@@ -876,13 +878,13 @@ public class PanelHolder {
 			if (path != null) {
 				try {
 					// Try loading the already extracted book
-					book = new Epub(path, name, current, lang, activity);
+					book = new Epub(path, name, current, lang, activity, governor.getVisualOptions());
 					book.goToPage(current);
 				} catch (Exception e1) {
 
 					// Exception: Retry with re-extracting the book
 					try {
-						book = new Epub(path, position + "", activity);
+						book = new Epub(path, position + "", activity, governor.getVisualOptions());
 						book.goToPage(current);
 					} catch (Exception e2) {
 						ok = false;
@@ -892,7 +894,7 @@ public class PanelHolder {
 				} catch (Error e) {
 					// Exception: Retry with re-extracting the book
 					try {
-						book = new Epub(path, position + "", activity);
+						book = new Epub(path, position + "", activity, governor.getVisualOptions());
 						book.goToPage(current);
 					} catch (Exception e2) {
 						ok = false;

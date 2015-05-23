@@ -117,7 +117,7 @@ public class Epub {
 	 * @throws Exception
 	 */
 	public Epub(String filePath, String destFolder,
-			Context theContext) throws Exception {
+			Context theContext, VisualOptions visualOptions) throws Exception {
 
 		List<String> spineElements;
 		List<SpineReference> spineList;
@@ -160,7 +160,7 @@ public class Epub {
 		}
 
 		metadata = generateMetadata();
-		createTableOfContentsFile();
+		createTableOfContentsFile(visualOptions);
 	}
 
 	/**
@@ -175,7 +175,7 @@ public class Epub {
 	 * TODO unify with the first initializator.
 	 */
 	public Epub(String filePath, String folder, int spineIndex,
-			int language, Context theContext) throws Exception {
+			int language, Context theContext, VisualOptions visualOptions) throws Exception {
 		List<String> spineElements;
 		List<SpineReference> spineList;
 
@@ -208,7 +208,7 @@ public class Epub {
 		goToPage(spineIndex);
 
 		metadata = generateMetadata();
-		createTableOfContentsFile();
+		createTableOfContentsFile(visualOptions);
 	}
 
 	/**
@@ -473,7 +473,7 @@ public class Epub {
 	 * Move the book to a different directory.
 	 * @param newName	new name
 	 */
-	public void changeDirName(String newName) throws Exception {
+	public void changeDirName(String newName, VisualOptions visualOptions) throws Exception {
 		Log.d(LOG, "EpubManipulator changeDirName");
 
 		// Rename the directory
@@ -495,7 +495,7 @@ public class Epub {
 			this.fileInputStream = new FileInputStream(filePath);
 			this.book = (new EpubReader()).readEpub(fileInputStream);
 		}
-		createTableOfContentsFile();
+		createTableOfContentsFile(visualOptions);
 
 		// Reopen the current page
 		try {
@@ -715,7 +715,7 @@ public class Epub {
 	/**
 	 * Create an html file, which contain the Table of Contents, in the EPUB folder.
 	 */
-	public void createTableOfContentsFile() {
+	public void createTableOfContentsFile(VisualOptions visualOptions) {
 		List<TOCReference> tmp;
 		TableOfContents toc = book.getTableOfContents();
 		String html = "<html><body><ul>";
@@ -753,6 +753,9 @@ public class Epub {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		// Apply visual options to the ToC
+		writeHtmlWithCSS(filePath, visualOptions, context);
 	}
 
 	/**
@@ -760,7 +763,7 @@ public class Epub {
 	 */
 	public String tableOfContents() {
 		Log.d(LOG, "tableOfContents [" + decompressedFolder + "] ");
-		return "File://" + tempLocation + decompressedFolder + "/Toc.html";
+		return "file://" + tempLocation + decompressedFolder + "/Toc.html";
 	}
 
 	/**
@@ -840,36 +843,54 @@ public class Epub {
 		// Obtain the CSS styles we'll be inserting (if any)
 		String css = visualOptions.getCSS(context);
 
-		/* For each page in the book. */
+		// For each page in the book.
 		for (int i = 0; i < spineElementPaths.length; i++) {
 			String path = spineElementPaths[i].replace("file:///", "");
-
-			/* If the html file isn't yet present in the originalCssPath, move it there. */
-			File originalCssFile = new File(originalCssPath(path));
-			if(!originalCssFile.exists()) {
-				Log.d(LOG, LOG + ".changeCSS - moving HTML file to a new originalCssPath: " + path);
-				File originalFile = new File(path);
-				originalFile.renameTo(originalCssFile);
-			}
-
-			// Open the HTML page in its original CSS styles.
-			String html = readPage(originalCssPath(path));
-
-			// If the visual styles asks for some visual settings to be set:
-			if (visualOptions.applyOptions) {
-				if (visualOptions.removeOriginalStyles) {
-					Log.d(LOG, LOG + ".changeCSS - removing CSS: " + path);
-
-					html = removeCSSFromHTML(html);
-				} else {
-					Log.d(LOG, LOG + ".changeCSS - NOT removing CSS: " + path);
-				}
-
-				html = html.replace("</head>", css + "</head>");
-			}
-
-			writePage(path, html);
+			writeHtmlWithCSS(path, visualOptions, context);
 		}
+
+		// For Table of Contents as well.
+		writeHtmlWithCSS(tableOfContents().replace("file:///", ""), visualOptions, context);
+	}
+
+	/**
+	 * Helper method: Saves a given file to a different location, then opens it, optionally removes
+	 *  any sing of original CSS, then injects new CSS, then saves the result to the original location.
+	 * @param path             Path of the file about to be injected with CSS
+	 * @param visualOptions    Visual Options
+	 * @param context          Context
+	 */
+	private void writeHtmlWithCSS(String path, VisualOptions visualOptions, Context context) {
+		/* If the html file isn't yet present in the originalCssPath, move it there. */
+		File originalCssFile = new File(originalCssPath(path));
+		if(!originalCssFile.exists()) {
+
+			Log.d(LOG, LOG + ".changeCSS - moving HTML file to a new originalCssPath: " + path);
+			File originalFile = new File(path);
+			originalFile.renameTo(originalCssFile);
+		}
+
+		// Open the HTML page in its original CSS styles.
+		String html = readPage(originalCssPath(path));
+
+		// If the visual styles asks for some visual settings to be set:
+		if (visualOptions.applyOptions) {
+			if (visualOptions.removeOriginalStyles) {
+				Log.d(LOG, LOG + ".changeCSS - removing CSS: " + path);
+
+				html = removeCSSFromHTML(html);
+			} else {
+				Log.d(LOG, LOG + ".changeCSS - NOT removing CSS: " + path);
+			}
+
+			if (html.contains("</head>")) {
+				html = html.replace("</head>", visualOptions.getCSS(context) + "</head>");
+			} else {
+				html = html.replace("<body>", "<body>" + visualOptions.getCSS(context));
+			}
+		}
+
+		writePage(path, html);
 	}
 
 	/**
