@@ -526,6 +526,10 @@ public class PanelHolder {
 		if (book != null) {
 			// Split the #... part from the URL so we can get a match.
 			String cleanPath = pathOfPage.split("#", 2)[0];
+
+			Log.d(LOG, LOG + ".loadPageIntoView: cleanPath=" + cleanPath);
+			Log.d(LOG, LOG + ".loadPageIntoView: currentPg=" + book.getCurrentPageURL());
+
 			if ((cleanPath.equals(book.getCurrentPageURL())) || (book.getPageIndex(cleanPath) >= 0)) {
 
 				// This is a newly opening book page (not Metadata or ToC)

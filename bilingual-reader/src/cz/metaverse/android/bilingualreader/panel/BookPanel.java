@@ -45,6 +45,7 @@ THE SOFTWARE.
 
 package cz.metaverse.android.bilingualreader.panel;
 
+import java.net.URLDecoder;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.annotation.SuppressLint;
@@ -264,8 +265,11 @@ public class BookPanel extends SplitPanel {
 				//    the onSingleTapConfirmed gesture is evaluated, rendering this sadly useless.
 				onTouchListener.setJustClickedOnUrlLink();
 
-				// Set book page through the governor if possible.
 				try {
+					// Decode any HTML entities in the URL so we get the correct path.
+					url = URLDecoder.decode(url, "UTF-8");
+
+					// Set book page through the governor if possible.
 					panelHolder.setBookPage(url);
 				} catch (Exception e) {
 					errorMessage(getString(R.string.error_LoadPage));
