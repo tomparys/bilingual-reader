@@ -265,6 +265,11 @@ public class BookPanel extends SplitPanel {
 				//    the onSingleTapConfirmed gesture is evaluated, rendering this sadly useless.
 				onTouchListener.setJustClickedOnUrlLink();
 
+				/* Cancel ChapterSync and ScrollSync if they were on and announce the changes. */
+				boolean changedChapterSync = governor.setChapterSync(false);
+				Boolean changedScrollSync = governor.setScrollSync(false, true); // returns null if no change.
+				Func.toastDeactivatedSync(changedChapterSync, changedScrollSync != null, activity);
+
 				try {
 					// Decode any HTML entities in the URL so we get the correct path.
 					url = URLDecoder.decode(url, "UTF-8");

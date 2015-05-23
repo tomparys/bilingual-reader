@@ -21,10 +21,13 @@ package cz.metaverse.android.bilingualreader.helper;
 
 import java.io.File;
 
+import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Environment;
 import android.util.Log;
 import android.util.TypedValue;
+import android.widget.Toast;
+import cz.metaverse.android.bilingualreader.R;
 
 /**
  *
@@ -155,4 +158,30 @@ public class Func {
 		return filePath;
 	}
 
+	/**
+	 * Displays a toast announcing that Chapter Sync or Scroll Sync or both were deactivated.
+	 * @param chapterSync  Whether Chapter Sync was just deactivated.
+	 * @param scrollSync   Whether Scroll Sync was just deactivated.
+	 * @param Activity     Needed for context.
+	 * @return             Whether a toast was displayed or not.
+	 */
+	public static boolean toastDeactivatedSync(boolean chapterSync, boolean scrollSync, Activity activity) {
+		Integer messageResource = null;
+
+		if (chapterSync && scrollSync) {
+			messageResource = R.string.Deactivated_Chapter_and_Scroll_sync;
+			Toast.makeText(activity, messageResource, Toast.LENGTH_LONG).show();
+		} else if (chapterSync) {
+			messageResource = R.string.Deactivated_Chapter_sync;
+			Toast.makeText(activity, messageResource, Toast.LENGTH_SHORT).show();
+		} else if (scrollSync) {
+			messageResource = R.string.Deactivated_Scroll_sync;
+			Toast.makeText(activity, messageResource, Toast.LENGTH_SHORT).show();
+		}
+
+		if (messageResource != null) {
+			return true;
+		}
+		return false;
+	}
 }

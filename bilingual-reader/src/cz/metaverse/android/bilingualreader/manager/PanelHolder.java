@@ -413,19 +413,7 @@ public class PanelHolder {
 		/* Cancel ChapterSync and ScrollSync if they were on and announce the changes. */
 		boolean changedChapterSync = governor.setChapterSync(false);
 		Boolean changedScrollSync = governor.setScrollSync(false, true); // returns null if no change.
-		Integer messageResource = null;
-
-		if (changedChapterSync && changedScrollSync != null) {
-			messageResource = R.string.Deactivated_Chapter_and_Scroll_sync;
-		} else if (changedChapterSync) {
-			messageResource = R.string.Deactivated_Chapter_sync;
-		} else if (changedScrollSync != null) {
-			messageResource = R.string.Deactivated_Scroll_sync;
-		}
-
-		if (messageResource != null) {
-			Toast.makeText(activity, messageResource, Toast.LENGTH_LONG).show();
-		}
+		Func.toastDeactivatedSync(changedChapterSync, changedScrollSync != null, activity);
 
 		// Display infotext if appropriate.
 		InfotextDialog.showIfAppropriate(activity, DontShowAgain.READER_ACTIVITY);
@@ -624,23 +612,13 @@ public class PanelHolder {
 						// Deactivate Chapter sync AND Scroll Sync.
 						governor.setChapterSync(false);
 
-						if (governor.setScrollSync(false, true) != null) {
-							// If ScrollSync was active:
-							Toast.makeText(activity,
-									R.string.Other_book_has_no_more_chapters_Deactivated_Chapter_and_Scroll_sync,
-									Toast.LENGTH_LONG).show();
-						} else {
-							// If ScrollSync wasn't active:
-							Toast.makeText(activity,
-									R.string.Other_book_has_no_more_chapters_Deactivated_Chapter_sync,
-									Toast.LENGTH_LONG).show();
-						}
+						Func.toastDeactivatedSync(true,
+								governor.setScrollSync(false, true) != null, activity);
 					}
 
 				} else {
-					if (governor.setScrollSync(false, true) != null) {
-						Toast.makeText(activity, R.string.Deactivated_Scroll_sync, Toast.LENGTH_SHORT).show();
-					}
+					Func.toastDeactivatedSync(false,
+							governor.setScrollSync(false, true) != null, activity);
 				}
 			}
 		} catch (Exception e) {
