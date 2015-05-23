@@ -275,7 +275,7 @@
     <string name="Activated_Scroll_sync">Activated Scroll sync.</string>
     <string name="Deactivated_Scroll_sync">Deactivated Scroll sync.</string>
     <string name="Panel_hidden">Panel hidden.</string>
-    <string name="Reappear_panel">Reappear panel</string>
+    <string name="Unhide_panel">Unhide panel</string>
     <string name="Export">Export</string>
     <string name="Fields_separator_colon">Fields separated by:</string>
     <string name="Enclosed_in_quotation_marks">Enclosed in quotation marks (\"):</string>

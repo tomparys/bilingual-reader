@@ -592,7 +592,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 		if (hide) {
 			drawerHideOrReappearPanelButton.setText(R.string.Hide_panel);
 		} else {
-			drawerHideOrReappearPanelButton.setText(R.string.Reappear_panel);
+			drawerHideOrReappearPanelButton.setText(R.string.Unhide_panel);
 		}
 	}
 
