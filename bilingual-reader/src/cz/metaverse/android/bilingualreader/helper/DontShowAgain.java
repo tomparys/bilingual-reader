@@ -36,10 +36,10 @@ import cz.metaverse.android.bilingualreader.R;
 public class DontShowAgain {
 
 	/* The various available info boxes. */
-	public static final int RECENTLY_OPENED_BOOKS = 0;
-	public static final int READER_ACTIVITY = 1;
-	public static final int CHAPTER_SYNC = 2;
-	public static final int SCROLL_SYNC = 3;
+	public static final int CHAPTER_SYNC = 0;
+	public static final int SCROLL_SYNC = 1;
+	public static final int RECENTLY_OPENED_BOOKS = 2;
+	public static final int READER_ACTIVITY = 3;
 	public static final int METADATA_OR_TOC = 4;
 
 	public static final int TEXTS_COUNT = 5;
