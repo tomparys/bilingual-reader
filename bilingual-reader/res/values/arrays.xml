@@ -19,24 +19,60 @@
     <string-array name="textColor">
         <item>Black</item>
         <item>White</item>
+        <item>Bright White</item>
+        
+        <item>Bright cyan</item>
+        <item>Bright blue</item>
+        <item>Bright green</item>
+        <item>Bright yellow</item>
+        
+        <item>Yellow</item>
+        <item>Orange</item>
         <item>Red</item>
-        <item>Green</item>
+        <item>Magenta</item>
+        <item>Violet</item>
         <item>Blue</item>
-    </string-array>
+        <item>Cyan</item>
+        <item>Green</item>
+        </string-array>
     <string-array name="textColor_value">
         <item>#000000</item>
-        <item>#ffffff</item>
-        <item>#ff0000</item>
-        <item>#00ff00</item>
-        <item>#0000ff</item>
-    </string-array>
+        <item>#eee8d5</item>
+        <item>#fdf6e3</item>
+        
+        <item>#93a1a1</item>
+        <item>#839496</item>
+        <item>#586E75</item>
+        <item>#657b83</item>
+        
+        <item>#b58900</item>
+        <item>#cb4b16</item>
+        <item>#dc322f</item>
+        <item>#d33682</item>
+        <item>#6c71c4</item>
+        <item>#268bd2</item>
+        <item>#2aa198</item>
+        <item>#859900</item>
+        </string-array>
     <string-array name="bgColor">
         <item>White</item>
         <item>Black</item>
+        
+        <item>Solarized Bright Black</item>
+        <item>Solarized Black</item>
+        
+        <item>Solarized Light</item>
+        <item>Solarized Dark</item>
     </string-array>
     <string-array name="bgColor_value">
         <item>#ffffff</item>
         <item>#000000</item>
+        
+        <item>#073642</item>
+        <item>#002b36</item>
+        
+        <item>#fdf6e3</item>
+        <item>#657b83</item>
     </string-array>
     <string-array name="font">
         <item>Sans Serif</item>
