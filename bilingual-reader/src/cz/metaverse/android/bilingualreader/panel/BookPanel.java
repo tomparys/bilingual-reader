@@ -639,6 +639,7 @@ public class BookPanel extends SplitPanel {
 		// Load position from before if this is a page opening from before.
 		if (loadPositionY != null) {
 			webView.setScrollY(Math.round(loadPositionY * webView.getContentHeight()));
+			Log.d(LOG, LOGID + ".onFinishedRenderingContent, set webView scrollY: " + webView.getScrollY());
 		}
 
 		// Load the scroll sync data

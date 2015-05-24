@@ -307,7 +307,7 @@ public class BookPanelOnTouchListener
 		 * Don't forget to mirror any changes made here in the onScroll() method as well, to be safe.
 		 */
 		if(MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_UP) {
-			Log.d(LOG, "[" + panelPosition + "] OnTouchListener --> onTouch ACTION_UP");
+			Log.d(LOG, "[" + panelPosition + "] OnTouchListener --> onTouch ACTION_UP - scrollY: " + webView.getScrollY());
 
 			// Only if it's not DoubleTapSwipe, that is handled separately.
 			if (!isDoubleTapSwipe) {
@@ -335,7 +335,7 @@ public class BookPanelOnTouchListener
 	 */
 	@Override
 	public boolean onDown(MotionEvent event) {
-		Log.d(LOG, "[" + panelPosition + "] onDown"); //: " + event.toString());
+		Log.d(LOG, "[" + panelPosition + "] onDown - scrollY: " + webView.getScrollY()); //: " + event.toString());
 
 		/*
 		 * Reset all variables from handling of the last touch gesture
