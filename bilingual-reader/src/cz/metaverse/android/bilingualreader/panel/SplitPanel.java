@@ -94,6 +94,16 @@ public abstract class SplitPanel extends Fragment {
 	}
 
 	/**
+	 * Empty constructor for when Android needs to recreate the Fragment.
+	 */
+	public SplitPanel() {
+		this.governor = ((ReaderActivity) getActivity()).governor;
+		// We can't set panelHolder because we don't know the panel's position.
+		//  So this panel, after being re-created, will fail selfCheck and be destroyed and recreated
+		//  from scratch.
+	}
+
+	/**
 	 * Checks whether there are any problems with this instance, if for example the Android system
 	 * didn't close any important fields that would result in NullPointerExceptions.
 	 * @return true if everything appears to be sound

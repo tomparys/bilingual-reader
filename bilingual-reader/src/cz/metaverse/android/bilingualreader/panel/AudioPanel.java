@@ -109,6 +109,13 @@ public class AudioPanel extends SplitPanel {
 	}
 
 	/**
+	 * Empty constructor for when Android needs to recreate the Fragment.
+	 */
+	public AudioPanel() {
+		super();
+	}
+
+	/**
 	 * Checks whether there are any problems with this instance, if for example the Android system
 	 * didn't close any important fields that would result in NullPointerExceptions.
 	 * @return true if everything appears to be sound
