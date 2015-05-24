@@ -245,6 +245,10 @@ public class BookPanel extends SplitPanel {
 		// Enable JavaScript for cool things to happen!
 		webView.getSettings().setJavaScriptEnabled(true);
 
+		// Disable horizontal scroll bar.
+		webView.setHorizontalScrollBarEnabled(false);
+		//webView.setOverScrollMode(View.OVER_SCROLL_NEVER); //we have to leave vertical overscroll in.
+
 		onTouchListener = new BookPanelOnTouchListener(activity, governor, panelHolder, this, webView, panelPosition);
 		webView.setOnTouchListener(onTouchListener);
 

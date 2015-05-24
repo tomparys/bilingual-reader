@@ -155,6 +155,8 @@ public class BookPanelOnTouchListener
 	 * Fields for touch/gesture events.
 	 */
 	protected GestureDetectorCompat gestureDetector;
+	protected float touchOriginX;
+	protected float touchOriginY;
 
 	// For scrolling gesture events.
 	protected boolean scrollIsOrWasMultitouch;
@@ -314,6 +316,10 @@ public class BookPanelOnTouchListener
 			}
 		}
 
+		// Modify the event so that it is passed on in a state where the X coordinate hasn't changed at all.
+		// This prevents the "over scroll glow effect" on pages that have some (hidden) horizontal scroll.
+		event.setLocation(touchOriginX, event.getY());
+
 		view.performClick(); // Android system mandates we pass the baton to the onClick listener now.
 
 		return view.onTouchEvent(event);
@@ -338,6 +344,10 @@ public class BookPanelOnTouchListener
 		 * Warning: When doing double-tap, after the second tap, all variables get re-initiated here for
 		 *  the second time. There's no good way around this, but it also doesn't cause any issues so far.
 		 */
+		// Reset general touch fields
+		touchOriginX = event.getX();
+		touchOriginY = event.getY();
+
 		// Reset fields dealing with scroll.
 		scrollIsOrWasMultitouch = false;
 		scrollOriginX = event.getX();

@@ -297,7 +297,9 @@ public class SelectionWebView extends WebView {
 	}
 
 	/**
-	 * Overriding this method so we can stop the WebView from scrolling at any time we want.
+	 * Overriding this method so we can:
+	 *  1. Disallow all horizontal scrolling.
+	 *  2. Stop the WebView from scrolling at all in case we currently want to.
 	 */
 	@Override
 	public boolean overScrollBy(int deltaX, int deltaY, int scrollX, int scrollY, int scrollRangeX,
@@ -307,8 +309,8 @@ public class SelectionWebView extends WebView {
 			// WebView will not scroll at all.
 			return false;
 		} else {
-			// WebView will scroll normally.
-			return super.overScrollBy(deltaX, deltaY, scrollX, scrollY, scrollRangeX,
+			// WebView will scroll only vertically, horizontally it will be always scrolled to the left.
+			return super.overScrollBy(0, deltaY, 0, scrollY, scrollRangeX,
 					scrollRangeY, maxOverScrollX, maxOverScrollY, isTouchEvent);
 		}
 	}
