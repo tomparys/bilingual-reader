@@ -674,8 +674,25 @@ public class BookPanel extends SplitPanel {
 			// If this panel is the one that has finished rendering last.
 			if (sister != null && sister.finishedRenderingContent.get()) {
 				// Check if the Scroll Sync data in both WebViews are congruent.
-				if (!webView.areScrollSyncDataCongruentWithSister()) {
-					// If not, deactivate scroll sync.
+				Boolean congruent = webView.areScrollSyncDataCongruentWithSister();
+
+				/* If there are no scroll data both in the panels -> start the default scroll sync method. */
+				if (congruent == null) {
+					// First we need to disable scroll sync ...
+					governor.setScrollSync(false, true);
+					// ... so that upon enabling it again, default method is set.
+					Boolean newDefaultScrollSyncMethodSet = governor.setScrollSync(true, true);
+
+					if (newDefaultScrollSyncMethodSet != null && newDefaultScrollSyncMethodSet) {
+						Toast.makeText(activity, getString(R.string.Activated_Default_Scroll_sync_method),
+								Toast.LENGTH_LONG).show();
+					} else {
+						Log.v(LOG, LOG + ".onFinishedRenderingContent - minor ERROR: "
+								+ "Setting of the default scroll method was unsuccessful.");
+					}
+				}
+				/* If the scroll data are different in both panels, deactivate scroll sync. */
+				else if (congruent == false) {
 					governor.setScrollSync(false, true);
 					Toast.makeText(activity, R.string.Deactivated_Scroll_sync, Toast.LENGTH_SHORT).show();
 				}

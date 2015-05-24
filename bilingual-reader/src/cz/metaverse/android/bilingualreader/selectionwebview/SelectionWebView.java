@@ -497,9 +497,12 @@ public class SelectionWebView extends WebView {
 	}
 
 	/**
-	 * Returns whether the scrollSync
+	 * Returns:
+	 *  - null  - if both the panels have no scroll sync settings (method = ScrollSyncMethod.none)
+	 *  - false - if the panels have different scroll sync settings
+	 *  - true  - if the panels have exactly the same scroll sync settings
 	 */
-	public boolean areScrollSyncDataCongruentWithSister() {
+	public Boolean areScrollSyncDataCongruentWithSister() {
 		SelectionWebView sister = getSisterWebView();
 
 		// If the ScrollSyncMethods are not null and equal to each other.
@@ -507,7 +510,7 @@ public class SelectionWebView extends WebView {
 
 			switch (scrollSyncMethod) {
 			case none:
-				return false;
+				return null;
 
 			case proportional:
 			case linear:

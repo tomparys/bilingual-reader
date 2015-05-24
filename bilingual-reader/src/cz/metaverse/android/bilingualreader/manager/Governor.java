@@ -367,6 +367,8 @@ public class Governor {
 	 * @return  Null if change was not made, if it was, returns whether a new default sync method was set.
 	 */
 	public Boolean setScrollSync(boolean setScrollSync, boolean checkSyncData) {
+		Log.d(LOG, LOG + ".setScrollSync(" + setScrollSync + ", " + checkSyncData + ")");
+
 		if (!exactlyOneBookOpen()) {
 			boolean defaultScrollSyncMethodStarted = false;
 
@@ -377,7 +379,8 @@ public class Governor {
 				if (webView != null) {
 					// If the Scroll Sync methods and data loaded in the two panels don't agree
 					// with each other, reset them out.
-					if (!webView[0].areScrollSyncDataCongruentWithSister()) {
+					Boolean congruent = webView[0].areScrollSyncDataCongruentWithSister();
+					if (congruent == null || congruent == false) {
 						webView[0].resetScrollSync(ScrollSyncMethod.proportional);
 						webView[1].resetScrollSync(ScrollSyncMethod.proportional);
 						defaultScrollSyncMethodStarted = true;
@@ -421,7 +424,8 @@ public class Governor {
 			// if not, we're going to reset the method and data when ScrollSync is activated,
 			// thus in that case we return null.
 			else {
-				if (webView[0].areScrollSyncDataCongruentWithSister()) {
+				Boolean congruent = webView[0].areScrollSyncDataCongruentWithSister();
+				if (congruent == null || congruent == false) {
 					return webView[0].getScrollSyncMethod();
 				}
 			}
