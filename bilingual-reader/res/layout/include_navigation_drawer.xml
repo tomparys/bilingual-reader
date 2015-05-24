@@ -150,6 +150,23 @@
             android:background="?android:attr/dividerVertical" />
 
         <Button
+            android:id="@+id/drawer_visual_options_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="start|center_vertical"
+            android:onClick="onDrawerButtonClicked"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:text="@string/Visual_Options"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="?android:attr/dividerVertical" />
+
+        <Button
             android:id="@+id/drawer_dictionary_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -176,23 +193,6 @@
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
             android:text="@string/Would_You_Like_to_Know_More"
-            android:textSize="18sp" />
-
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="1dp"
-            android:background="?android:attr/dividerVertical" />
-
-        <Button
-            android:id="@+id/drawer_visual_options_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?android:attr/selectableItemBackground"
-            android:gravity="start|center_vertical"
-            android:onClick="onDrawerButtonClicked"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:text="@string/Visual_Options"
             android:textSize="18sp" />
 
         <View
