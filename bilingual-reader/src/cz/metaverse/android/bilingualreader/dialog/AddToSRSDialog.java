@@ -98,7 +98,9 @@ public class AddToSRSDialog extends DialogFragment implements DialogInterface.On
 		super.onSaveInstanceState(outState);
 
 		outState.putBoolean("startedFromSRSDActivity", startedFromSRSDatabaseActivity);
-		outState.putLong("rowid", rowid);
+		if (rowid != null) {
+			outState.putLong("rowid", rowid);
+		}
 	}
 
 	/**
