@@ -231,7 +231,7 @@
     <string name="translation_colon">Translation:</string>
     <string name="drawer_open">Open drawer</string>
     <string name="drawer_close">Close drawer</string>
-    <string name="activated_sync_chapters">Activated synchronized chapters.</string>
+    <string name="Activated_Chapter_sync">Activated Chapter sync.</string>
     <string name="Deactivated_Chapter_sync">Deactivated Chapter sync.</string>
     <string name="Other_book_has_no_more_chapters_Deactivated_Chapter_sync">The other book has no more chapters. Deactivated Chapter sync.</string>
     <string name="Deactivated_Chapter_and_Scroll_sync">Deactivated Chapter and Scroll sync.</string>

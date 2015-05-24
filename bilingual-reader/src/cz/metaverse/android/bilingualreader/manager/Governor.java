@@ -563,6 +563,7 @@ public class Governor {
 
 			if (ok && firstLanguage != -1 && secondLanguage != -1) {
 				setChapterSync(true);
+				Toast.makeText(activity, R.string.Activated_Chapter_sync, Toast.LENGTH_LONG).show();
 			}
 
 			readingBilingualEbook = true;

@@ -860,7 +860,9 @@ public class Epub {
 	 * @param visualOptions    Visual Options
 	 * @param context          Context
 	 */
-	private void writeHtmlWithCSS(String path, VisualOptions visualOptions, Context context) {
+	public void writeHtmlWithCSS(String path, VisualOptions visualOptions, Context context) {
+		path = path.replace("file:///", "");
+
 		/* If the html file isn't yet present in the originalCssPath, move it there. */
 		File originalCssFile = new File(originalCssPath(path));
 		if(!originalCssFile.exists()) {

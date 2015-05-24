@@ -486,6 +486,12 @@ public class PanelHolder {
 		Log.d(LOG, "setBookPage: " + page);
 
 		if (book != null) {
+			if (governor.isReadingBilingualEbook()) {
+				// Bilingual books have trouble with changing CSS of the various language versions,
+				// so let's change it on the fly when opening them.
+				book.writeHtmlWithCSS(page, governor.getVisualOptions(), activity);
+			}
+
 			book.goToPage(page);
 
 			// Extract audio into the other panel if appropriate.
@@ -641,6 +647,12 @@ public class PanelHolder {
 		// Change the background of the BookPanel if it is one, so transitions are smooth.
 		if (isBookPanel()) {
 			getBookPanel().changeCSS(governor.getVisualOptions());
+
+			if (governor.isReadingBilingualEbook()) {
+				// Bilingual books have trouble with changing CSS of the various language versions,
+				// so let's change the current page here.
+				book.writeHtmlWithCSS(book.getCurrentPageURL(), governor.getVisualOptions(), activity);
+			}
 		}
 
 		book.changeCSS(governor.getVisualOptions(), activity);

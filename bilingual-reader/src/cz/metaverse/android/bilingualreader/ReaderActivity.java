@@ -827,7 +827,7 @@ public class ReaderActivity extends Activity implements View.OnSystemUiVisibilit
 				// Display infotext if appropriate.
 				if (!InfotextDialog.showIfAppropriate(this, DontShowAgain.CHAPTER_SYNC)) {
 					// If infotext was not shown, show at least a toast.
-					Toast.makeText(this, getString(R.string.activated_sync_chapters), Toast.LENGTH_SHORT).show();
+					Toast.makeText(this, getString(R.string.Activated_Chapter_sync), Toast.LENGTH_SHORT).show();
 				}
 			} else {
 				Toast.makeText(this, getString(R.string.Deactivated_Chapter_sync), Toast.LENGTH_SHORT).show();
