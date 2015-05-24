@@ -692,8 +692,9 @@ public class BookPanel extends SplitPanel {
 					if (newDefaultScrollSyncMethodSet != null && newDefaultScrollSyncMethodSet) {
 						Toast.makeText(activity, getString(R.string.Activated_Default_Scroll_sync_method),
 								Toast.LENGTH_LONG).show();
+						Log.d(LOG, LOGID + ".onFinishedRenderingContent - Activated_Default_Scroll_sync_method.");
 					} else {
-						Log.v(LOG, LOG + ".onFinishedRenderingContent - minor ERROR: "
+						Log.v(LOG, LOGID + ".onFinishedRenderingContent - minor ERROR: "
 								+ "Setting of the default scroll method was unsuccessful.");
 					}
 				}
@@ -701,6 +702,7 @@ public class BookPanel extends SplitPanel {
 				else if (congruent == false) {
 					governor.setScrollSync(false, true);
 					Toast.makeText(activity, R.string.Deactivated_Scroll_sync, Toast.LENGTH_SHORT).show();
+					Log.d(LOG, LOGID + ".onFinishedRenderingContent - Deactivated_Scroll_sync.");
 				}
 			}
 		}
