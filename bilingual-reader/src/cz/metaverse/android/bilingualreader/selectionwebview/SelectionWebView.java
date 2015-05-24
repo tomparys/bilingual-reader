@@ -659,6 +659,10 @@ public class SelectionWebView extends WebView {
 		}
 	}
 
+	public void resetPreviousContentHeight() {
+		previousContentHeight = 0;
+	}
+
 
 
 	// ============================================================================================

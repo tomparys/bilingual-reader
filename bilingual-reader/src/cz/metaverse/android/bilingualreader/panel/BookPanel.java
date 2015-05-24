@@ -429,6 +429,9 @@ public class BookPanel extends SplitPanel {
 		if (finishedRenderingContent.get()) {
 			loadPositionY = null;
 			firstRenderingAfterCreatingActivity = false;
+			if (webView != null) {
+				webView.resetPreviousContentHeight();
+			}
 
 			// Scroll Sync data
 			loadScrollSyncMethod = null;
@@ -467,6 +470,9 @@ public class BookPanel extends SplitPanel {
 		if (finishedRenderingContent.get()) {
 			loadPositionY = null;
 			firstRenderingAfterCreatingActivity = false;
+			if (webView != null) {
+				webView.resetPreviousContentHeight();
+			}
 
 			// Scroll Sync data
 			loadScrollSyncMethod = null;
