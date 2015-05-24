@@ -318,7 +318,9 @@ public class BookPanelOnTouchListener
 
 		// Modify the event so that it is passed on in a state where the X coordinate hasn't changed at all.
 		// This prevents the "over scroll glow effect" on pages that have some (hidden) horizontal scroll.
-		event.setLocation(touchOriginX, event.getY());
+		//  -- Disabled because it causes the wrong scroll position to be loaded after opening a page
+		//     sometimes (but not every time), for some unknown reason.
+		//event.setLocation(touchOriginX, event.getY());
 
 		view.performClick(); // Android system mandates we pass the baton to the onClick listener now.
 

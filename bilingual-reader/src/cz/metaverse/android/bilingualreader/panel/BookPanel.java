@@ -247,7 +247,7 @@ public class BookPanel extends SplitPanel {
 
 		// Disable horizontal scroll bar.
 		webView.setHorizontalScrollBarEnabled(false);
-		//webView.setOverScrollMode(View.OVER_SCROLL_NEVER); //we have to leave vertical overscroll in.
+		webView.setOverScrollMode(View.OVER_SCROLL_NEVER); // Sadly, disables also vertical over scroll.
 
 		onTouchListener = new BookPanelOnTouchListener(activity, governor, panelHolder, this, webView, panelPosition);
 		webView.setOnTouchListener(onTouchListener);
@@ -548,6 +548,7 @@ public class BookPanel extends SplitPanel {
 	 * @param latestBookPage BookPage entry to load data from, or NULL so the method contacts database itself.
 	 */
 	public void loadBookPageFromDb(BookPage latestBookPage) {
+		BookPage bookPage = null;
 
 		// Only prepare displayedBookPageKey if enumState=books, because when saveBookPageToDb() gets
 		// called, the enumState will be already changed to the new one. This way, we can test
@@ -559,13 +560,7 @@ public class BookPanel extends SplitPanel {
 					Func.fileNameFromPath(panelHolder.getBook().getFilePath()),
 					panelHolder.getBook().getTitle(),
 					Func.fileNameFromPath(displayedPage)};
-		}
 
-		// Load page only if this isn't the first time we're opening any page in this run of the app,
-		// in which case we're loading the data from preferences, and loading from DB would be redundant.
-		if ((latestBookPage != null || finishedRenderingContent.get()) && displayedBookPageKey != null) {
-
-			BookPage bookPage;
 			if (latestBookPage != null) {
 				bookPage = latestBookPage;
 			} else {
@@ -575,9 +570,18 @@ public class BookPanel extends SplitPanel {
 					displayedBookPageKey[0], displayedBookPageKey[1], displayedBookPageKey[2]);
 			}
 
-			// If the BookPage was found in the database, load the data to be used later!
+			// If the BookPage was found in the database.
 			if (bookPage != null) {
 				loadedFromBookPageRowId = bookPage.getId();
+			}
+		}
+
+		// Load page only if this isn't the first time we're opening any page in this run of the app,
+		// in which case we're loading the data from preferences, and loading from DB would be redundant.
+		if ((latestBookPage != null || finishedRenderingContent.get()) && displayedBookPageKey != null) {
+
+			// If the BookPage was found in the database, load the data to be used later!
+			if (bookPage != null) {
 				loadPositionY = bookPage.getScrollY();
 
 				// Load ScrollSync data
